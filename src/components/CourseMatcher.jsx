@@ -179,7 +179,7 @@ class CourseMatcher extends Component {
               <div className="list-group-item">
                 <table className='table'>
                   <thead>
-                    <th>Course</th>
+                    <th className='w-25'>Course</th>
                     <th>Friends</th>
                   </thead>
                   <tbody>{this.state.sameCourseText}</tbody>
