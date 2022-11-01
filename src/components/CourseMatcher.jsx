@@ -4,9 +4,10 @@ class CourseMatcher extends Component {
 
   state = {
     courses: [{}],       //Courses reading array. Will have courseList, file, student
-    sameCourseText: <em><small className='text-muted'>Shared courses and names of people who share them will be displayed here.</small></em>,
-    sameSectionText: <em><small className='text-muted'>Shared sections and names of people who share them will be displayed here.</small></em>,
-    submitted: false
+    sameCourseText: "",
+    sameSectionText: "",
+    submitted: false,
+    tablePlaceholder: "show"
   }
 
   //------------Upload button functions
@@ -97,17 +98,26 @@ class CourseMatcher extends Component {
       }
     }
 
+    sameSections.sort(function (a, b) {
+      return (a.sectionName < b.sectionName) ? -1 : (a.sectionName > b.sectionName) ? 1 : 0;
+    });
+    sameCourses.sort(function (a, b) {
+      return (a.courseName < b.courseName) ? -1 : (a.courseName > b.courseName) ? 1 : 0;
+    });
+
     this.displayCourses(sameCourses, sameSections);
   }
 
   displayCourses = (c, s) => {
     let newSameCourseText = [];
     let newSameSectionText = [];
+    this.setState(prevState => ({ tablePlaceholder: "none" }));
+
     for (let i = 0; i < c.length; i++) {
-      newSameCourseText.push(c[i].courseName + ": " + c[i].courseMates.toString(), <br />);
+      newSameCourseText.push(<tr><td>{c[i].courseName}</td><td>{c[i].courseMates.toString().replaceAll(",", ", ")}</td></tr>);
     }
     for (let i = 0; i < s.length; i++) {
-      newSameSectionText.push(s[i].sectionName + ": " + s[i].sectionMates.toString(), <br />);
+      newSameSectionText.push(<tr><td>{s[i].sectionName}</td><td>{s[i].sectionMates.toString().replaceAll(",", ", ")}</td></tr>);
     }
     this.setState(prevState => ({
       sameCourseText: newSameCourseText,
@@ -125,7 +135,7 @@ class CourseMatcher extends Component {
     this.setState(prevState => ({
       courses: [{}]
     }));
-    document.getElementById("fileUpload").value="";
+    document.getElementById("fileUpload").value = "";
   }
 
   updateDropdown = () => {
@@ -144,47 +154,73 @@ class CourseMatcher extends Component {
 
     return (
       <div className="App">
-        <div className="card mx-auto mt-3" style={{ "width": "50%" }}>
-          <div className="card-body">
-            <h5 className='card-title'>Upload your Timetables</h5>
-            <input id="fileUpload" className="form-control" type="file" accept=".ics" multiple onChange={(e) => this.handleUpload(e)} />
-            <button className="btn btn-outline-primary mt-2" onClick={this.handleSubmit}>Submit</button>
-            <p className="card-text help-text text-muted mt-2">Step 1: Find your Timetable on your SSC,
-              then click Download your schedule to your calendar software.
+        <div className="m-4">
+          <div className="card col-md-6 mx-auto">
+            <div className="card-body">
+              <h5 className='card-title'>Upload your Timetables</h5>
+              <input id="fileUpload" className="form-control" type="file" accept=".ics" multiple onChange={(e) => this.handleUpload(e)} />
+              <button className="btn btn-outline-primary mt-2" onClick={this.handleSubmit}>Submit</button>
+              <p className="card-text help-text text-muted mt-2">Step 1: Find your Timetable on your SSC,
+                then click Download your schedule to your calendar software.
+                <br></br>
+                Step 2: Rename your .ics files to your names (e.g. Jen.ics, Daniel.ics, etc)</p>
+              <div className="row m-1">
+                <button className="btn btn-primary" onClick={this.handleView} disabled={!this.state.submitted}>
+                  View courses in common
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="row m-4 justify-content-around">
+          <div className="card col-md-5 p-0 mb-3">
+            <div className="list-group list-group-flush">
+              <div className="list-group-item list-group-item-primary pb-0 text-center"><h6>Shared courses</h6></div>
+              <div className="list-group-item">
+                <table className='table'>
+                  <thead>
+                    <th>Course</th>
+                    <th>Friends</th>
+                  </thead>
+                  <tbody>{this.state.sameCourseText}</tbody>
+                </table>
+                <p className='help-text text-muted' style={{ display: this.state.tablePlaceholder }}><em><small>
+                  Shared courses and names of people who share them will be displayed here.
+                </small></em></p>
+              </div>
+            </div>
+          </div>
+          <div className="card col-md-5 p-0 mb-3">
+            <div className="list-group list-group-flush">
+              <div className="list-group-item list-group-item-primary pb-0 text-center"><h6>Shared sections</h6></div>
+              <div className="list-group-item">
+                <table className='table'>
+                  <thead>
+                    <th>Section</th>
+                    <th>Friends</th>
+                  </thead>
+                  <tbody>{this.state.sameSectionText}</tbody>
+                </table>
+                <p className='help-text text-muted' style={{ display: this.state.tablePlaceholder }}><em><small>
+                  Shared sections and names of people who share them will be displayed here.
+                </small></em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="m-4">
+          <div className="card col-md-6 text-center mx-auto mt-3">
+            <div className='card-body'>
+              <button className="btn btn-outline-primary" onClick={this.handleSave} disabled={!this.state.submitted}>
+                <span>Save to </span>
+                <select>
+                  <option value="" /*disabled selected*/>---</option>
+                </select>
+                <span>'s Google Calendar</span></button>
               <br></br>
-              Step 2: Rename your .ics files to your names (e.g. Jen.ics, Daniel.ics, etc)</p>
-            <div className="row m-1">
-              <button className="btn btn-primary" onClick={this.handleView} disabled={!this.state.submitted}>
-                View courses in common
-              </button>
+              <span className="help-text text-muted">Add classmates taking classes together with you in your courses' event
+                descriptions.</span>
             </div>
-          </div>
-        </div>
-        <div className="row row-cols-2 m-4 justify-content-around">
-          <div className="card col-5 p-0">
-            <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0"><h6>Shared courses:</h6></div>
-              <div className="list-group-item"><p className='font-monospace'>{this.state.sameCourseText}</p></div>
-            </div>
-          </div>
-          <div className="card col-5 p-0">
-            <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0"><h6>Shared sections:</h6></div>
-              <div className="list-group-item"><p className='font-monospace'>{this.state.sameSectionText}</p></div>
-            </div>
-          </div>
-        </div>
-        <div className="card text-center mx-auto mt-3" style={{ "width": "50%" }}>
-          <div className='card-body'>
-            <button className="btn btn-outline-primary" onClick={this.handleSave} disabled={!this.state.submitted}>
-              <span>Save to </span>
-              <select>
-                <option value="" /*disabled selected*/>---</option>
-              </select>
-              <span>'s Google Calendar</span></button>
-            <br></br>
-            <span className="help-text">Add classmates taking classes together with you in your courses' event
-              descriptions.</span>
           </div>
         </div>
       </div>
