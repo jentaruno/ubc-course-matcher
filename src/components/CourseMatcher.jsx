@@ -158,12 +158,20 @@ class CourseMatcher extends Component {
           <div className="card col-md-6 mx-auto">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
-              <input id="fileUpload" className="form-control" type="file" accept=".ics" multiple onChange={(e) => this.handleUpload(e)} />
-              <button className="btn btn-outline-primary mt-2" onClick={this.handleSubmit}>Submit</button>
-              <p className="card-text help-text text-muted mt-2">Step 1: Find your Timetable on your SSC,
+              <div className="row mt-2">
+                <div className="col-md-9 mb-2">
+                  <input id="fileUpload" className="form-control w-100" type="file" accept=".ics" multiple onChange={(e) => this.handleUpload(e)} />
+                </div>
+                <div className="col-md-3 mb-2">
+                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+                </div>
+              </div>
+              <p><small className="card-text help-text text-muted mt-2">Step 1: Find your Timetables on your SSC,
                 then click Download your schedule to your calendar software.
                 <br></br>
-                Step 2: Rename your .ics files to your names (e.g. Jen.ics, Daniel.ics, etc)</p>
+                Step 2: Rename your .ics files to your names (e.g. Jen.ics, Daniel.ics, etc)
+                <br></br>
+                Step 3: Collect all the Timetables you want to match, click on the Choose Files button to upload them (can be as many as you want!)</small></p>
               <div className="row m-1">
                 <button className="btn btn-primary" onClick={this.handleView} disabled={!this.state.submitted}>
                   View courses in common
@@ -175,35 +183,43 @@ class CourseMatcher extends Component {
         <div className="row m-4 justify-content-around">
           <div className="card col-md-5 p-0 mb-3">
             <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0 text-center"><h6>Shared courses</h6></div>
+              <div className="list-group-item list-group-item-primary pb-0 text-center"><h5>Shared courses</h5></div>
               <div className="list-group-item">
                 <table className='table'>
                   <thead>
-                    <th className='w-25'>Course</th>
-                    <th>Friends</th>
+                    <tr>
+                      <th className='col-md-4'>📚 Course</th>
+                      <th className='col-md-8'>👫 Friends</th>
+                    </tr>
                   </thead>
                   <tbody>{this.state.sameCourseText}</tbody>
+                  <tfoot><tr>
+                    <td colSpan="2" className='table-secondary help-text text-muted  text-center' style={{ display: this.state.tablePlaceholder }}><em><small>
+                      Shared courses and names of people who share them will be displayed here.
+                    </small></em></td>
+                  </tr></tfoot>
                 </table>
-                <p className='help-text text-muted' style={{ display: this.state.tablePlaceholder }}><em><small>
-                  Shared courses and names of people who share them will be displayed here.
-                </small></em></p>
               </div>
             </div>
           </div>
           <div className="card col-md-5 p-0 mb-3">
             <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0 text-center"><h6>Shared sections</h6></div>
+              <div className="list-group-item list-group-item-primary pb-0 text-center"><h5>Shared sections</h5></div>
               <div className="list-group-item">
                 <table className='table'>
                   <thead>
-                    <th>Section</th>
-                    <th>Friends</th>
+                    <tr>
+                      <th className='col-md-4'>🧑‍🏫 Section</th>
+                      <th className='col-md-8'>👫 Friends</th>
+                    </tr>
                   </thead>
                   <tbody>{this.state.sameSectionText}</tbody>
+                  <tfoot><tr>
+                    <td colSpan="2" className='table-secondary help-text text-muted text-center' style={{ display: this.state.tablePlaceholder }}><em><small>
+                      Shared sections and names of people who share them will be displayed here.
+                    </small></em></td>
+                  </tr></tfoot>
                 </table>
-                <p className='help-text text-muted' style={{ display: this.state.tablePlaceholder }}><em><small>
-                  Shared sections and names of people who share them will be displayed here.
-                </small></em></p>
               </div>
             </div>
           </div>
