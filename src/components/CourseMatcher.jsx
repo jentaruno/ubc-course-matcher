@@ -3,56 +3,99 @@ import React, { Component } from 'react';
 class CourseMatcher extends Component {
 
   state = {
-    courses: [{}],       //Courses reading array. Will have courseList, file, student
+    errorMessage: "",
+    timetablesText: [<tr>
+      <td><input type="text" className="form-control" placeholder="Your name"></input></td>
+      <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)}></input></td>
+      <td></td>
+    </tr>,
+    <tr>
+      <td><input type="text" className="form-control" placeholder="Friend's name"></input></td>
+      <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)}></input></td>
+      <td></td>
+    </tr>],
+    courses: [],       //Courses reading array. Will have courseList, file, student
     sameCourseText: "",
     sameSectionText: "",
     submitted: false,
     tablePlaceholder: "show"
   }
 
-  //------------Upload button functions
+  //------------Timetable table functions
 
-  readFileContents = async (file) => {
-    return new Promise((resolve, reject) => {
-      let fileReader = new FileReader();
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = reject;
-      fileReader.readAsText(file);
-    });
-  }
-
-  readAllFiles = async (AllFiles) => {
-    const results = await Promise.all(AllFiles.map(async (file) => {
-      const fileContents = await this.readFileContents(file);
-      return fileContents;
-    }));
-
+  addField = (e) => {
+    e.preventDefault();
+    let newTimetablesText = this.state.timetablesText;
+    newTimetablesText.push(<tr>
+      <td><input type="text" className="form-control" placeholder="Friend's name"></input></td>
+      <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)}></input></td>
+      <td><button className="btn btn-outline-danger deleteBtn" onClick={(e) => this.handleDeleteRow(e)}>X</button></td>
+    </tr>);
     this.setState(prevState => ({
-      courses: results.map((e, i) => Object.assign({ file: e }, this.state.courses[i]))
+      timetablesText: newTimetablesText
     }));
   }
+
+  handleDeleteRow = (e) => {
+    let currentRow = e.target.closest("tr");
+    let newCourses = this.state.courses;
+    newCourses.splice(currentRow.rowIndex - 1, 1);
+    this.setState(prevState => ({
+      courses: newCourses,
+      submitted: false
+    }))
+    currentRow.remove();;
+  }
+
+  //------------Upload button functions
 
   handleUpload = (e) => {
     this.setState(prevState => ({
       submitted: false
-    }));
+    }))
 
-    let AllFiles = [];
-    [...e.target.files].forEach(file => AllFiles.push(file));
+    if (e.target.files.length == 0)
+      return;
 
-    this.readAllFiles(AllFiles);
+    let newCourses = this.state.courses;
+    let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = function () {
+      let currentRow = e.target.closest("tr").rowIndex - 1;
+      newCourses[currentRow] = { file: reader.result };
+    };
+
+    reader.onerror = function () {
+      console.log(reader.error);
+    };
 
     this.setState(prevState => ({
-      courses: AllFiles.map((e, i) => Object.assign({ student: e.name.replace(".ics", "") }, this.state.courses[i]))
+      courses: newCourses
     }));
+
     this.updateDropdown();
   }
 
   //------------Course matching functions
 
   handleSubmit = () => {
+    this.setState(prevState => ({
+      errorMessage: ""
+    }));
+    //See if any rows are not properly filled with a name and a file
+    let timetables = document.getElementById("timetablesTable");
+    for (let i = 0; i < timetables.rows.length; i++) {
+      let currentRow = timetables.rows[i];
+      if (currentRow.getElementsByTagName('input')[0].value == "" ||
+        currentRow.getElementsByTagName('input')[1].files.length <= 0) {
+        this.setState(prevState => ({
+          errorMessage: "The table is not filled in correctly."
+        }));
+        return;
+      }
+    }
+    //Check if there is more than 1 course uploaded, meaning we can start matching (may be redundant due to validation above) 
     if (this.state.courses.length > 1)
       this.setState(prevState => ({
         submitted: true
@@ -65,7 +108,7 @@ class CourseMatcher extends Component {
           .map(e => e.substring(8, 20)));
 
     this.setState(prevState => ({
-      courses: extractedCourses.map((e, i) => Object.assign({ courseList: e }, this.state.courses[i]))
+      courses: extractedCourses.map((e, i) => Object.assign({ student: document.getElementById("timetablesTable").rows[i].getElementsByTagName("input")[0].value, courseList: e }, this.state.courses[i]))
     }));
   }
 
@@ -127,15 +170,10 @@ class CourseMatcher extends Component {
 
   handleView = (e) => {
     e.preventDefault();
-    //disable this function if submit hasnt been pressed yet
+    //Disable this function if submit hasnt been pressed yet
     this.handleSubmit();
     //Display course name, and people taking it together with you
-    console.log(this.state.courses);
     this.findSameSections();
-    this.setState(prevState => ({
-      courses: [{}]
-    }));
-    document.getElementById("fileUpload").value = "";
   }
 
   updateDropdown = () => {
@@ -158,20 +196,35 @@ class CourseMatcher extends Component {
           <div className="card col-md-6 mx-auto">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
-              <div className="row mt-2">
-                <div className="col-md-9 mb-2">
-                  <input id="fileUpload" className="form-control w-100" type="file" accept=".ics" multiple onChange={(e) => this.handleUpload(e)} />
-                </div>
-                <div className="col-md-3 mb-2">
+              <div className="m-1">
+                <table className="table mb-2">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>File</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
+                  <tfoot>
+                    <tr>
+                      <td colSpan={2}><p className='text-danger'>{this.state.errorMessage}</p></td>
+                      <td><input className="btn btn-outline-primary" type="button" onClick={(e) => this.addField(e)} value="+" /></td>
+                    </tr>
+                  </tfoot>
+                </table>
+                <div className='m-1'>
                   <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
                 </div>
               </div>
-              <p><small className="card-text help-text text-muted mt-2">Step 1: Find your Timetables on your SSC,
-                then click Download your schedule to your calendar software.
-                <br></br>
-                Step 2: Rename your .ics files to your names (e.g. Jen.ics, Daniel.ics, etc)
-                <br></br>
-                Step 3: Collect all the Timetables you want to match, click on the Choose Files button to upload them (can be as many as you want!)</small></p>
+              <div className="m-1">
+                <p><small className="card-text help-text text-muted">Step 1: Find your Timetable on your SSC,
+                  then click Download your schedule to your calendar software.
+                  <br></br>
+                  Step 2: Have your friends do the same and send the files over to you.
+                  <br></br>
+                  Step 3: Upload your timetables using the table above. If you want to match more than 2 friends, add more rows with the [+] button.</small></p>
+              </div>
               <div className="row m-1">
                 <button className="btn btn-primary" onClick={this.handleView} disabled={!this.state.submitted}>
                   View courses in common
