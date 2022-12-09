@@ -80,26 +80,12 @@ class CourseMatcher extends Component {
   //------------Course matching functions
 
   handleSubmit = () => {
-    this.setState(prevState => ({
-      errorMessage: ""
-    }));
-    //See if any rows are not properly filled with a name and a file
-    let timetables = document.getElementById("timetablesTable");
-    for (let i = 0; i < timetables.rows.length; i++) {
-      let currentRow = timetables.rows[i];
-      if (currentRow.getElementsByTagName('input')[0].value == "" ||
-        currentRow.getElementsByTagName('input')[1].files.length <= 0) {
-        this.setState(prevState => ({
-          errorMessage: "The table is not filled in correctly."
-        }));
-        return;
-      }
+    if (this.isTableValid()) {
+      this.setState(prevState => ({ submitted: true }));
     }
-    //Check if there is more than 1 course uploaded, meaning we can start matching (may be redundant due to validation above) 
-    if (this.state.courses.length > 1)
-      this.setState(prevState => ({
-        submitted: true
-      }))
+    else {
+      this.setState(prevState => ({ submitted: false }));
+    }
     //Read .ics files one by one
     let extractedCourses = this.state.courses.map(e => e.file.split('\n'))
       .map(e =>
@@ -110,6 +96,42 @@ class CourseMatcher extends Component {
     this.setState(prevState => ({
       courses: extractedCourses.map((e, i) => Object.assign({ student: document.getElementById("timetablesTable").rows[i].getElementsByTagName("input")[0].value, courseList: e }, this.state.courses[i]))
     }));
+  }
+
+  isTableValid = () => {
+    let timetables = document.getElementById("timetablesTable");
+    let currentStudents = [];
+    let currentFiles = [];
+
+    for (let i = 0; i < timetables.rows.length; i++) {
+      let currentRow = timetables.rows[i];
+      let newErrorMessage = "";
+      if (currentRow.getElementsByTagName('input')[1].files[0])
+        var currentFile = currentRow.getElementsByTagName('input')[1].files[0].name;
+
+      if (currentStudents.indexOf(currentRow.getElementsByTagName('input')[0].value) !== -1)
+        newErrorMessage = "There are duplicate names on the table.";
+      if (currentRow.getElementsByTagName('input')[1].files.length <= 0)
+        newErrorMessage = "One or more files have not been uploaded.";
+      if (currentRow.getElementsByTagName('input')[0].value == "")
+        newErrorMessage = "One or more names have not been filled.";
+      if (currentFiles.indexOf(currentFile) !== -1) {
+        newErrorMessage = "There are duplicate files on the table.";
+        console.log("current file:",currentFile,"array:",currentFiles)
+      }
+
+      this.setState(prevState => ({
+        errorMessage: newErrorMessage
+      }));
+      if (newErrorMessage != "") {
+        return false;
+      }
+      
+      currentStudents.push(currentRow.getElementsByTagName('input')[0].value);
+      currentFiles.push(currentFile);
+    }
+
+    return true;
   }
 
   findSameSections = () => {
@@ -213,7 +235,7 @@ class CourseMatcher extends Component {
                     </tr>
                   </tfoot>
                 </table>
-                <div className='m-1'>
+                <div className='row m-1'>
                   <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
                 </div>
               </div>
