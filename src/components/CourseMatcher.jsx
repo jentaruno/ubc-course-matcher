@@ -18,7 +18,9 @@ class CourseMatcher extends Component {
     sameCourseText: "",
     sameSectionText: "",
     submitted: false,
-    tablePlaceholder: "show"
+/*     displayCoursesTable: "none",
+    displaySectionsTable: "none",
+    displayFreeTable: "none" */
   }
 
   //------------Timetable table functions
@@ -98,6 +100,17 @@ class CourseMatcher extends Component {
     }));
   }
 
+  handleView = (e) => {
+    e.preventDefault();
+    let buttonClass = e.target.classList;
+    if (buttonClass.contains("btn-courses")) {
+      this.displayCourses("courses", this.findSameCourses());
+    }
+    if (buttonClass.contains("btn-sections")) {
+      this.displayCourses("sections", this.findSameSections());
+    }
+  }
+
   isTableValid = () => {
     let timetables = document.getElementById("timetablesTable");
     let currentStudents = [];
@@ -117,7 +130,7 @@ class CourseMatcher extends Component {
         newErrorMessage = "One or more names have not been filled.";
       if (currentFiles.indexOf(currentFile) !== -1) {
         newErrorMessage = "There are duplicate files on the table.";
-        console.log("current file:",currentFile,"array:",currentFiles)
+        console.log("current file:", currentFile, "array:", currentFiles)
       }
 
       this.setState(prevState => ({
@@ -126,7 +139,7 @@ class CourseMatcher extends Component {
       if (newErrorMessage != "") {
         return false;
       }
-      
+
       currentStudents.push(currentRow.getElementsByTagName('input')[0].value);
       currentFiles.push(currentFile);
     }
@@ -134,8 +147,7 @@ class CourseMatcher extends Component {
     return true;
   }
 
-  findSameSections = () => {
-    let sameSections = []; //Same sections array. Will have sectionName, sectionMates
+  findSameCourses = () => {
     let sameCourses = []; //Same courses array. Will have courseName, courseMates
     //vvv Major loop da loop to record same sections and courses
     //Loop for each student
@@ -143,59 +155,72 @@ class CourseMatcher extends Component {
       //Loop for each course in this student's timetable
       for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
         let currentSectionName = this.state.courses[i].courseList[a];
-        let currentSectionMates = [this.state.courses[i].student];
         let currentCourseMates = [this.state.courses[i].student];
         //Loop for next students to check if they have the course
         for (let j = i + 1; j < this.state.courses.length; j++) {
-          if (this.state.courses[j].courseList.indexOf(currentSectionName) >= 0)
-            currentSectionMates.push(this.state.courses[j].student);
           if (this.state.courses[j].courseList.map(e => e.substring(0, 8))
             .indexOf(currentSectionName.substring(0, 8)) >= 0)
             currentCourseMates.push(this.state.courses[j].student);
         }
+        //If there are common occurences found, add to sameCourses
+        if (currentCourseMates.length > 1 && //Check if this is not a duplicate of a previous match record
+          sameCourses.map(e => { return (e.name === currentSectionName.substring(0, 8)) }).every(e => e === false))
+          sameCourses.push({ name: currentSectionName.substring(0, 8), mates: currentCourseMates });
+      }
+    }
+
+    sameCourses.sort(function (a, b) {
+      return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
+    });
+
+    return sameCourses;
+  }
+
+  findSameSections = () => {
+    let sameSections = []; //Same sections array. Will have sectionName, sectionMates
+    //vvv Major loop da loop to record same sections and courses
+    //Loop for each student
+    for (let i = 0; i < this.state.courses.length - 1; i++) {
+      //Loop for each course in this student's timetable
+      for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
+        let currentSectionName = this.state.courses[i].courseList[a];
+        let currentSectionMates = [this.state.courses[i].student];
+        //Loop for next students to check if they have the course
+        for (let j = i + 1; j < this.state.courses.length; j++) {
+          if (this.state.courses[j].courseList.indexOf(currentSectionName) >= 0)
+            currentSectionMates.push(this.state.courses[j].student);
+        }
         //If there are common occurences found, add to sameSections
         if (currentSectionMates.length > 1 && //Check if this is not a duplicate of a previous match record
-          sameSections.map(e => { return (e.sectionName === currentSectionName) }).every(e => e === false))
-          sameSections.push({ sectionName: currentSectionName, sectionMates: currentSectionMates });
-        if (currentCourseMates.length > 1 && //Check if this is not a duplicate of a previous match record
-          sameCourses.map(e => { return (e.courseName === currentSectionName.substring(0, 8)) }).every(e => e === false))
-          sameCourses.push({ courseName: currentSectionName.substring(0, 8), courseMates: currentCourseMates });
+          sameSections.map(e => { return (e.name === currentSectionName) }).every(e => e === false))
+          sameSections.push({ name: currentSectionName, mates: currentSectionMates });
       }
     }
 
     sameSections.sort(function (a, b) {
-      return (a.sectionName < b.sectionName) ? -1 : (a.sectionName > b.sectionName) ? 1 : 0;
-    });
-    sameCourses.sort(function (a, b) {
-      return (a.courseName < b.courseName) ? -1 : (a.courseName > b.courseName) ? 1 : 0;
+      return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
     });
 
-    this.displayCourses(sameCourses, sameSections);
+    return sameSections;
   }
 
-  displayCourses = (c, s) => {
-    let newSameCourseText = [];
-    let newSameSectionText = [];
-    this.setState(prevState => ({ tablePlaceholder: "none" }));
-
-    for (let i = 0; i < c.length; i++) {
-      newSameCourseText.push(<tr><td>{c[i].courseName}</td><td>{c[i].courseMates.toString().replaceAll(",", ", ")}</td></tr>);
+  displayCourses = (table, text) => {
+    let newText = [];
+    for (let i = 0; i < text.length; i++) {
+      newText.push(<tr><td>{text[i].name}</td><td>{text[i].mates.toString().replaceAll(",", ", ")}</td></tr>);
     }
-    for (let i = 0; i < s.length; i++) {
-      newSameSectionText.push(<tr><td>{s[i].sectionName}</td><td>{s[i].sectionMates.toString().replaceAll(",", ", ")}</td></tr>);
+    switch (table) {
+      case "courses":
+        this.setState(prevState => ({ /* displayCoursesTable: "show", displaySectionsTable: "none", displayFreeTable: "none",  */sameCourseText: newText }));
+        break;
+      case "sections":
+        this.setState(prevState => ({ /* displayCoursesTable: "none", displaySectionsTable: "show", displayFreeTable: "none",  */sameSectionText: newText }));
+        break;
+      case "free":
+        this.setState(prevState => ({ /* displayCoursesTable: "none", displaySectionsTable: "none", displayFreeTable: "show" */ }))
+        break;
+      default: break;
     }
-    this.setState(prevState => ({
-      sameCourseText: newSameCourseText,
-      sameSectionText: newSameSectionText
-    }))
-  }
-
-  handleView = (e) => {
-    e.preventDefault();
-    //Disable this function if submit hasnt been pressed yet
-    this.handleSubmit();
-    //Display course name, and people taking it together with you
-    this.findSameSections();
   }
 
   updateDropdown = () => {
@@ -206,16 +231,12 @@ class CourseMatcher extends Component {
 
   }
 
-  handleSave = (e) => {
-    e.preventDefault();
-  }
-
   render() {
 
     return (
       <div className="App">
-        <div className="m-4">
-          <div className="card col-md-6 mx-auto">
+        <div className="row m-4 justify-content-around">
+          <div className="card col-md-5 p-0 mb-3">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
               <div className="m-1">
@@ -236,7 +257,7 @@ class CourseMatcher extends Component {
                   </tfoot>
                 </table>
                 <div className='row m-1'>
-                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+                  <button className="btn btn-primary" onClick={this.handleSubmit}>Submit</button>
                 </div>
               </div>
               <div className="m-1">
@@ -247,18 +268,35 @@ class CourseMatcher extends Component {
                   <br></br>
                   Step 3: Upload your timetables using the table above. If you want to match more than 2 friends, add more rows with the [+] button.</small></p>
               </div>
-              <div className="row m-1">
-                <button className="btn btn-primary" onClick={this.handleView} disabled={!this.state.submitted}>
-                  View courses in common
-                </button>
-              </div>
             </div>
           </div>
-        </div>
-        <div className="row m-4 justify-content-around">
-          <div className="card col-md-5 p-0 mb-3">
-            <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0 text-center"><h5>Shared courses</h5></div>
+          <div className="col-md-6 p-0">
+            <div className="row p-0 mb-2 d-flex justify-content-around">
+              <div className="col-lg-5 mb-3">
+                <div className="row">
+                  <button type="button" className="btn btn-outline-primary btn-courses" onClick={this.handleView} disabled={!this.state.submitted}>
+                    📚 Courses in common
+                  </button>
+                </div>
+              </div>
+              <div className="col-lg-5 mb-3">
+                <div className="row">
+                  <button type="button" className="btn btn-outline-primary btn-sections" onClick={this.handleView} disabled={!this.state.submitted}>
+                    🧑‍🏫 Sections in common
+                  </button>
+                </div>
+              </div>
+              <div className="col-lg-5 mb-3">
+                <div className="row">
+                  <button type="button" className="btn btn-outline-primary btn-free" onClick={this.handleView} disabled={!this.state.submitted}>
+                    🙌 Who's free right now?
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="list-group list-group-flush" style={{ display: this.state.displayCoursesTable }}>
+              <div className="list-group-item list-group-item-primary pb-0 text-center">
+                <h5>Shared courses</h5></div>
               <div className="list-group-item">
                 <table className='table'>
                   <thead>
@@ -268,18 +306,12 @@ class CourseMatcher extends Component {
                     </tr>
                   </thead>
                   <tbody>{this.state.sameCourseText}</tbody>
-                  <tfoot><tr>
-                    <td colSpan="2" className='table-secondary help-text text-muted  text-center' style={{ display: this.state.tablePlaceholder }}><em><small>
-                      Shared courses and names of people who share them will be displayed here.
-                    </small></em></td>
-                  </tr></tfoot>
                 </table>
               </div>
             </div>
-          </div>
-          <div className="card col-md-5 p-0 mb-3">
-            <div className="list-group list-group-flush">
-              <div className="list-group-item list-group-item-primary pb-0 text-center"><h5>Shared sections</h5></div>
+            <div className="list-group list-group-flush" style={{ display: this.state.displaySectionsTable }}>
+              <div className="list-group-item list-group-item-primary pb-0 text-center">
+                <h5>Shared sections</h5></div>
               <div className="list-group-item">
                 <table className='table'>
                   <thead>
@@ -289,28 +321,8 @@ class CourseMatcher extends Component {
                     </tr>
                   </thead>
                   <tbody>{this.state.sameSectionText}</tbody>
-                  <tfoot><tr>
-                    <td colSpan="2" className='table-secondary help-text text-muted text-center' style={{ display: this.state.tablePlaceholder }}><em><small>
-                      Shared sections and names of people who share them will be displayed here.
-                    </small></em></td>
-                  </tr></tfoot>
                 </table>
               </div>
-            </div>
-          </div>
-        </div>
-        <div className="m-4">
-          <div className="card col-md-6 text-center mx-auto mt-3">
-            <div className='card-body'>
-              <button className="btn btn-outline-primary" onClick={this.handleSave} disabled={!this.state.submitted}>
-                <span>Save to </span>
-                <select>
-                  <option value="" /*disabled selected*/>---</option>
-                </select>
-                <span>'s Google Calendar</span></button>
-              <br></br>
-              <span className="help-text text-muted">Add classmates taking classes together with you in your courses' event
-                descriptions.</span>
             </div>
           </div>
         </div>
