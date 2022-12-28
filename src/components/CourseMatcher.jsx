@@ -19,7 +19,9 @@ class CourseMatcher extends Component {
     tableTitleText: "",
     tableHead1Text: "",
     tableHead2Text: "",
-    tableText: ""
+    tableText: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+      After uploading your files, click Submit and press one of the three buttons above. The information you need will be displayed here.
+    </small></em></td></tr>
   }
 
   //------------Timetable table functions
@@ -48,7 +50,7 @@ class CourseMatcher extends Component {
     currentRow.remove();;
   }
 
-  //------------Upload button functions
+  //------------Upload and submit button functions
 
   handleUpload = (e) => {
     this.setState(prevState => ({
@@ -75,10 +77,7 @@ class CourseMatcher extends Component {
       courses: newCourses
     }));
 
-    this.updateDropdown();
   }
-
-  //------------Course matching functions
 
   handleSubmit = () => {
     if (this.isTableValid()) {
@@ -87,26 +86,56 @@ class CourseMatcher extends Component {
     else {
       this.setState(prevState => ({ submitted: false }));
     }
-    //Read .ics files one by one
+    //Read courses one by one
     let extractedCourses = this.state.courses.map(e => e.file.split('\n'))
       .map(e =>
         e.filter(e => e.includes("SUMMARY:"))
           .filter((v, i, a) => a.indexOf(v) === i)
           .map(e => e.substring(8, 20)));
 
+    //Read times that student is in class
+    let extractedClassStartTimes = this.state.courses.map(e => e.file.split('\n'))
+      .map(e =>
+        e.filter(e => e.includes("DTSTART;"))
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .map(e => ((+e.substring(40, 42)) * 60) + (+e.substring(42, 44))));
+    let extractedClassEndTimes = this.state.courses.map(e => e.file.split('\n'))
+      .map(e =>
+        e.filter(e => e.includes("DTEND;"))
+          .filter((v, i, a) => a.indexOf(v) === i)
+          .map(e => ((+e.substring(38, 40)) * 60) + (+e.substring(40, 42))));
+
+    let extractedClassTimes = [];
+    for (let i = 0; i < extractedClassStartTimes.length; i++) {
+      let startend = extractedClassStartTimes[i].map(function (e, j) {
+        return { start: e, end: extractedClassEndTimes[i][j] }
+      });
+      extractedClassTimes.push(startend);
+    }
+
     this.setState(prevState => ({
-      courses: extractedCourses.map((e, i) => Object.assign({ student: document.getElementById("timetablesTable").rows[i].getElementsByTagName("input")[0].value, courseList: e }, this.state.courses[i]))
+      courses: extractedCourses.map((e, i) => Object.assign({
+        key: document.getElementById("timetablesTable").rows[i].getElementsByTagName("input")[0].value,
+        courseList: e,
+        classTimes: extractedClassTimes[i]
+      }, this.state.courses[i]))
     }));
+
   }
+
+  //------------Course matching functions
 
   handleView = (e) => {
     e.preventDefault();
     let buttonClass = e.target.classList;
     if (buttonClass.contains("btn-courses")) {
-      this.displayCourses("courses", this.findSameCourses());
+      this.displayOnTable("courses", this.findSameCourses());
     }
     if (buttonClass.contains("btn-sections")) {
-      this.displayCourses("sections", this.findSameSections());
+      this.displayOnTable("sections", this.findSameSections());
+    }
+    if (buttonClass.contains("btn-free")) {
+      this.displayOnTable("free", this.findFree());
     }
   }
 
@@ -129,7 +158,6 @@ class CourseMatcher extends Component {
         newErrorMessage = "One or more names have not been filled.";
       if (currentFiles.indexOf(currentFile) !== -1) {
         newErrorMessage = "There are duplicate files on the table.";
-        console.log("current file:", currentFile, "array:", currentFiles)
       }
 
       this.setState(prevState => ({
@@ -154,59 +182,110 @@ class CourseMatcher extends Component {
       //Loop for each course in this student's timetable
       for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
         let currentSectionName = this.state.courses[i].courseList[a];
-        let currentCourseMates = [this.state.courses[i].student];
+        let currentCourseFriends = [this.state.courses[i].key];
         //Loop for next students to check if they have the course
         for (let j = i + 1; j < this.state.courses.length; j++) {
           if (this.state.courses[j].courseList.map(e => e.substring(0, 8))
             .indexOf(currentSectionName.substring(0, 8)) >= 0)
-            currentCourseMates.push(this.state.courses[j].student);
+            currentCourseFriends.push(this.state.courses[j].key);
         }
         //If there are common occurences found, add to sameCourses
-        if (currentCourseMates.length > 1 && //Check if this is not a duplicate of a previous match record
-          sameCourses.map(e => { return (e.name === currentSectionName.substring(0, 8)) }).every(e => e === false))
-          sameCourses.push({ name: currentSectionName.substring(0, 8), mates: currentCourseMates });
+        if (currentCourseFriends.length > 1 && //Check if this is not a duplicate of a previous match record
+          sameCourses.map(e => { return (e.key === currentSectionName.substring(0, 8)) }).every(e => e === false))
+          sameCourses.push({ key: currentSectionName.substring(0, 8), friends: currentCourseFriends });
       }
     }
 
     sameCourses.sort(function (a, b) {
-      return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
+      return (a.key < b.key) ? -1 : (a.key > b.key) ? 1 : 0;
     });
 
     return sameCourses;
   }
 
   findSameSections = () => {
-    let sameSections = []; //Same sections array. Will have sectionName, sectionMates
+    let sameSections = []; //Same sections array. Will have sectionName, sectionfriends
     //vvv Major loop da loop to record same sections and courses
     //Loop for each student
     for (let i = 0; i < this.state.courses.length - 1; i++) {
       //Loop for each course in this student's timetable
       for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
         let currentSectionName = this.state.courses[i].courseList[a];
-        let currentSectionMates = [this.state.courses[i].student];
+        let currentSectionFriends = [this.state.courses[i].key];
         //Loop for next students to check if they have the course
         for (let j = i + 1; j < this.state.courses.length; j++) {
           if (this.state.courses[j].courseList.indexOf(currentSectionName) >= 0)
-            currentSectionMates.push(this.state.courses[j].student);
+            currentSectionFriends.push(this.state.courses[j].key);
         }
         //If there are common occurences found, add to sameSections
-        if (currentSectionMates.length > 1 && //Check if this is not a duplicate of a previous match record
-          sameSections.map(e => { return (e.name === currentSectionName) }).every(e => e === false))
-          sameSections.push({ name: currentSectionName, mates: currentSectionMates });
+        if (currentSectionFriends.length > 1 && //Check if this is not a duplicate of a previous match record
+          sameSections.map(e => { return (e.key === currentSectionName) }).every(e => e === false))
+          sameSections.push({ key: currentSectionName, friends: currentSectionFriends });
       }
     }
 
     sameSections.sort(function (a, b) {
-      return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
+      return (a.key < b.key) ? -1 : (a.key > b.key) ? 1 : 0;
     });
 
     return sameSections;
   }
 
-  displayCourses = (table, text) => {
+  //------------Who's free button functions
+
+  findFree = () => {
+    let freeTimes = [];
+    let today = new Date();
+    let currentTime = today.getHours() * 60 + today.getMinutes();
+    //Loop for each student
+    for (let i = 0; i < this.state.courses.length; i++) {
+      let currentClassTimes = this.state.courses[i].classTimes;
+      let hasClass = false;
+      //Loop for each class
+      for (let j = 0; j < currentClassTimes.length; j++) {
+        //If the student has class right now
+        if (currentClassTimes[j].start <= currentTime && currentTime < currentClassTimes[j].end) {
+          hasClass = true;
+          let timeToClassEnd = currentClassTimes[j].end - currentTime;
+          if (timeToClassEnd <= 60) {
+            //If this timing is not on the table yet
+            if (freeTimes.filter(e => e.key).map(e => (+e.time.split(' ')[1])).indexOf(timeToClassEnd) == -1) {
+              freeTimes.push({ key: "In " + timeToClassEnd.toString() + " min", friends: [this.state.courses[i].key] });
+            }
+            //If this timing is already on the table, with someone being free in that timing
+            else {
+              freeTimes.map(e => {
+                if (e.key.contains(timeToClassEnd.toString()) && e.friends.indexOf(this.state.courses[i].key) == -1) {
+                  e.friends.push(this.courses[i].key);
+                }
+              })
+            }
+          }
+        }
+      }
+      //If the student doesn't have class
+      if (!hasClass) {
+        if (freeTimes.map(e => e.key).indexOf("Now") == -1) {
+          freeTimes.push({ key: "Now", friends: [this.state.courses[i].key] })
+        }
+        else {
+          freeTimes.map((e) => {
+            if (e.key == "Now" && e.friends.indexOf(this.state.courses[i].key) == -1)
+              e.friends.push(this.state.courses[i].key)
+          })
+        }
+      }
+    }
+
+    return freeTimes;
+  }
+
+  //------------Table display functions
+
+  displayOnTable = (table, text) => {
     let newText = [];
     for (let i = 0; i < text.length; i++) {
-      newText.push(<tr><td>{text[i].name}</td><td>{text[i].mates.toString().replaceAll(",", ", ")}</td></tr>);
+      newText.push(<tr><td>{text[i].key}</td><td>{text[i].friends.toString().replaceAll(",", ", ")}</td></tr>);
     }
     switch (table) {
       case "courses":
@@ -238,14 +317,6 @@ class CourseMatcher extends Component {
         break;
       default: break;
     }
-  }
-
-  updateDropdown = () => {
-    //if number of students > 1 make button blue
-    // if (courses[0].student)
-
-    //list names
-
   }
 
   render() {
