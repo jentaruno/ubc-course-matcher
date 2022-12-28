@@ -15,12 +15,11 @@ class CourseMatcher extends Component {
       <td></td>
     </tr>],
     courses: [],       //Courses reading array. Will have courseList, file, student
-    sameCourseText: "",
-    sameSectionText: "",
     submitted: false,
-/*     displayCoursesTable: "none",
-    displaySectionsTable: "none",
-    displayFreeTable: "none" */
+    tableTitleText: "",
+    tableHead1Text: "",
+    tableHead2Text: "",
+    tableText: ""
   }
 
   //------------Timetable table functions
@@ -211,13 +210,31 @@ class CourseMatcher extends Component {
     }
     switch (table) {
       case "courses":
-        this.setState(prevState => ({ /* displayCoursesTable: "show", displaySectionsTable: "none", displayFreeTable: "none",  */sameCourseText: newText }));
+        this.setState(prevState =>
+        ({
+          tableTitleText: "Shared courses",
+          tableHead1Text: "📚 Course",
+          tableHead2Text: "👫 Friends",
+          tableText: newText
+        }));
         break;
       case "sections":
-        this.setState(prevState => ({ /* displayCoursesTable: "none", displaySectionsTable: "show", displayFreeTable: "none",  */sameSectionText: newText }));
+        this.setState(prevState =>
+        ({
+          tableTitleText: "Shared sections",
+          tableHead1Text: "🧑‍🏫 Section",
+          tableHead2Text: "👫 Friends",
+          tableText: newText
+        }));
         break;
       case "free":
-        this.setState(prevState => ({ /* displayCoursesTable: "none", displaySectionsTable: "none", displayFreeTable: "show" */ }))
+        this.setState(prevState =>
+        ({
+          tableTitleText: "Who's free right now?",
+          tableHead1Text: "🕒 Time",
+          tableHead2Text: "👫 Friends",
+          tableText: newText
+        }))
         break;
       default: break;
     }
@@ -236,7 +253,7 @@ class CourseMatcher extends Component {
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
-          <div className="card col-md-5 p-0 mb-3">
+          <div className="card fixed col-md-5 p-0 mb-3">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
               <div className="m-1">
@@ -270,7 +287,7 @@ class CourseMatcher extends Component {
               </div>
             </div>
           </div>
-          <div className="col-md-6 p-0">
+          <div className="fixed col-md-6 p-0">
             <div className="row p-0 mb-2 d-flex justify-content-around">
               <div className="col-lg-5 mb-3">
                 <div className="row">
@@ -294,34 +311,21 @@ class CourseMatcher extends Component {
                 </div>
               </div>
             </div>
-            <div className="list-group list-group-flush" style={{ display: this.state.displayCoursesTable }}>
-              <div className="list-group-item list-group-item-primary pb-0 text-center">
-                <h5>Shared courses</h5></div>
-              <div className="list-group-item">
-                <table className='table'>
-                  <thead>
-                    <tr>
-                      <th className='col-md-4'>📚 Course</th>
-                      <th className='col-md-8'>👫 Friends</th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.state.sameCourseText}</tbody>
-                </table>
-              </div>
-            </div>
-            <div className="list-group list-group-flush" style={{ display: this.state.displaySectionsTable }}>
-              <div className="list-group-item list-group-item-primary pb-0 text-center">
-                <h5>Shared sections</h5></div>
-              <div className="list-group-item">
-                <table className='table'>
-                  <thead>
-                    <tr>
-                      <th className='col-md-4'>🧑‍🏫 Section</th>
-                      <th className='col-md-8'>👫 Friends</th>
-                    </tr>
-                  </thead>
-                  <tbody>{this.state.sameSectionText}</tbody>
-                </table>
+            <div className="card fixed col-12">
+              <div className="list-group list-group-flush">
+                <div className="list-group-item list-group-item-primary pb-0 text-center">
+                  <h5>{this.state.tableTitleText}</h5></div>
+                <div className="list-group-item">
+                  <table className='table'>
+                    <thead>
+                      <tr>
+                        <th className='col-md-4'>{this.state.tableHead1Text}</th>
+                        <th className='col-md-8'>{this.state.tableHead2Text}</th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.state.tableText}</tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
