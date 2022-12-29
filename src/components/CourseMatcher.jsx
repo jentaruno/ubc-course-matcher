@@ -249,14 +249,15 @@ class CourseMatcher extends Component {
           let timeToClassEnd = currentClassTimes[j].end - currentTime;
           if (timeToClassEnd <= 60) {
             //If this timing is not on the table yet
-            if (freeTimes.filter(e => e.key).map(e => (+e.time.split(' ')[1])).indexOf(timeToClassEnd) == -1) {
+            if (freeTimes.filter(e => e.key).map(e => (+e.key.split(' ')[1])).indexOf(timeToClassEnd) == -1) {
               freeTimes.push({ key: "In " + timeToClassEnd.toString() + " min", friends: [this.state.courses[i].key] });
             }
             //If this timing is already on the table, with someone being free in that timing
             else {
+              console.log(freeTimes);
               freeTimes.map(e => {
-                if (e.key.contains(timeToClassEnd.toString()) && e.friends.indexOf(this.state.courses[i].key) == -1) {
-                  e.friends.push(this.courses[i].key);
+                if (e.key.includes(timeToClassEnd.toString()) && e.friends.indexOf(this.state.courses[i].key) == -1) {
+                  e.friends.push(this.state.courses[i].key);
                 }
               })
             }
@@ -324,7 +325,7 @@ class CourseMatcher extends Component {
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
-          <div className="card fixed col-md-5 p-0 mb-3">
+          <div className="card fixed col-md-5 p-0 mb-4">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
               <div className="m-1">
@@ -349,8 +350,8 @@ class CourseMatcher extends Component {
                 </div>
               </div>
               <div className="m-1">
-                <p><small className="card-text help-text text-muted">Step 1: Find your Timetable on your SSC,
-                  then click Download your schedule to your calendar software.
+                <p><small className="card-text help-text text-muted">Step 1: Find your Timetable on your <a href='https://ssc.adm.ubc.ca/sscportal' target="_blank">SSC</a>,
+                  then click <em>Download your schedule to your calendar software</em>.
                   <br></br>
                   Step 2: Have your friends do the same and send the files over to you.
                   <br></br>
@@ -359,7 +360,7 @@ class CourseMatcher extends Component {
             </div>
           </div>
           <div className="fixed col-md-6 p-0">
-            <div className="row p-0 mb-2 d-flex justify-content-around">
+            <div className="row p-0 mx-1 mb-2 d-flex justify-content-around">
               <div className="col-lg-5 mb-3">
                 <div className="row">
                   <button type="button" className="btn btn-outline-primary btn-courses" onClick={this.handleView} disabled={!this.state.submitted}>

@@ -1,0 +1,39 @@
+$primary: #606c38;
+$light: #f9fff7;
+$dark: #283618;
+
+@import "../node_modules/bootstrap/scss/bootstrap";
+
+@font-face {
+    font-family: 'Satoshi';
+    font-style: normal;
+	font-weight: normal;
+    src: url(./fonts/Satoshi-Regular.otf) format('opentype');
+}
+@font-face {
+    font-family: 'Satoshi';
+    font-style: normal;
+	font-weight: bold;
+    src: url(./fonts/Satoshi-Bold.otf) format('opentype')
+}
+@font-face {
+    font-family: 'Satoshi';
+    font-style: italic;
+	font-weight: normal;
+    src: url(./fonts/Satoshi-Italic.otf) format('opentype');
+}
+@font-face {
+    font-family: 'Satoshi';
+    font-style: italic;
+	font-weight: bold;
+    src: url(./fonts/Satoshi-BoldItalic.otf) format('opentype');
+}
+
+// Then add additional custom code here
+body {
+    font-family: 'Satoshi', sans-serif;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: bold;
+}
