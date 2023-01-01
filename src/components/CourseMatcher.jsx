@@ -1,30 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, Component } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
+import QRCode from 'react-qr-code';
 
 class CourseMatcher extends Component {
 
   state = {
     errorMessage: "",
     timetablesText: [<tr>
-      <td><input type="text" className="form-control" placeholder="Your name"></input></td>
-      <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)}></input></td>
-      <td></td>
-    </tr>,
-    <tr>
       <td><input type="text" className="form-control" placeholder="Friend's name"></input></td>
       <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)}></input></td>
       <td></td>
     </tr>],
+    courseFiles: [],
     courses: [],       //Courses reading array. Will have courseList, file, student
+    submittedFile: false,
     submitted: false,
     tableTitleText: "",
     tableHead1Text: "",
     tableHead2Text: "",
     tableText: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
       After uploading your files, click Submit and press one of the three buttons above. The information you need will be displayed here.
-    </small></em></td></tr>
+    </small></em></td></tr>,
+    showModal: false,
+    qrCodeValue: "aaa",
+    userName: "User"
   }
 
-  //------------Timetable table functions
+  //------------Basic table functions
 
   addField = (e) => {
     e.preventDefault();
@@ -46,27 +49,33 @@ class CourseMatcher extends Component {
     this.setState(prevState => ({
       courses: newCourses,
       submitted: false
-    }))
-    currentRow.remove();;
+    }));
+    currentRow.remove();
+  }
+
+  handleChangeName = (e) => {
+    this.setState({ userName: e.target.value })
   }
 
   //------------Upload and submit button functions
 
-  handleUpload = (e) => {
-    this.setState(prevState => ({
-      submitted: false
-    }))
+  uploadFile = (files, row) => {
+    if (row == 0) {
+      this.setState({ submittedFile: false })
+    }
+    if (row > 0) {
+      this.setState(({ submitted: false }))
+    }
 
-    if (e.target.files.length == 0)
+    if (files.length == 0)
       return;
 
-    let newCourses = this.state.courses;
-    let file = e.target.files[0];
+    let newCourses = this.state.courseFiles;
+    let file = files[0];
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = function () {
-      let currentRow = e.target.closest("tr").rowIndex - 1;
-      newCourses[currentRow] = { file: reader.result };
+      newCourses[row] = { file: reader.result };
     };
 
     reader.onerror = function () {
@@ -74,32 +83,63 @@ class CourseMatcher extends Component {
     };
 
     this.setState(prevState => ({
-      courses: newCourses
+      courseFiles: newCourses
     }));
 
   }
 
+  handleUploadFile = (e) => {
+    this.uploadFile(e.target.files, 0);
+    this.readCourses();
+  }
+
+  handleUpload = (e) => {
+    this.uploadFile(e.target.files, e.target.closest("tr").rowIndex)
+  }
+
+  handleQrCode = () => {
+    if (!this.state.submittedFile)
+      return;
+    this.setState({ showModal: true });
+    console.log(this.state.courses[0]);
+    this.state.qrCodeValue = JSON.stringify(this.state.courses[0]);
+  }
+
+  handleSubmitFile = () => {
+    if (this.isTableValid(document.getElementById("userTimetable"))) {
+      this.setState({ submittedFile: true });
+      this.readCourses();
+    }
+    else {
+      this.setState({ submittedFile: false });
+    }
+  }
+
   handleSubmit = () => {
-    if (this.isTableValid()) {
+    if (this.isTableValid(document.getElementById("timetablesTable"))) {
       this.setState(prevState => ({ submitted: true }));
+      this.readCourses();
     }
     else {
       this.setState(prevState => ({ submitted: false }));
     }
+  }
+
+  readCourses = () => {
     //Read courses one by one
-    let extractedCourses = this.state.courses.map(e => e.file.split('\n'))
+    let extractedCourses = this.state.courseFiles.map(e => e.file.split('\n'))
       .map(e =>
         e.filter(e => e.includes("SUMMARY:"))
           .filter((v, i, a) => a.indexOf(v) === i)
           .map(e => e.substring(8, 20)));
 
     //Read times that student is in class
-    let extractedClassStartTimes = this.state.courses.map(e => e.file.split('\n'))
+    let extractedClassStartTimes = this.state.courseFiles.map(e => e.file.split('\n'))
       .map(e =>
         e.filter(e => e.includes("DTSTART;"))
           .filter((v, i, a) => a.indexOf(v) === i)
           .map(e => ((+e.substring(40, 42)) * 60) + (+e.substring(42, 44))));
-    let extractedClassEndTimes = this.state.courses.map(e => e.file.split('\n'))
+    let extractedClassEndTimes = this.state.courseFiles.map(e => e.file.split('\n'))
       .map(e =>
         e.filter(e => e.includes("DTEND;"))
           .filter((v, i, a) => a.indexOf(v) === i)
@@ -113,13 +153,21 @@ class CourseMatcher extends Component {
       extractedClassTimes.push(startend);
     }
 
-    this.setState(prevState => ({
-      courses: extractedCourses.map((e, i) => Object.assign({
-        key: document.getElementById("timetablesTable").rows[i].getElementsByTagName("input")[0].value,
-        courseList: e,
-        classTimes: extractedClassTimes[i]
-      }, this.state.courses[i]))
-    }));
+    //Change state of courses data
+    this.setState({
+      courses: extractedCourses.map((e, i) => {
+        let student;
+        if (i == 0) { student = this.state.userName; }
+        else { student = document.getElementById("timetablesTable").rows[i - 1].getElementsByTagName("input")[0].value; }
+        return Object.assign({
+          key: student,
+          courseList: e,
+          classTimes: extractedClassTimes[i]
+        })
+      })
+    });
+
+    console.log(this.state.courses);
 
   }
 
@@ -139,13 +187,12 @@ class CourseMatcher extends Component {
     }
   }
 
-  isTableValid = () => {
-    let timetables = document.getElementById("timetablesTable");
+  isTableValid = (table) => {
     let currentStudents = [];
     let currentFiles = [];
 
-    for (let i = 0; i < timetables.rows.length; i++) {
-      let currentRow = timetables.rows[i];
+    for (let i = 0; i < table.rows.length; i++) {
+      let currentRow = table.rows[i];
       let newErrorMessage = "";
       if (currentRow.getElementsByTagName('input')[1].files[0])
         var currentFile = currentRow.getElementsByTagName('input')[1].files[0].name;
@@ -329,6 +376,47 @@ class CourseMatcher extends Component {
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetables</h5>
               <div className="m-1">
+                <table className='table'>
+                  <tbody id="userTimetable">
+                    <tr>
+                      <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)}></input></td>
+                      <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUploadFile(e)}></input></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <Button className="table" variant="outline-primary" onClick={this.handleSubmitFile}>
+                  Submit
+                </Button>
+                <Button className='table' variant="outline-primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
+                    <path d="M2 2h2v2H2V2Z" />
+                    <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
+                    <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z" />
+                    <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z" />
+                    <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z" />
+                  </svg>
+                  <span> Share your QR Code</span>
+                </Button>
+                <Modal show={this.state.showModal} onHide={() => this.setState({ showModal: false })}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>{this.state.userName}'s Timetable QR Code</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <div style={{ height: "auto", margin: "0 auto", maxWidth: 300, width: "100%" }}>
+                      <QRCode
+                        size={4000}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        value={this.state.qrCodeValue}
+                        viewBox={`0 0 256 256`}
+                      />
+                    </div>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <Button variant="secondary" onClick={() => this.setState({ showModal: false })}>
+                      Close
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
                 <table className="table mb-2">
                   <thead>
                     <tr>
@@ -346,11 +434,11 @@ class CourseMatcher extends Component {
                   </tfoot>
                 </table>
                 <div className='row m-1'>
-                  <button className="btn btn-primary" onClick={this.handleSubmit}>Submit</button>
+                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
                 </div>
               </div>
               <div className="m-1">
-                <p><small className="card-text help-text text-muted">Step 1: Find your Timetable on your <a href='https://ssc.adm.ubc.ca/sscportal' target="_blank">SSC</a>,
+                <p><small className="card-text help-text text-muted">Step 1: Find your Timetable on your <a href='https://ssc.adm.ubc.ca/sscportal' rel='noreferrer' target="_blank">SSC</a>,
                   then click <em>Download your schedule to your calendar software</em>.
                   <br></br>
                   Step 2: Have your friends do the same and send the files over to you.
@@ -363,21 +451,21 @@ class CourseMatcher extends Component {
             <div className="row p-0 mx-1 mb-2 d-flex justify-content-around">
               <div className="col-lg-5 mb-3">
                 <div className="row">
-                  <button type="button" className="btn btn-outline-primary btn-courses" onClick={this.handleView} disabled={!this.state.submitted}>
+                  <button type="button" className="btn btn-primary btn-courses" onClick={this.handleView} disabled={!this.state.submitted}>
                     📚 Courses in common
                   </button>
                 </div>
               </div>
               <div className="col-lg-5 mb-3">
                 <div className="row">
-                  <button type="button" className="btn btn-outline-primary btn-sections" onClick={this.handleView} disabled={!this.state.submitted}>
+                  <button type="button" className="btn btn-primary btn-sections" onClick={this.handleView} disabled={!this.state.submitted}>
                     🧑‍🏫 Sections in common
                   </button>
                 </div>
               </div>
               <div className="col-lg-5 mb-3">
                 <div className="row">
-                  <button type="button" className="btn btn-outline-primary btn-free" onClick={this.handleView} disabled={!this.state.submitted}>
+                  <button type="button" className="btn btn-primary btn-free" onClick={this.handleView} disabled={!this.state.submitted}>
                     🙌 Who's free right now?
                   </button>
                 </div>
