@@ -9,6 +9,7 @@
     "bootstrap": "^5.2.1",
     "exports-loader": "^4.0.0",
     "gh-pages": "^4.0.0",
+    "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
