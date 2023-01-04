@@ -7,7 +7,8 @@ import QrScanner from 'qr-scanner';
 class CourseMatcher extends Component {
 
   state = {
-    errorMessage: "",
+    userErrorMessage: "",
+    friendsErrorMessage: "",
     userName: "User",
     timetablesText: [],
     displayTimetablesPlaceholder: "show",
@@ -29,7 +30,8 @@ class CourseMatcher extends Component {
     modalHeader: "",
     displayQR: "none",
     displayQRScanner: "none",
-    qrCodeValue: ""
+    qrCodeValue: "",
+    qrScanner: ""
   }
 
   //------------Basic table functions
@@ -92,16 +94,16 @@ class CourseMatcher extends Component {
 
   handleSubmitFile = (e) => {
     e.preventDefault();
-    this.setState({ submittedFile: true });
-    this.readCourses();
+    if (this.isFormValid()) {
+      this.setState({ submittedFile: true });
+      this.readCourses();
+    }
     console.log(this.state.courses);
   }
 
   handleSubmit = () => {
-    if (this.state.courses.length > 1)
-      this.setState({
-        submitted: true
-      });
+    if (this.isTableValid())
+      this.setState({ submitted: true });
   }
 
   readCourses = () => {
@@ -201,6 +203,34 @@ class CourseMatcher extends Component {
     return sameSections;
   }
 
+  isFormValid = () => {
+    let newErrorMessage = "";
+    if (!document.getElementById("user-name").value.trim())
+      newErrorMessage = "Please fill in your name.";
+    if (document.getElementById("user-file").files.length < 1)
+      newErrorMessage = "Please upload your file.";
+    this.displayErrorMessage("user", newErrorMessage);
+    if (newErrorMessage != "")
+      return false;
+
+    return true;
+  }
+
+  isTableValid = () => {
+    let courses = this.state.courses;
+    let newErrorMessage = "";
+    if (courses.length < 2)
+      newErrorMessage = "You need to have at least two files to start matching.";
+    if (new Set(courses.map(e => e.key)).size !== courses.length || new Set(courses.map(e => e.courseList)).size !== courses.length)
+      newErrorMessage = "There are duplicate names or files."
+    this.displayErrorMessage("friends", newErrorMessage);
+
+    if (newErrorMessage != "")
+      return false;
+
+    return true;
+  }
+
   //-------------QR Code functions
 
   handleQrCode = () => {
@@ -216,22 +246,26 @@ class CourseMatcher extends Component {
   }
 
   handleScanQRCode = () => {
-    /*this.setState({
+    /* this.setState({
       modalDisplay: true,
       displayQRScanner: "show",
       modalHeader: "Scan QR Code",
-    })*/
+    }) */
 
-    let qrScanner = new QrScanner(
-      document.getElementById("qr-video"),
-      result => this.processQRCode(result, qrScanner),
-      {
-        returnDetailedScanResult: true,
-        highlightScanRegion: true
-      }
-    );
-
-    qrScanner.start();
+    if (this.state.qrScanner == "") {
+      let qrScanner = new QrScanner(
+        document.getElementById("qr-video"),
+        result => this.processQRCode(result, qrScanner),
+        {
+          returnDetailedScanResult: true,
+          highlightScanRegion: true
+        }
+      );
+      this.setState({ qrScanner: qrScanner });
+      qrScanner.start();
+    }
+    else
+      this.state.qrScanner.start();
   }
 
   processQRCode = (result, qrScanner) => {
@@ -249,8 +283,8 @@ class CourseMatcher extends Component {
       timetablesText: newTimetablesText
     });
     console.log(this.state.courses);
-    if (qrScanner)
-      qrScanner.stop();
+    if (this.state.qrScanner != "")
+      this.state.qrScanner.stop();
   }
 
   isQRValid = (str) => {
@@ -282,11 +316,19 @@ class CourseMatcher extends Component {
       displayQRScanner: "none",
     });
     let qrScanner = document.getElementsByTagName("QRCode");
-    if (qrScanner)
-      qrScanner.stop();
+    if (this.state.qrScanner != "")
+      this.state.qrScanner.stop();
   }
 
   //------------Table display functions
+
+  displayErrorMessage = (element, message) => {
+    switch (element) {
+      case "user": this.setState({ userErrorMessage: message }); break;
+      case "friends": this.setState({ friendsErrorMessage: message }); break;
+      default: break;
+    }
+  }
 
   displayOnTable = (table, text) => {
     let newText = [];
@@ -338,17 +380,18 @@ class CourseMatcher extends Component {
                   then click <em>Download your schedule to your calendar software</em>.</small></p>
               </div>
               <div className="m-1">
-                <form>
-                  <table className='table'>
-                    <tbody id="userTimetable">
-                      <tr>
-                        <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)} required /></td>
-                        <td><input type="file" accept=".ics" className="form-control" onChange={(e) => this.handleUploadFile(e)} required /></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <input type="submit" className="btn btn-outline-primary table" onClick={this.handleSubmitFile} />
-                </form>
+                <table className='table'>
+                  <tbody id="userTimetable">
+                    <tr>
+                      <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)} /></td>
+                      <td><input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUploadFile(e)} /></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="row m-1">
+                  <button className="btn btn-outline-primary" onClick={this.handleSubmitFile}>Submit</button>
+                </div>
+                <p className='text-danger'>{this.state.userErrorMessage}</p>
                 <hr />
                 <h5 className='card-title'>Add your friends' Timetables</h5>
                 <div className="row px-1 d-flex justify-content-around">
@@ -386,11 +429,6 @@ class CourseMatcher extends Component {
 
                         </div>
                       </Modal.Body>
-                      <Modal.Footer>
-                        <Button variant="secondary" onClick={this.handleHideModal}>
-                          Close
-                        </Button>
-                      </Modal.Footer>
                     </Modal>
                   </div>
                   <div className="col-lg-6">
@@ -416,9 +454,9 @@ class CourseMatcher extends Component {
                   </thead>
                   <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
                   <tfoot style={{ display: this.state.displayTimetablesPlaceholder }}>
-                    <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
-                      After adding your friends' Timetables, their names will be displayed here.
-                    </small></em></td></tr>
+                    <tr>
+                      <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
+                    </tr>
                   </tfoot>
                 </table>
                 <div className='row m-1'>
