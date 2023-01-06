@@ -2,6 +2,7 @@
 Skip the tedious timetable talk and quickly get to sit with your friends!
 ## 🔍 Features
 * Share timetables with a single scan using QR code
+* Share timetables with a single scan using QR code
 * Display shared courses and sections among friends
 * Match multiple timetables at once! Get all your friends!
 ## 🔭 Future improvements
