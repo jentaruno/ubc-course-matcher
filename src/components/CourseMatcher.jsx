@@ -83,7 +83,6 @@ class CourseMatcher extends Component {
     }));
   }
 
-
   handleSubmitFile = (e) => {
     e.preventDefault();
     if (this.isFormValid()) {
