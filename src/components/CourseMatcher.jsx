@@ -11,10 +11,12 @@ class CourseMatcher extends Component {
     friendsErrorMessage: "",
     userName: "User",
     timetablesText: [],
-    displayTimetablesPlaceholder: "show",
+    timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+      After you scan your friends' QR codes, their names will be displayed here.
+    </small></em></td></tr>,
 
     courseFiles: [],
-    courses: [],       //Courses reading array. Will have courseList, file, student
+    courses: [{}],       //Courses reading array. Will have courseList, file, student
 
     submittedFile: false,
     submitted: false,
@@ -23,7 +25,7 @@ class CourseMatcher extends Component {
     tableHead1Text: "",
     tableHead2Text: "",
     tableText: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
-      After uploading your files, click Submit and press one of the three buttons above. The information you need will be displayed here.
+      After uploading your files, click Submit and press one of the two buttons above. The information you need will be displayed here.
     </small></em></td></tr>,
 
     modalDisplay: false,
@@ -40,6 +42,7 @@ class CourseMatcher extends Component {
     let currentRow = e.target.closest("tr");
     let newCourses = this.state.courses;
     newCourses.splice(currentRow.rowIndex, 1);
+    this.updatePlaceholder();
     this.setState(prevState => ({
       courses: newCourses,
       submitted: false
@@ -51,46 +54,35 @@ class CourseMatcher extends Component {
     this.setState({ userName: e.target.value })
   }
 
+  updatePlaceholder = () => {
+    if (!this.state.courses[1])
+      this.setState({
+        timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+          After you scan your friends' QR codes, their names will be displayed here.
+        </small></em></td></tr>
+      });
+    else
+      this.setState({ timetablesPlaceholder: "" });
+  }
+
   //------------Upload and submit button functions
 
-  uploadFile = (files, row) => {
-    if (row == 0) {
-      this.setState({ submittedFile: false })
-    }
-    if (row > 0) {
-      this.setState(({ submitted: false }))
-    }
-
-    if (files.length == 0)
-      return;
-
-    let newCourses = this.state.courseFiles;
-    let file = files[0];
+  handleUpload = (e) => {
+    let file = e.target.files[0];
+    let newCourses = [];
     let reader = new FileReader();
     reader.readAsText(file);
     reader.onload = function () {
-      newCourses[row] = { file: reader.result };
+      newCourses[0] = { file: reader.result };
     };
-
     reader.onerror = function () {
       console.log(reader.error);
     };
-
     this.setState(prevState => ({
       courseFiles: newCourses
     }));
-
   }
 
-  handleUploadFile = (e) => {
-    this.uploadFile(e.target.files, 0);
-  }
-
-  handleUpload = (e) => {
-    e.preventDefault();
-    this.setState({ displayTimetablesPlaceholder: "none" });
-    this.uploadFile(e.target.files, e.target.closest("tr").rowIndex);
-  }
 
   handleSubmitFile = (e) => {
     e.preventDefault();
@@ -98,12 +90,14 @@ class CourseMatcher extends Component {
       this.setState({ submittedFile: true });
       this.readCourses();
     }
-    console.log(this.state.courses);
   }
 
   handleSubmit = () => {
-    if (this.isTableValid())
+    if (this.isTableValid()) {
       this.setState({ submitted: true });
+      this.displayOnTable("courses", [""]);
+      this.displayOnTable("sections", [""]);
+    }
   }
 
   readCourses = () => {
@@ -113,22 +107,15 @@ class CourseMatcher extends Component {
         e.filter(e => e.includes("SUMMARY:"))
           .filter((v, i, a) => a.indexOf(v) === i)
           .map(e => e.substring(8, 20)));
-
+    let newCourses = this.state.courses;
+    newCourses[0] = {
+      key: this.state.userName,
+      courseList: extractedCourses[0]
+    }
     //Change state of courses data
     this.setState({
-      courses: extractedCourses.map((e, i) => {
-        let student;
-        if (i == 0) { student = this.state.userName; }
-        else { student = extractedCourses[i].key; }
-        return Object.assign({
-          key: student,
-          courseList: e
-        })
-      })
+      courses: newCourses
     });
-
-    console.log(this.state.courses);
-
   }
 
   //------------Course matching functions
@@ -145,7 +132,6 @@ class CourseMatcher extends Component {
   }
 
   findSameCourses = () => {
-    console.log(this.state.courses);
     let sameCourses = []; //Same courses array. Will have courseName, courseMates
     //vvv Major loop da loop to record same sections and courses
     //Loop for each student
@@ -171,7 +157,6 @@ class CourseMatcher extends Component {
       return (a.key < b.key) ? -1 : (a.key > b.key) ? 1 : 0;
     });
 
-    console.log(sameCourses);
     return sameCourses;
   }
 
@@ -236,7 +221,6 @@ class CourseMatcher extends Component {
   handleQrCode = () => {
     if (!this.state.submittedFile)
       return;
-    console.log(this.state.courses[0]);
     this.setState({
       modalDisplay: true,
       displayQR: "show",
@@ -269,20 +253,27 @@ class CourseMatcher extends Component {
   }
 
   processQRCode = (result, qrScanner) => {
-    console.log(result.data);
     if (!this.isQRValid(result.data))
       return;
+
+    //Add scanned QR code to courses array
     let currentCourses = this.state.courses;
     let newTimetablesText = this.state.timetablesText;
     let addedCourse = JSON.parse(result.data);
     currentCourses.push(addedCourse);
+    newTimetablesText[0] = "";
     newTimetablesText.push(<tr><td>{this.randomEmoji()} {addedCourse.key}</td>
-      <td><button className="btn btn-outline-danger deleteBtn" onClick={(e) => this.handleDeleteRow(e)}>X</button></td></tr>);
+      <td><button className="btn btn-outline-danger btn-sm deleteBtn" onClick={(e) => this.handleDeleteRow(e)}>X</button></td></tr>);
     this.setState({
       courses: currentCourses,
-      timetablesText: newTimetablesText
+      timetablesText: newTimetablesText,
+      submitted: false
     });
-    console.log(this.state.courses);
+
+    //Update placeholder text
+    this.updatePlaceholder();
+
+    //Stop video after done
     if (this.state.qrScanner != "")
       this.state.qrScanner.stop();
   }
@@ -337,6 +328,10 @@ class CourseMatcher extends Component {
     }
     switch (table) {
       case "courses":
+        if (newText.length == 0)
+          newText[0] = <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+            It seems like you're not taking any courses together.
+          </small></em></td></tr>;
         this.setState(prevState =>
         ({
           tableTitleText: "Shared courses",
@@ -346,6 +341,10 @@ class CourseMatcher extends Component {
         }));
         break;
       case "sections":
+        if (newText.length == 0)
+          newText[0] = <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+            It seems like you're not taking any sections together.
+          </small></em></td></tr>;
         this.setState(prevState =>
         ({
           tableTitleText: "Shared sections",
@@ -384,7 +383,7 @@ class CourseMatcher extends Component {
                   <tbody id="userTimetable">
                     <tr>
                       <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)} /></td>
-                      <td><input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUploadFile(e)} /></td>
+                      <td><input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)} /></td>
                     </tr>
                   </tbody>
                 </table>
@@ -441,19 +440,21 @@ class CourseMatcher extends Component {
                         <path d="M12 9h2V8h-2v1Z" />
                       </svg>
                       <span> Add friend's Timetable</span>
-                    </Button></div>
-                  <video style={{ width: "100%" }}
-                    id="qr-video" disablePictureInPicture playsInline />
+                    </Button>
+                  </div>
                 </div>
+                <video style={{ width: "100%" }}
+                  id="qr-video" disablePictureInPicture playsInline />
                 <table className="table mb-4">
                   <thead>
                     <tr>
-                      <th className='col-10'>Name</th>
-                      <th className='col-2'></th>
+                      <th className='col-11'>Name</th>
+                      <th className='col-1'></th>
                     </tr>
                   </thead>
                   <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
-                  <tfoot style={{ display: this.state.displayTimetablesPlaceholder }}>
+                  <tfoot>
+                    {this.state.timetablesPlaceholder}
                     <tr>
                       <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
                     </tr>
