@@ -24,15 +24,13 @@ class CourseMatcher extends Component {
       After you scan your friends' QR codes, their names will be displayed here.
     </small></em></td></tr>,
 
+    meetTableText: ``,
+
     courseFiles: [],
     courses: [{}],       //Courses reading array. Will have courseList, file, student
 
     submittedFile: false,
     submitted: false,
-
-    coursesTableText: <tr></tr>,
-    sectionsTableText: <tr></tr>,
-    meetTableText: "",
 
     modalDisplay: false,
     modalHeader: "",
@@ -210,6 +208,7 @@ class CourseMatcher extends Component {
         break;
       case "sections": this.displayOnTable("sections", this.findSameSections());
         break;
+      case "meet": this.displayOnTable("meet", this.findMeetTime());
       default: break;
     }
   }
@@ -402,21 +401,47 @@ class CourseMatcher extends Component {
 
     // Loop through the time range
     for (let currentTime = startTime; currentTime <= endTime; currentTime.setMinutes(currentTime.getMinutes() + 30)) {
+      let options = { hour: '2-digit', minute: '2-digit', hour12: false };
+      let currentRowId = "";
+      let minutes = currentTime.getMinutes();
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+      currentRowId = currentTime.getHours() + "" + minutes;
       if (currentTime.getMinutes() == 0) {
-        let options = { hour: '2-digit', minute: '2-digit', hour12: false };
-        let currentLocaleTime = currentTime.toLocaleTimeString([], options)
+        let currentLocaleTime = currentTime.toLocaleTimeString([], options);
         meetTableText.push(<tr>
-          <th scope='row'>{currentLocaleTime}</th>
-          <td></td><td></td><td></td><td></td><td></td>
-        </tr>)
+          <th scope='row' className='p-0'>{currentLocaleTime}</th>
+          {this.generateMeetRow(currentRowId)}
+        </tr>);
       } else {
         meetTableText.push(<tr>
-          <td></td><td></td><td></td><td></td><td></td><td></td>
-        </tr>)
+        <th scope='row' className='p-0'></th>
+        {this.generateMeetRow(currentRowId)}
+        </tr>);
       }
     }
 
-    return meetTableText;
+    this.setState({ meetTableText: meetTableText });
+  }
+
+  generateMeetRow = (currentRow) => {
+    let meetRows = [];
+    for (let i = 0; i < 5; i++) {
+      const tdId = "td" + i + currentRow;
+      const tooltipId = "tooltip" + i + currentRow;
+      const tooltip = (<Tooltip id={tooltipId}>
+          Woohoo!
+        </Tooltip>)
+      meetRows.push(<td className='p-0'><OverlayTrigger
+      placement="bottom"
+      overlay={tooltip}>
+      <span className="d-flex text-light">.</span>
+      </OverlayTrigger>
+      </td>);
+    }
+
+    return meetRows;
   }
 
   //------------Table display functions
@@ -633,23 +658,17 @@ class CourseMatcher extends Component {
                   <Tab.Pane eventKey="tab-4">
                     <div className="card">
                       <div className="card-body">
-                        <div className="card">
-                          <div className="card-body">
-                            <table className='table table-sm meet-table'>
-                              <thead>
-                                <th></th>
-                                <th scope='col'>Mon</th>
-                                <th scope='col'>Tue</th>
-                                <th scope='col'>Wed</th>
-                                <th scope='col'>Thu</th>
-                                <th scope='col'>Fri</th>
-                              </thead>
-                              <tbody>
-                                {this.state.meetTableText}
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
+                        <table className='table table-sm meet-table'>
+                          <thead>
+                            <th></th>
+                            <th scope='col'>Mon</th>
+                            <th scope='col'>Tue</th>
+                            <th scope='col'>Wed</th>
+                            <th scope='col'>Thu</th>
+                            <th scope='col'>Fri</th>
+                          </thead>
+                          <tbody id="meet">{this.state.meetTableText}</tbody>
+                        </table>
                       </div>
                     </div>
                   </Tab.Pane>
