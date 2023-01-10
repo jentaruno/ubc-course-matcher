@@ -19,7 +19,7 @@ class Footer extends Component {
                                     </svg>
                                     <span> </span>
                                     <a target="_blank" rel="noopener noreferrer" className="link-dark d-inline-block"
-                                        href="https://github.com/jentaruno/jentaruno.github.io/tree/main/bp-easy-chair">
+                                        href="https://github.com/jentaruno">
                                         GitHub
                                     </a>
                                 </li>

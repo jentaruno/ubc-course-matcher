@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import QRCode from 'react-qr-code';
 import QrScanner from 'qr-scanner';
+import Cookies from 'universal-cookie';
 
 class CourseMatcher extends Component {
 
@@ -10,6 +11,7 @@ class CourseMatcher extends Component {
     userErrorMessage: "",
     friendsErrorMessage: "",
     userName: "User",
+    userCourses: "",
     timetablesText: [],
     timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
       After you scan your friends' QR codes, their names will be displayed here.
@@ -33,7 +35,15 @@ class CourseMatcher extends Component {
     displayQR: "none",
     displayQRScanner: "none",
     qrCodeValue: "",
-    qrScanner: ""
+    qrScanner: "",
+    svgRef: React.createRef(),
+
+    nameCookie: "",
+    courseCookie: ""
+  }
+
+  componentDidMount() {
+    this.loadCookies();
   }
 
   //------------Basic table functions
@@ -88,6 +98,9 @@ class CourseMatcher extends Component {
     if (this.isFormValid()) {
       this.setState({ submittedFile: true });
       this.readCourses();
+      this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList);
+      let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
+      this.setState({ userCourses: "Loaded courses:" + newUserCourses });
     }
   }
 
@@ -115,6 +128,50 @@ class CourseMatcher extends Component {
     this.setState({
       courses: newCourses
     });
+  }
+
+  saveCookies = (name, courseList) => {
+    let nameCookie;
+    let courseCookie;
+    let expiryDate = new Date();
+    expiryDate.setMonth(expiryDate.getMonth() + 10)
+    if (this.state.nameCookie == "" || this.state.courseCookie == "") {
+      nameCookie = new Cookies();
+      courseCookie = new Cookies();
+      nameCookie.set('name', name, { path: '/', expires: expiryDate });
+      courseCookie.set('courseList', courseList, { path: '/', expires: expiryDate });
+    }
+    else {
+      nameCookie = this.state.nameCookie;
+      courseCookie = this.state.courseCookie;
+      nameCookie.set('name', name, { path: '/', expires: expiryDate });
+      courseCookie.set('courseList', courseList, { path: '/', expires: expiryDate });
+    }
+    this.setState({ nameCookie: nameCookie, courseCookie: courseCookie });
+    console.log(nameCookie.get('name'));
+    console.log(courseCookie.get('courseList'));
+  }
+
+  loadCookies = () => {
+    console.log("Loading cookies");
+    let nameCookie = new Cookies();
+    let courseCookie = new Cookies();
+    try {
+      let userCourses = courseCookie.get('courseList')
+      let newCourses = this.state.courses;
+      nameCookie = nameCookie.get('name');
+      newCourses[0] = { key: nameCookie, courseList: userCourses };
+      userCourses = userCourses.map(e => " " + e)
+      this.setState({
+        userName: nameCookie,
+        userCourses: "Loaded courses:" + userCourses,
+        courses: newCourses,
+        submittedFile: true
+      });
+      document.getElementById('user-name').value = nameCookie.get('name');
+    } catch (e) {
+      console.log("No cookies were loaded.");
+    }
   }
 
   //------------Course matching functions
@@ -229,11 +286,11 @@ class CourseMatcher extends Component {
   }
 
   handleScanQRCode = () => {
-    /* this.setState({
-      modalDisplay: true,
-      displayQRScanner: "show",
-      modalHeader: "Scan QR Code",
-    }) */
+    // this.setState({
+    //   modalDisplay: true,
+    //   displayQRScanner: "show",
+    //   modalHeader: "Scan QR Code",
+    // })
 
     if (this.state.qrScanner == "") {
       let qrScanner = new QrScanner(
@@ -370,7 +427,7 @@ class CourseMatcher extends Component {
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
-          <div className="card fixed col-md-5 p-0 mb-4">
+          <div className="card col-md-5 p-0 mb-4">
             <div className="card-body">
               <h5 className='card-title'>Upload your Timetable</h5>
               <div className="m-1">
@@ -389,83 +446,87 @@ class CourseMatcher extends Component {
                 <div className="row m-1">
                   <button className="btn btn-outline-primary" onClick={this.handleSubmitFile}>Submit</button>
                 </div>
-                <p className='text-danger'>{this.state.userErrorMessage}</p>
-                <hr />
-                <h5 className='card-title'>Add your friends' Timetables</h5>
-                <div className="row px-1 d-flex justify-content-around">
-                  <div className="col-lg-6">
-                    <Button className='table' variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
-                        <path d="M2 2h2v2H2V2Z" />
-                        <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
-                        <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z" />
-                        <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z" />
-                        <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z" />
-                      </svg>
-                      <span> Share your QR Code</span>
-                    </Button>
-                    <Modal show={this.state.modalDisplay} onHide={this.handleHideModal}>
-                      <Modal.Header closeButton>
-                        <Modal.Title>{this.state.modalHeader}</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <div style={{
-                          height: "auto",
-                          margin: "0 auto",
-                          maxWidth: 300,
-                          width: "100%",
-                          display: this.state.displayQR
-                        }}>
-                          <QRCode
-                            size={4000}
-                            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                            value={this.state.qrCodeValue}
-                            viewBox={`0 0 256 256`}
-                          />
-                        </div>
-                        <div style={{ display: this.state.displayQRScanner }}>
-
-                        </div>
-                      </Modal.Body>
-                    </Modal>
-                  </div>
-                  <div className="col-lg-6">
-                    <Button className='table' variant='primary' onClick={this.handleScanQRCode}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code-scan mb-1" viewBox="0 0 16 16">
-                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z" />
-                        <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z" />
-                        <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z" />
-                        <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z" />
-                        <path d="M12 9h2V8h-2v1Z" />
-                      </svg>
-                      <span> Add friend's Timetable</span>
-                    </Button>
-                  </div>
-                </div>
-                <video style={{ width: "100%" }}
-                  id="qr-video" disablePictureInPicture playsInline />
-                <table className="table mb-4">
-                  <thead>
-                    <tr>
-                      <th className='col-11'>Name</th>
-                      <th className='col-1'></th>
-                    </tr>
-                  </thead>
-                  <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
-                  <tfoot>
-                    {this.state.timetablesPlaceholder}
-                    <tr>
-                      <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
-                    </tr>
-                  </tfoot>
-                </table>
-                <div className='row m-1'>
-                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+                <div className="mt-2">
+                  <small className='text-muted'>{this.state.userCourses}</small>
+                  <p className='text-danger'>{this.state.userErrorMessage}</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="fixed col-md-5 p-0">
+          <div className="card fixed col-md-6 p-0 mb-4">
+            <div className="card-body">
+              <h5 className='card-title'>Add your friends' Timetables</h5>
+              <div className="row px-1 d-flex justify-content-around">
+                <div className="col-lg-6">
+                  <Button className='table' variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
+                      <path d="M2 2h2v2H2V2Z" />
+                      <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
+                      <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z" />
+                      <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z" />
+                      <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z" />
+                    </svg>
+                    <span> Share your QR Code</span>
+                  </Button>
+                  <Modal show={this.state.modalDisplay} onHide={this.handleHideModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>{this.state.modalHeader}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <div style={{
+                        height: "auto",
+                        margin: "0 auto",
+                        maxWidth: 300,
+                        width: "100%",
+                        display: this.state.displayQR
+                      }}>
+                        <QRCode
+                          ref={this.svgRef}
+                          size={4000}
+                          style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                          value={this.state.qrCodeValue}
+                          viewBox={`0 0 256 256`}
+                        />
+                      </div>
+                    </Modal.Body>
+                  </Modal>
+                </div>
+                <div className="col-lg-6">
+                  <Button className='table' variant='primary' onClick={this.handleScanQRCode}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code-scan mb-1" viewBox="0 0 16 16">
+                      <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z" />
+                      <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z" />
+                      <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z" />
+                      <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z" />
+                      <path d="M12 9h2V8h-2v1Z" />
+                    </svg>
+                    <span> Add friend's Timetable</span>
+                  </Button>
+                </div>
+              </div>
+              <video style={{ width: "100%" }}
+                id="qr-video" disablePictureInPicture playsInline />
+              <table className="table mb-4">
+                <thead>
+                  <tr>
+                    <th className='col-11'>Name</th>
+                    <th className='col-1'></th>
+                  </tr>
+                </thead>
+                <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
+                <tfoot>
+                  {this.state.timetablesPlaceholder}
+                  <tr>
+                    <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div className='row m-1'>
+                <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+              </div>
+            </div>
+          </div>
+          <div className="fixed col-md-8 p-0">
             <div className="row p-0 mx-1 mb-2 d-flex justify-content-around">
               <div className="col-lg-5 mb-3">
                 <div className="row">
