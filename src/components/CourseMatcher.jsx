@@ -1,9 +1,15 @@
 import React, { useState, Component } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from 'react-bootstrap/Tooltip';
 import QRCode from 'react-qr-code';
 import QrScanner from 'qr-scanner';
 import Cookies from 'universal-cookie';
+import Col from 'react-bootstrap/Col';
+import Nav from 'react-bootstrap/Nav';
+import Row from 'react-bootstrap/Row';
+import Tab from 'react-bootstrap/Tab';
 
 class CourseMatcher extends Component {
 
@@ -12,8 +18,9 @@ class CourseMatcher extends Component {
     friendsErrorMessage: "",
     userName: "User",
     userCourses: "",
+    viewCoursesText: "",
     timetablesText: [],
-    timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
+    timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted text-center'><em><small>
       After you scan your friends' QR codes, their names will be displayed here.
     </small></em></td></tr>,
 
@@ -24,23 +31,20 @@ class CourseMatcher extends Component {
     submitted: false,
 
     tableTitleText: "",
-    tableHead1Text: "",
-    tableHead2Text: "",
-    tableText: <tr><td colSpan="2" className='table-secondary help-text text-muted  text-center'><em><small>
-      After uploading your files, click Submit and press one of the two buttons above. The information you need will be displayed here.
-    </small></em></td></tr>,
+    tableText: <tr></tr>,
 
     modalDisplay: false,
     modalHeader: "",
-    displayQR: "none",
-    displayQRScanner: "none",
+    closeQRButton: "",
+    QRScannerWidth: "0",
     qrCodeValue: "",
     qrScanner: "",
-    svgRef: React.createRef(),
 
     nameCookie: "",
     courseCookie: ""
   }
+
+  //Load cookies
 
   componentDidMount() {
     this.loadCookies();
@@ -100,7 +104,10 @@ class CourseMatcher extends Component {
       this.readCourses();
       this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList);
       let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
-      this.setState({ userCourses: "Loaded courses:" + newUserCourses });
+      this.setState({
+        userCourses: String(newUserCourses),
+        viewCoursesText: "✅ Loaded courses (" + newUserCourses.length + ")..."
+      });
     }
   }
 
@@ -153,7 +160,6 @@ class CourseMatcher extends Component {
   }
 
   loadCookies = () => {
-    console.log("Loading cookies");
     let nameCookie = new Cookies();
     let courseCookie = new Cookies();
     try {
@@ -164,11 +170,12 @@ class CourseMatcher extends Component {
       userCourses = userCourses.map(e => " " + e)
       this.setState({
         userName: nameCookie,
-        userCourses: "Loaded courses:" + userCourses,
+        userCourses: String(userCourses),
+        viewCoursesText: "✅ Loaded courses (" + userCourses.length + ")...",
         courses: newCourses,
         submittedFile: true
       });
-      document.getElementById('user-name').value = nameCookie.get('name');
+      document.getElementById('user-name').value = nameCookie;
     } catch (e) {
       console.log("No cookies were loaded.");
     }
@@ -176,14 +183,13 @@ class CourseMatcher extends Component {
 
   //------------Course matching functions
 
-  handleView = (e) => {
-    e.preventDefault();
-    let buttonClass = e.target.classList;
-    if (buttonClass.contains("btn-courses")) {
-      this.displayOnTable("courses", this.findSameCourses());
-    }
-    if (buttonClass.contains("btn-sections")) {
-      this.displayOnTable("sections", this.findSameSections());
+  handleView = (view) => {
+    switch (view) {
+      case "courses": this.displayOnTable("courses", this.findSameCourses());
+        break;
+      case "sections": this.displayOnTable("sections", this.findSameSections());
+        break;
+      default: break;
     }
   }
 
@@ -279,18 +285,17 @@ class CourseMatcher extends Component {
       return;
     this.setState({
       modalDisplay: true,
-      displayQR: "show",
       modalHeader: this.state.userName + "'s Timetable QR Code",
       qrCodeValue: JSON.stringify(this.state.courses[0])
     });
   }
 
   handleScanQRCode = () => {
-    // this.setState({
-    //   modalDisplay: true,
-    //   displayQRScanner: "show",
-    //   modalHeader: "Scan QR Code",
-    // })
+    this.setState({
+      QRScannerWidth: "100%",
+      closeQRButton: <button type="button" class="btn-close" aria-label="Close" onClick={this.handleStopQR}
+        style={{ position: 'absolute', top: 10, right: 10 }} />
+    })
 
     if (this.state.qrScanner == "") {
       let qrScanner = new QrScanner(
@@ -330,8 +335,10 @@ class CourseMatcher extends Component {
     this.updatePlaceholder();
 
     //Stop video after done
-    if (this.state.qrScanner != "")
-      this.state.qrScanner.stop();
+    if (this.state.qrScanner != "") {
+      this.setState({ QRScannerWidth: 0, closeQRButton: "" });
+      this.state.qrScanner.stop()
+    };
   }
 
   isQRValid = (str) => {
@@ -348,26 +355,22 @@ class CourseMatcher extends Component {
     return true;
   }
 
-  randomEmoji = () => {
-    var emojis = [
-      '😄', '😃', '😀', '😊', '☺', '😉', '😍', '😘', '😚', '😗', '😙', '😜', '😝', '😛', '😳', '😁', '😔', '😌', '😒', '😞', '😣', '😢', '😂', '😭', '😪', '😥', '😰', '😅', '😓', '😩', '😫', '😨', '😱', '😠', '😡', '😤', '😖', '😆', '😋', '😷', '😎', '😴', '😵', '😲', '😟', '😦', '😧', '😈', '👿', '😮', '😬', '😐', '😕', '😯', '😶', '😇', '😏', '😑', '👲', '👳', '👮', '👷', '💂', '👶', '👦', '👧', '👨', '👩', '👴', '👵', '👱', '👼', '👸', '😺', '😸', '😻', '😽', '😼', '🙀', '😿', '😹', '😾', '👹', '👺', '🙈', '🙉', '🙊', '💀', '👽', '💩', '🔥', '✨', '🌟', '💫', '💥', '💢', '💦', '💧', '💤', '💨', '👂', '👀', '👃', '👅', '👄', '👍', '👎', '👌', '👊', '✊', '✌', '👋', '✋', '👐', '👆', '👇', '👉', '👈', '🙌', '🙏', '☝', '👏', '💪', '🚶', '🏃', '💃', '👫', '👪', '👬', '👭', '💏', '💑', '👯', '🙆', '🙅', '💁', '🙋', '💆', '💇', '💅', '👰', '🙎', '🙍', '🙇', '🎩', '👑', '👒', '👟', '👞', '👡', '👠', '👢', '👕', '👔', '👚', '👗', '🎽', '👖', '👘', '👙', '💼', '👜', '👝', '👛', '👓', '🎀', '🌂', '💄', '💛', '💙', '💜', '💚', '❤', '💔', '💗', '💓', '💕', '💖', '💞', '💘', '💌', '💋', '💍', '💎', '👤', '👥', '💬', '👣', '💭', '🐶', '🐺', '🐱', '🐭', '🐹', '🐰', '🐸', '🐯', '🐨', '🐻', '🐷', '🐽', '🐮', '🐗', '🐵', '🐒', '🐴', '🐑', '🐘', '🐼', '🐧', '🐦', '🐤', '🐥', '🐣', '🐔', '🐍', '🐢', '🐛', '🐝', '🐜', '🐞', '🐌', '🐙', '🐚', '🐠', '🐟', '🐬', '🐳', '🐋', '🐄', '🐏', '🐀', '🐃', '🐅', '🐇', '🐉', '🐎', '🐐', '🐓', '🐕', '🐖', '🐁', '🐂', '🐲', '🐡', '🐊', '🐫', '🐪', '🐆', '🐈', '🐩', '🐾', '💐', '🌸', '🌷', '🍀', '🌹', '🌻', '🌺', '🍁', '🍃', '🍂', '🌿', '🌾', '🍄', '🌵', '🌴', '🌲', '🌳', '🌰', '🌱', '🌼', '🌐', '🌞', '🌝', '🌚', '🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌜', '🌛', '🌙', '🌍', '🌎', '🌏', '🌋', '🌌', '🌠', '⭐', '☀', '⛅', '☁', '⚡', '☔', '❄', '⛄', '🌀', '🌁', '🌈', '🌊', '🎍', '💝', '🎎', '🎒', '🎓', '🎏', '🎆', '🎇', '🎐', '🎑', '🎃', '👻', '🎅', '🎄', '🎁', '🎋', '🎉', '🎊', '🎈', '🎌', '🔮', '🎥', '📷', '📹', '📼', '💿', '📀', '💽', '💾', '💻', '📱', '☎', '📞', '📟', '📠', '📡', '📺', '📻', '🔊', '🔉', '🔈', '🔇', '🔔', '🔕', '📢', '📣', '⏳', '⌛', '⏰', '⌚', '🔓', '🔒', '🔏', '🔐', '🔑', '🔎', '💡', '🔦', '🔆', '🔅', '🔌', '🔋', '🔍', '🛁', '🛀', '🚿', '🚽', '🔧', '🔩', '🔨', '🚪', '🚬', '💣', '🔫', '🔪', '💊', '💉', '💰', '💴', '💵', '💷', '💶', '💳', '💸', '📲', '📧', '📥', '📤', '✉', '📩', '📨', '📯', '📫', '📪', '📬', '📭', '📮', '📦', '📝', '📄', '📃', '📑', '📊', '📈', '📉', '📜', '📋', '📅', '📆', '📇', '📁', '📂', '✂', '📌', '📎', '✒', '✏', '📏', '📐', '📕', '📗', '📘', '📙', '📓', '📔', '📒', '📚', '📖', '🔖', '📛', '🔬', '🔭', '📰', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🎻', '🎺', '🎷', '🎸', '👾', '🎮', '🃏', '🎴', '🀄', '🎲', '🎯', '🏈', '🏀', '⚽', '⚾', '🎾', '🎱', '🏉', '🎳', '⛳', '🚵', '🚴', '🏁', '🏇', '🏆', '🎿', '🏂', '🏊', '🏄', '🎣', '☕', '🍵', '🍶', '🍼', '🍺', '🍻', '🍸', '🍹', '🍷', '🍴', '🍕', '🍔', '🍟', '🍗', '🍖', '🍝', '🍛', '🍤', '🍱', '🍣', '🍥', '🍙', '🍘', '🍚', '🍜', '🍲', '🍢', '🍡', '🍳', '🍞', '🍩', '🍮', '🍦', '🍨', '🍧', '🎂', '🍰', '🍪', '🍫', '🍬', '🍭', '🍯', '🍎', '🍏', '🍊', '🍋', '🍒', '🍇', '🍉', '🍓', '🍑', '🍈', '🍌', '🍐', '🍍', '🍠', '🍆', '🍅', '🌽', '🏠', '🏡', '🏫', '🏢', '🏣', '🏥', '🏦', '🏪', '🏩', '🏨', '💒', '⛪', '🏬', '🏤', '🌇', '🌆', '🏯', '🏰', '⛺', '🏭', '🗼', '🗾', '🗻', '🌄', '🌅', '🌃', '🗽', '🌉', '🎠', '🎡', '⛲', '🎢', '🚢', '⛵', '🚤', '🚣', '⚓', '🚀', '✈', '💺', '🚁', '🚂', '🚊', '🚉', '🚞', '🚆', '🚄', '🚅', '🚈', '🚇', '🚝', '🚋', '🚃', '🚎', '🚌', '🚍', '🚙', '🚘', '🚗', '🚕', '🚖', '🚛', '🚚', '🚨', '🚓', '🚔', '🚒', '🚑', '🚐', '🚲', '🚡', '🚟', '🚠', '🚜', '💈', '🚏', '🎫', '🚦', '🚥', '⚠', '🚧', '🔰', '⛽', '🏮', '🎰', '♨', '🗿', '🎪', '🎭', '📍', '🚩', '⬆', '⬇', '⬅', '➡', '🔠', '🔡', '🔤', '↗', '↖', '↘', '↙', '↔', '↕', '🔄', '◀', '▶', '🔼', '🔽', '↩', '↪', 'ℹ', '⏪', '⏩', '⏫', '⏬', '⤵', '⤴', '🆗', '🔀', '🔁', '🔂', '🆕', '🆙', '🆒', '🆓', '🆖', '📶', '🎦', '🈁', '🈯', '🈳', '🈵', '🈴', '🈲', '🉐', '🈹', '🈺', '🈶', '🈚', '🚻', '🚹', '🚺', '🚼', '🚾', '🚰', '🚮', '🅿', '♿', '🚭', '🈷', '🈸', '🈂', 'Ⓜ', '🛂', '🛄', '🛅', '🛃', '🉑', '㊙', '㊗', '🆑', '🆘', '🆔', '🚫', '🔞', '📵', '🚯', '🚱', '🚳', '🚷', '🚸', '⛔', '✳', '❇', '❎', '✅', '✴', '💟', '🆚', '📳', '📴', '🅰', '🅱', '🆎', '🅾', '💠', '➿', '♻', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '⛎', '🔯', '🏧', '💹', '💲', '💱', '©', '®', '™', '〽', '〰', '🔝', '🔚', '🔙', '🔛', '🔜', '❌', '⭕', '❗', '❓', '❕', '❔', '🔃', '🕛', '🕧', '🕐', '🕜', '🕑', '🕝', '🕒', '🕞', '🕓', '🕟', '🕔', '🕠', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚', '🕡', '🕢', '🕣', '🕤', '🕥', '🕦', '✖', '➕', '➖', '➗', '♠', '♥', '♣', '♦', '💮', '💯', '✔', '☑', '🔘', '🔗', '➰', '🔱', '🔲', '🔳', '◼', '◻', '◾', '◽', '▪', '▫', '🔺', '⬜', '⬛', '⚫', '⚪', '🔴', '🔵', '🔻', '🔶', '🔷', '🔸', '🔹'
-    ];
-
-    return emojis[Math.floor(Math.random() * emojis.length)];
+  handleStopQR = () => {
+    if (this.state.qrScanner != "") {
+      this.state.qrScanner.stop();
+      this.setState({ QRScannerWidth: 0, closeQRButton: "" })
+    }
   }
 
   handleHideModal = () => {
-    this.setState({
-      modalDisplay: false,
-      displayQR: "none",
-      displayQRScanner: "none",
-    });
-    let qrScanner = document.getElementsByTagName("QRCode");
-    if (this.state.qrScanner != "")
-      this.state.qrScanner.stop();
+    this.setState({ modalDisplay: false });
   }
 
   //------------Table display functions
+
+  scrollToView = () => {
+    document.getElementById('view-table').scrollIntoView({ behavior: 'smooth' });
+  }
 
   displayErrorMessage = (element, message) => {
     switch (element) {
@@ -391,8 +394,6 @@ class CourseMatcher extends Component {
         this.setState(prevState =>
         ({
           tableTitleText: "Shared courses",
-          tableHead1Text: "📚 Course",
-          tableHead2Text: "👫 Friends",
           tableText: newText
         }));
         break;
@@ -404,8 +405,6 @@ class CourseMatcher extends Component {
         this.setState(prevState =>
         ({
           tableTitleText: "Shared sections",
-          tableHead1Text: "🧑‍🏫 Section",
-          tableHead2Text: "👫 Friends",
           tableText: newText
         }));
         break;
@@ -413,8 +412,6 @@ class CourseMatcher extends Component {
         this.setState(prevState =>
         ({
           tableTitleText: "Who's free right now?",
-          tableHead1Text: "🕒 Time",
-          tableHead2Text: "👫 Friends",
           tableText: newText
         }))
         break;
@@ -422,145 +419,207 @@ class CourseMatcher extends Component {
     }
   }
 
+  randomEmoji = () => {
+    var emojis = [
+      '😄', '😃', '😀', '😊', '☺', '😉', '😍', '😘', '😚', '😗', '😙', '😜', '😝', '😛', '😳', '😁', '😔', '😌', '😒', '😞', '😣', '😢', '😂', '😭', '😪', '😥', '😰', '😅', '😓', '😩', '😫', '😨', '😱', '😠', '😡', '😤', '😖', '😆', '😋', '😷', '😎', '😴', '😵', '😲', '😟', '😦', '😧', '😈', '👿', '😮', '😬', '😐', '😕', '😯', '😶', '😇', '😏', '😑', '👲', '👳', '👮', '👷', '💂', '👶', '👦', '👧', '👨', '👩', '👴', '👵', '👱', '👼', '👸', '😺', '😸', '😻', '😽', '😼', '🙀', '😿', '😹', '😾', '👹', '👺', '🙈', '🙉', '🙊', '💀', '👽', '💩', '🔥', '✨', '🌟', '💫', '💥', '💢', '💦', '💧', '💤', '💨', '👂', '👀', '👃', '👅', '👄', '👍', '👎', '👌', '👊', '✊', '✌', '👋', '✋', '👐', '👆', '👇', '👉', '👈', '🙌', '🙏', '☝', '👏', '💪', '🚶', '🏃', '💃', '👫', '👪', '👬', '👭', '💏', '💑', '👯', '🙆', '🙅', '💁', '🙋', '💆', '💇', '💅', '👰', '🙎', '🙍', '🙇', '🎩', '👑', '👒', '👟', '👞', '👡', '👠', '👢', '👕', '👔', '👚', '👗', '🎽', '👖', '👘', '👙', '💼', '👜', '👝', '👛', '👓', '🎀', '🌂', '💄', '💛', '💙', '💜', '💚', '❤', '💔', '💗', '💓', '💕', '💖', '💞', '💘', '💌', '💋', '💍', '💎', '👤', '👥', '💬', '👣', '💭', '🐶', '🐺', '🐱', '🐭', '🐹', '🐰', '🐸', '🐯', '🐨', '🐻', '🐷', '🐽', '🐮', '🐗', '🐵', '🐒', '🐴', '🐑', '🐘', '🐼', '🐧', '🐦', '🐤', '🐥', '🐣', '🐔', '🐍', '🐢', '🐛', '🐝', '🐜', '🐞', '🐌', '🐙', '🐚', '🐠', '🐟', '🐬', '🐳', '🐋', '🐄', '🐏', '🐀', '🐃', '🐅', '🐇', '🐉', '🐎', '🐐', '🐓', '🐕', '🐖', '🐁', '🐂', '🐲', '🐡', '🐊', '🐫', '🐪', '🐆', '🐈', '🐩', '🐾', '💐', '🌸', '🌷', '🍀', '🌹', '🌻', '🌺', '🍁', '🍃', '🍂', '🌿', '🌾', '🍄', '🌵', '🌴', '🌲', '🌳', '🌰', '🌱', '🌼', '🌐', '🌞', '🌝', '🌚', '🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌜', '🌛', '🌙', '🌍', '🌎', '🌏', '🌋', '🌌', '🌠', '⭐', '☀', '⛅', '☁', '⚡', '☔', '❄', '⛄', '🌀', '🌁', '🌈', '🌊', '🎍', '💝', '🎎', '🎒', '🎓', '🎏', '🎆', '🎇', '🎐', '🎑', '🎃', '👻', '🎅', '🎄', '🎁', '🎋', '🎉', '🎊', '🎈', '🎌', '🔮', '🎥', '📷', '📹', '📼', '💿', '📀', '💽', '💾', '💻', '📱', '☎', '📞', '📟', '📠', '📡', '📺', '📻', '🔊', '🔉', '🔈', '🔇', '🔔', '🔕', '📢', '📣', '⏳', '⌛', '⏰', '⌚', '🔓', '🔒', '🔏', '🔐', '🔑', '🔎', '💡', '🔦', '🔆', '🔅', '🔌', '🔋', '🔍', '🛁', '🛀', '🚿', '🚽', '🔧', '🔩', '🔨', '🚪', '🚬', '💣', '🔫', '🔪', '💊', '💉', '💰', '💴', '💵', '💷', '💶', '💳', '💸', '📲', '📧', '📥', '📤', '✉', '📩', '📨', '📯', '📫', '📪', '📬', '📭', '📮', '📦', '📝', '📄', '📃', '📑', '📊', '📈', '📉', '📜', '📋', '📅', '📆', '📇', '📁', '📂', '✂', '📌', '📎', '✒', '✏', '📏', '📐', '📕', '📗', '📘', '📙', '📓', '📔', '📒', '📚', '📖', '🔖', '📛', '🔬', '🔭', '📰', '🎨', '🎬', '🎤', '🎧', '🎼', '🎵', '🎶', '🎹', '🎻', '🎺', '🎷', '🎸', '👾', '🎮', '🃏', '🎴', '🀄', '🎲', '🎯', '🏈', '🏀', '⚽', '⚾', '🎾', '🎱', '🏉', '🎳', '⛳', '🚵', '🚴', '🏁', '🏇', '🏆', '🎿', '🏂', '🏊', '🏄', '🎣', '☕', '🍵', '🍶', '🍼', '🍺', '🍻', '🍸', '🍹', '🍷', '🍴', '🍕', '🍔', '🍟', '🍗', '🍖', '🍝', '🍛', '🍤', '🍱', '🍣', '🍥', '🍙', '🍘', '🍚', '🍜', '🍲', '🍢', '🍡', '🍳', '🍞', '🍩', '🍮', '🍦', '🍨', '🍧', '🎂', '🍰', '🍪', '🍫', '🍬', '🍭', '🍯', '🍎', '🍏', '🍊', '🍋', '🍒', '🍇', '🍉', '🍓', '🍑', '🍈', '🍌', '🍐', '🍍', '🍠', '🍆', '🍅', '🌽', '🏠', '🏡', '🏫', '🏢', '🏣', '🏥', '🏦', '🏪', '🏩', '🏨', '💒', '⛪', '🏬', '🏤', '🌇', '🌆', '🏯', '🏰', '⛺', '🏭', '🗼', '🗾', '🗻', '🌄', '🌅', '🌃', '🗽', '🌉', '🎠', '🎡', '⛲', '🎢', '🚢', '⛵', '🚤', '🚣', '⚓', '🚀', '✈', '💺', '🚁', '🚂', '🚊', '🚉', '🚞', '🚆', '🚄', '🚅', '🚈', '🚇', '🚝', '🚋', '🚃', '🚎', '🚌', '🚍', '🚙', '🚘', '🚗', '🚕', '🚖', '🚛', '🚚', '🚨', '🚓', '🚔', '🚒', '🚑', '🚐', '🚲', '🚡', '🚟', '🚠', '🚜', '💈', '🚏', '🎫', '🚦', '🚥', '⚠', '🚧', '🔰', '⛽', '🏮', '🎰', '♨', '🗿', '🎪', '🎭', '📍', '🚩', '⬆', '⬇', '⬅', '➡', '🔠', '🔡', '🔤', '↗', '↖', '↘', '↙', '↔', '↕', '🔄', '◀', '▶', '🔼', '🔽', '↩', '↪', 'ℹ', '⏪', '⏩', '⏫', '⏬', '⤵', '⤴', '🆗', '🔀', '🔁', '🔂', '🆕', '🆙', '🆒', '🆓', '🆖', '📶', '🎦', '🈁', '🈯', '🈳', '🈵', '🈴', '🈲', '🉐', '🈹', '🈺', '🈶', '🈚', '🚻', '🚹', '🚺', '🚼', '🚾', '🚰', '🚮', '🅿', '♿', '🚭', '🈷', '🈸', '🈂', 'Ⓜ', '🛂', '🛄', '🛅', '🛃', '🉑', '㊙', '㊗', '🆑', '🆘', '🆔', '🚫', '🔞', '📵', '🚯', '🚱', '🚳', '🚷', '🚸', '⛔', '✳', '❇', '❎', '✅', '✴', '💟', '🆚', '📳', '📴', '🅰', '🅱', '🆎', '🅾', '💠', '➿', '♻', '♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '⛎', '🔯', '🏧', '💹', '💲', '💱', '©', '®', '™', '〽', '〰', '🔝', '🔚', '🔙', '🔛', '🔜', '❌', '⭕', '❗', '❓', '❕', '❔', '🔃', '🕛', '🕧', '🕐', '🕜', '🕑', '🕝', '🕒', '🕞', '🕓', '🕟', '🕔', '🕠', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚', '🕡', '🕢', '🕣', '🕤', '🕥', '🕦', '✖', '➕', '➖', '➗', '♠', '♥', '♣', '♦', '💮', '💯', '✔', '☑', '🔘', '🔗', '➰', '🔱', '🔲', '🔳', '◼', '◻', '◾', '◽', '▪', '▫', '🔺', '⬜', '⬛', '⚫', '⚪', '🔴', '🔵', '🔻', '🔶', '🔷', '🔸', '🔹'
+    ];
+
+    return emojis[Math.floor(Math.random() * emojis.length)];
+  }
+
   render() {
 
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
-          <div className="card col-md-5 p-0 mb-4">
-            <div className="card-body">
-              <h5 className='card-title'>Upload your Timetable</h5>
-              <div className="m-1">
-                <p><small className="card-text help-text text-muted">Find your Timetable on your <a href='https://ssc.adm.ubc.ca/sscportal' rel='noreferrer' target="_blank">SSC</a>,
-                  then click <em>Download your schedule to your calendar software</em>.</small></p>
-              </div>
-              <div className="m-1">
-                <table className='table'>
-                  <tbody id="userTimetable">
-                    <tr>
-                      <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)} /></td>
-                      <td><input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)} /></td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div className="row m-1">
-                  <button className="btn btn-outline-primary" onClick={this.handleSubmitFile}>Submit</button>
+          <div className='col-md-5 p-0 mb-4'>
+            <div className="card">
+              <div className="card-body">
+                <h5 className='card-title'>Upload your Timetable</h5>
+                <div className="m-1">
+                  <p><small className="card-text help-text text-muted">Find your Timetable on your <a href='https://ssc.adm.ubc.ca/sscportal' rel='noreferrer' target="_blank">SSC</a>,
+                    then click <em>Download your schedule to your calendar software</em>. Upload it here, then hit Submit.</small></p>
                 </div>
-                <div className="mt-2">
-                  <small className='text-muted'>{this.state.userCourses}</small>
-                  <p className='text-danger'>{this.state.userErrorMessage}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="card fixed col-md-6 p-0 mb-4">
-            <div className="card-body">
-              <h5 className='card-title'>Add your friends' Timetables</h5>
-              <div className="row px-1 d-flex justify-content-around">
-                <div className="col-lg-6">
-                  <Button className='table' variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
-                      <path d="M2 2h2v2H2V2Z" />
-                      <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
-                      <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z" />
-                      <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z" />
-                      <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z" />
-                    </svg>
-                    <span> Share your QR Code</span>
-                  </Button>
-                  <Modal show={this.state.modalDisplay} onHide={this.handleHideModal}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>{this.state.modalHeader}</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      <div style={{
-                        height: "auto",
-                        margin: "0 auto",
-                        maxWidth: 300,
-                        width: "100%",
-                        display: this.state.displayQR
-                      }}>
-                        <QRCode
-                          ref={this.svgRef}
-                          size={4000}
-                          style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-                          value={this.state.qrCodeValue}
-                          viewBox={`0 0 256 256`}
-                        />
-                      </div>
-                    </Modal.Body>
-                  </Modal>
-                </div>
-                <div className="col-lg-6">
-                  <Button className='table' variant='primary' onClick={this.handleScanQRCode}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code-scan mb-1" viewBox="0 0 16 16">
-                      <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z" />
-                      <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z" />
-                      <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z" />
-                      <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z" />
-                      <path d="M12 9h2V8h-2v1Z" />
-                    </svg>
-                    <span> Add friend's Timetable</span>
-                  </Button>
-                </div>
-              </div>
-              <video style={{ width: "100%" }}
-                id="qr-video" disablePictureInPicture playsInline />
-              <table className="table mb-4">
-                <thead>
-                  <tr>
-                    <th className='col-11'>Name</th>
-                    <th className='col-1'></th>
-                  </tr>
-                </thead>
-                <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
-                <tfoot>
-                  {this.state.timetablesPlaceholder}
-                  <tr>
-                    <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
-                  </tr>
-                </tfoot>
-              </table>
-              <div className='row m-1'>
-                <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
-              </div>
-            </div>
-          </div>
-          <div className="fixed col-md-8 p-0">
-            <div className="row p-0 mx-1 mb-2 d-flex justify-content-around">
-              <div className="col-lg-5 mb-3">
-                <div className="row">
-                  <button type="button" className="btn btn-primary btn-courses" onClick={this.handleView} disabled={!this.state.submitted}>
-                    📚 Courses in common
-                  </button>
-                </div>
-              </div>
-              <div className="col-lg-5 mb-3">
-                <div className="row">
-                  <button type="button" className="btn btn-primary btn-sections" onClick={this.handleView} disabled={!this.state.submitted}>
-                    🧑‍🏫 Sections in common
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="card fixed col-12">
-              <div className="list-group list-group-flush">
-                <div className="list-group-item list-group-item-primary pb-0 text-center">
-                  <h5>{this.state.tableTitleText}</h5></div>
-                <div className="list-group-item">
+                <div className="m-1">
                   <table className='table'>
-                    <thead>
+                    <tbody id="userTimetable">
                       <tr>
-                        <th className='col-md-4'>{this.state.tableHead1Text}</th>
-                        <th className='col-md-8'>{this.state.tableHead2Text}</th>
+                        <td><input type="text" id="user-name" className="form-control" placeholder="Your name" onChange={(e) => this.handleChangeName(e)} /></td>
+                        <td>
+                          <input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)} />
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>{this.state.tableText}</tbody>
+                    </tbody>
                   </table>
+                  <div className="row m-1">
+                    <button className="btn btn-outline-primary" onClick={this.handleSubmitFile}>Submit</button>
+                  </div>
+                  <div className="mt-2">
+                    <OverlayTrigger
+                      placement="bottom"
+                      overlay={<Tooltip id="tooltip1">{this.state.userCourses}</Tooltip>}>
+                      <a className='badge badge-primary'>{this.state.viewCoursesText}</a>
+                    </OverlayTrigger>
+                    <p className='text-danger'>{this.state.userErrorMessage}</p>
+                  </div>
+                </div>
+                <div className="row px-1 d-flex justify-content-around">
+                  <div className="col-lg-6">
+                    <Button className='table' variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
+                        <path d="M2 2h2v2H2V2Z" />
+                        <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
+                        <path d="M6 10v6H0v-6h6Zm-5 1v4h4v-4H1Zm11-9h2v2h-2V2Z" />
+                        <path d="M10 0v6h6V0h-6Zm5 1v4h-4V1h4ZM8 1V0h1v2H8v2H7V1h1Zm0 5V4h1v2H8ZM6 8V7h1V6h1v2h1V7h5v1h-4v1H7V8H6Zm0 0v1H2V8H1v1H0V7h3v1h3Zm10 1h-1V7h1v2Zm-1 0h-1v2h2v-1h-1V9Zm-4 0h2v1h-1v1h-1V9Zm2 3v-1h-1v1h-1v1H9v1h3v-2h1Zm0 0h3v1h-2v1h-1v-2Zm-4-1v1h1v-2H7v1h2Z" />
+                        <path d="M7 12h1v3h4v1H7v-4Zm9 2v2h-3v-1h2v-1h1Z" />
+                      </svg>
+                      <span> Share your Timetable</span>
+                    </Button>
+                    <Modal show={this.state.modalDisplay} onHide={this.handleHideModal}>
+                      <Modal.Header closeButton>
+                        <Modal.Title>{this.state.modalHeader}</Modal.Title>
+                      </Modal.Header>
+                      <Modal.Body>
+                        <div style={{
+                          height: "auto",
+                          margin: "0 auto",
+                          padding: "1rem",
+                          maxWidth: 300,
+                          width: "100%"
+                        }}>
+                          <QRCode
+                            size={4000}
+                            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                            value={this.state.qrCodeValue}
+                            viewBox={`0 0 256 256`}
+                          />
+                        </div>
+                      </Modal.Body>
+                      <Modal.Footer>
+                        <small className="text-muted">Show this QR code to a friend who can scan it right now, or take a screenshot and share it with them through social media and messaging apps!</small>
+                      </Modal.Footer>
+                    </Modal>
+                  </div>
+                  <div className="col-lg-6">
+                    <Button className='table' variant='primary' onClick={this.handleScanQRCode}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code-scan mb-1" viewBox="0 0 16 16">
+                        <path d="M0 .5A.5.5 0 0 1 .5 0h3a.5.5 0 0 1 0 1H1v2.5a.5.5 0 0 1-1 0v-3Zm12 0a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-1 0V1h-2.5a.5.5 0 0 1-.5-.5ZM.5 12a.5.5 0 0 1 .5.5V15h2.5a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5Zm15 0a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1 0-1H15v-2.5a.5.5 0 0 1 .5-.5ZM4 4h1v1H4V4Z" />
+                        <path d="M7 2H2v5h5V2ZM3 3h3v3H3V3Zm2 8H4v1h1v-1Z" />
+                        <path d="M7 9H2v5h5V9Zm-4 1h3v3H3v-3Zm8-6h1v1h-1V4Z" />
+                        <path d="M9 2h5v5H9V2Zm1 1v3h3V3h-3ZM8 8v2h1v1H8v1h2v-2h1v2h1v-1h2v-1h-3V8H8Zm2 2H9V9h1v1Zm4 2h-1v1h-2v1h3v-2Zm-4 2v-1H8v1h2Z" />
+                        <path d="M12 9h2V8h-2v1Z" />
+                      </svg>
+                      <span> Add friend's Timetable</span>
+                    </Button>
+                  </div>
+                </div>
+                <div style={{ position: 'relative' }}>
+                  <video style={{ width: this.state.QRScannerWidth }}
+                    id="qr-video" disablePictureInPicture playsInline />
+                  {this.state.closeQRButton}
                 </div>
               </div>
             </div>
           </div>
+          <div className="col-md-6 p-0 mb-4">
+            <div className="card">
+              <div className="card-body">
+              <h5 className='card-title'>Add your friends' Timetables</h5>
+                <div className="m-1">
+                  <p><small className="card-text help-text text-muted">Get your friends to send you their QR codes, scan them, then hit Submit.</small></p>
+                </div>
+                <table className="table mb-4">
+                  <thead>
+                    <tr>
+                      <th className='col-11'>Name</th>
+                      <th className='col-1'></th>
+                    </tr>
+                  </thead>
+                  <tbody id="timetablesTable">{this.state.timetablesText}</tbody>
+                  <tfoot>
+                    {this.state.timetablesPlaceholder}
+                    <tr>
+                      <td colSpan={2}><p className='text-danger'>{this.state.friendsErrorMessage}</p></td>
+                    </tr>
+                  </tfoot>
+                </table>
+                <div className='row m-1'>
+                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="view-table" className="fixed col-md-8 p-0 mx-auto">
+          <Tab.Container defaultActiveKey="tab-1">
+            <Row>
+              <Col sm={3}>
+                <Nav variant="pills" className="flex-column">
+                  <Nav.Item>
+                    <Nav.Link eventKey="tab-1">
+                      ...
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="tab-2" onClick={() => this.handleView("courses")} disabled={!this.state.submitted}>
+                      Courses in common
+                    </Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item>
+                    <Nav.Link eventKey="tab-3" onClick={() => this.handleView("sections")} disabled={!this.state.submitted}>
+                      Sections in common
+                    </Nav.Link>
+                  </Nav.Item>
+                </Nav>
+              </Col>
+              <Col sm={9}>
+                <Tab.Content>
+                  <Tab.Pane eventKey="tab-1">
+                    <div className="card">
+                      <div className="card-body">
+                        <small className='help-text text-muted'>
+                          <em>
+                            After uploading your files, click Submit and press one of the buttons to the left of this box. The information you need will be displayed here.
+                          </em>
+                        </small>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="tab-2">
+                    <div className="card">
+                      <div className="card-body">
+                        <table className='table'>
+                          <thead>
+                            <tr>
+                              <th className='col-md-4'>📚 Course</th>
+                              <th className='col-md-8'>👫 Friends</th>
+                            </tr>
+                          </thead>
+                          <tbody>{this.state.tableText}</tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="tab-3">
+                    <div className="card">
+                      <div className="card-body">
+                        <table className='table'>
+                          <thead>
+                            <tr>
+                              <th className='col-md-4'>🧑‍🏫 Section</th>
+                              <th className='col-md-8'>👫 Friends</th>
+                            </tr>
+                          </thead>
+                          <tbody>{this.state.tableText}</tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Col>
+            </Row>
+          </Tab.Container>
         </div>
       </div >
     );
