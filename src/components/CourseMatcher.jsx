@@ -777,7 +777,7 @@ class CourseMatcher extends Component {
         </div>
 
         <div id="view-table" className="fixed col-11 col-md-9 p-0 mx-auto">
-          <Tab.Container defaultActiveKey="tab-4">
+          <Tab.Container defaultActiveKey="tab-1">
             <Row>
               <Col md={3} className="mb-3">
                 <Nav variant="pills" className="flex-column">
