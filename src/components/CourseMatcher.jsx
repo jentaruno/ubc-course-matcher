@@ -120,7 +120,7 @@ class CourseMatcher extends Component {
 
   handleSubmit = () => {
     if (this.isTableValid()) {
-      this.setState({ submitted: true, timetablesSubmitText: this.state.courses.length-1 + "timetables loaded" });
+      this.setState({ submitted: true, timetablesSubmitText: this.state.courses.length - 1 + " timetables loaded" });
       this.displayOnTable("courses", [""]);
       this.displayOnTable("sections", [""]);
     }
@@ -483,7 +483,7 @@ class CourseMatcher extends Component {
         currentTime <= endTime;
         currentTime.setMinutes(currentTime.getMinutes() + 30)) {
         let currentLocaleTime = currentTime.toLocaleTimeString([], options);
-        newTooltips["" + i + currentLocaleTime] = "";
+        newTooltips["" + i + currentLocaleTime] = { text: "", free: [], notFree: [] };
       }
     }
 
@@ -525,11 +525,11 @@ class CourseMatcher extends Component {
     let meetRows = [];
     for (let i = 1; i <= 5; i++) {
       const tdId = "" + i + currentRow;
-      const tooltip = <Tooltip>
-        {this.state.tooltips[tdId]}
-      </Tooltip>
       let overlay = (<span className='d-flex' style={{ opacity: 0 }}>.</span>);
-      if (this.state.tooltips[tdId] && this.state.tooltips[tdId] != "") {
+      if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != "") {
+        const tooltip = (<Tooltip>
+          {this.state.tooltips[tdId].text}
+        </Tooltip>);
         overlay = (<OverlayTrigger placement="top" overlay={tooltip}>
           <span className='d-flex' style={{ opacity: 0 }}>.</span>
         </OverlayTrigger>)
@@ -589,35 +589,34 @@ class CourseMatcher extends Component {
     }
   }
 
-addTooltip = (tooltipId, friendsList, name) => {
+  addTooltip = (tooltipId, friendsList, name) => {
     let newTooltips = this.state.tooltips;
-    if (newTooltips[tooltipId] == "") {
-      newTooltips[tooltipId] = "Free: " +
-        friendsList.filter(e => e != name).toString().replaceAll(",", ", ")
-        + ". Not free: " + name;
-    }
-    else {
-      let currentTooltip = this.state.tooltips[tooltipId].
-        replace("Not free:", "").
-        replace("Free:", "").
-        replaceAll(" ", "");
-      let splitText = currentTooltip.split(".");
-      let free = splitText[0].split(",").filter(e => e !== name);
-      let cleanFree = new Set(free);
-      cleanFree = [...cleanFree];
-      cleanFree = cleanFree.toString().replaceAll(",", ", ")
-      let notFree = splitText[1].split(",")
+    let free = [];
+    let notFree = [];
+    if (newTooltips[tooltipId].text == "") {
+      free = friendsList.filter(e => e != name);
+      notFree = [name];
+      newTooltips[tooltipId].text = "Free: " + free + ". Not free: " + notFree;
+    } else if (newTooltips[tooltipId].free.length == 0) {
+      console.log("nby free");
+      return;
+    } else {
+      console.log("changes");
+      free = newTooltips[tooltipId].free.filter(e => e != name);
+      notFree = newTooltips[tooltipId].notFree;
       notFree.push(name);
-      let cleanNotFree = new Set(notFree);
-      cleanNotFree = [...cleanNotFree];
-      cleanNotFree = cleanNotFree.toString().replaceAll(",", ", ")
-      if (cleanFree == "") {
-        newTooltips[tooltipId] = "No one's free"
-      } else {
-        newTooltips[tooltipId] = "Free: " + cleanFree +
-          ". " + "Not free: " + cleanNotFree;
+      console.log(notFree);
+      if (free.length == 0) {
+        newTooltips[tooltipId].text = "No one's free";
       }
     }
+
+    let cleanFree = new Set(free);
+    cleanFree = [...cleanFree];
+    let cleanNotFree = new Set(notFree);
+    cleanNotFree = [...cleanNotFree];
+    newTooltips[tooltipId].free = cleanFree;
+    newTooltips[tooltipId].notFree = cleanNotFree;
     this.setState({ tooltips: newTooltips });
   }
 
@@ -763,7 +762,7 @@ addTooltip = (tooltipId, friendsList, name) => {
         </div>
 
         <div id="view-table" className="fixed col-11 col-md-9 p-0 mx-auto">
-          <Tab.Container defaultActiveKey="tab-1">
+          <Tab.Container defaultActiveKey="tab-4">
             <Row>
               <Col md={3} className="mb-3">
                 <Nav variant="pills" className="flex-column">
