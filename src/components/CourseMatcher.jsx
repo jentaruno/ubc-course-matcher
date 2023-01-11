@@ -10,6 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
+import { findByLabelText } from '@testing-library/react';
 
 class CourseMatcher extends Component {
 
@@ -27,7 +28,9 @@ class CourseMatcher extends Component {
     meetTableText: ``,
 
     courseFiles: [],
-    courses: [{}],       //Courses reading array. Will have courseList, file, student
+    courses: [{}],       //Courses reading array. Will have key (student name), courseList, classTimes
+    tooltips: {},
+    term: "",
 
     submittedFile: false,
     submitted: false,
@@ -40,13 +43,15 @@ class CourseMatcher extends Component {
     qrScanner: "",
 
     nameCookie: "",
-    courseCookie: ""
+    courseCookie: "",
+    classTimesCookie: ""
   }
 
   //Load cookies
 
   componentDidMount() {
     this.loadCookies();
+    this.generateTooltips();
     this.state.meetTableText = this.generateMeetTable();
   }
 
@@ -102,7 +107,7 @@ class CourseMatcher extends Component {
     if (this.isFormValid()) {
       this.setState({ submittedFile: true });
       this.readCourses();
-      this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList);
+      this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList, this.state.courses[0].classTimes);
       let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
       this.setState({
         userCourses: String(newUserCourses),
@@ -120,29 +125,25 @@ class CourseMatcher extends Component {
   }
 
   readCourses = () => {
-    let splitFiles = this.state.courseFiles.map(e => e.file.split('\n'))
-    let index = splitFiles[0].findIndex(e => e.includes("BEGIN:VEVENT"));
-    splitFiles = splitFiles[0].slice(index);
-    console.log(index, splitFiles);
+    let splitFiles = this.state.courseFiles.map(e => e.file.split('\n'));
+    let currentTermFiles = this.sliceCurrentTerm(splitFiles[0]);
     let newCourses = this.state.courses;
 
     //Read courses one by one
-    let extractedCourses = splitFiles.filter(e => e.includes("SUMMARY:"))
+    let extractedCourses = splitFiles[0].filter(e => e.includes("SUMMARY"))
       .filter((v, i, a) => a.indexOf(v) === i)
       .map(e => e.substring(8, 20));
 
     //Read times that student is in class
-    let extractedClassDays = splitFiles.filter(e => e.includes("BYDAY"))
-      .map(e => e.slice(e.lastIndexOf("BYDAY") + 6).replace("\r", ""));
-    let extractedClassStartTimes = splitFiles.filter(e => e.includes("DTSTART;"))
-      .map(e => ((+e.substring(40, 42)) * 60) + (+e.substring(42, 44)));
-    let extractedClassEndTimes = splitFiles.filter(e => e.includes("DTEND;"))
-      .map(e => ((+e.substring(38, 40)) * 60) + (+e.substring(40, 42)));
+    let extractedClassDays = currentTermFiles.filter(e => e.includes("BYDAY"))
+      .map(e => e.slice(e.lastIndexOf("BYDAY") + 6).replace("\r", "")).map((e) => this.dayToNum(e));
+    let extractedClassStartTimes = currentTermFiles.filter(e => e.includes("DTSTART;"))
+      .map(e => e.substring(40, 42) + ":" + e.substring(42, 44));
+    let extractedClassEndTimes = currentTermFiles.filter(e => e.includes("DTEND;"))
+      .map(e => e.substring(38, 40) + ":" + e.substring(40, 42));
 
     let extractedClassTimes = extractedClassDays.map((e, i) =>
-      e.concat(extractedClassStartTimes[i].toString(), extractedClassEndTimes[i].toString()))
-
-    console.log(extractedClassTimes);
+      e + extractedClassStartTimes[i].toString() + "-" + extractedClassEndTimes[i].toString())
 
     newCourses[0] = {
       key: this.state.userName,
@@ -156,36 +157,68 @@ class CourseMatcher extends Component {
     });
   }
 
-  saveCookies = (name, courseList) => {
+  sliceCurrentTerm = (splitFile) => {
+    let currentDate = new Date();
+    let currentYear = currentDate.getFullYear();
+    let i = splitFile.findIndex(e => e.includes("DTSTAMP:"));
+    let j = splitFile.findIndex(e => e.includes((currentYear).toString()));
+    if (splitFile[i].includes(currentYear.toString())) {
+      this.setState({ term: "Winter" });
+      return splitFile.slice(i, j);
+    } else {
+      this.setState({ term: "Fall" });
+      return splitFile.slice(j);
+    };
+  }
+
+  dayToNum = (s) => {
+    switch (s) {
+      case "MO": return 1;
+      case "TU": return 2;
+      case "WE": return 3;
+      case "TH": return 4;
+      case "FR": return 5;
+      default: break;
+    }
+  }
+
+  saveCookies = (name, courseList, classTimes) => {
     let nameCookie;
     let courseCookie;
+    let classTimesCookie;
     let expiryDate = new Date();
-    expiryDate.setMonth(expiryDate.getMonth() + 10)
-    if (this.state.nameCookie == "" || this.state.courseCookie == "") {
+    expiryDate.setMonth(expiryDate.getMonth() + 4)
+    if (this.state.nameCookie == "" ||
+      this.state.courseCookie == "" ||
+      this.state.classTimesCookie) {
       nameCookie = new Cookies();
       courseCookie = new Cookies();
+      classTimesCookie = new Cookies();
       nameCookie.set('name', name, { path: '/', expires: expiryDate });
       courseCookie.set('courseList', courseList, { path: '/', expires: expiryDate });
+      classTimesCookie.set('classTimes', classTimes, { path: '/', expires: expiryDate });
     }
     else {
       nameCookie = this.state.nameCookie;
       courseCookie = this.state.courseCookie;
+      classTimesCookie = this.state.classTimes;
       nameCookie.set('name', name, { path: '/', expires: expiryDate });
       courseCookie.set('courseList', courseList, { path: '/', expires: expiryDate });
+      classTimesCookie.set('classTimes', classTimes, { path: '/', expires: expiryDate })
     }
-    this.setState({ nameCookie: nameCookie, courseCookie: courseCookie });
-    console.log(nameCookie.get('name'));
-    console.log(courseCookie.get('courseList'));
+    this.setState({ nameCookie: nameCookie, courseCookie: courseCookie, classTimesCookie: classTimesCookie });
   }
 
   loadCookies = () => {
     let nameCookie = new Cookies();
     let courseCookie = new Cookies();
+    let classTimesCookie = new Cookies();
     try {
-      let userCourses = courseCookie.get('courseList')
+      let userCourses = courseCookie.get('courseList');
+      let userClassTimes = classTimesCookie.get('classTimes');
       let newCourses = this.state.courses;
       nameCookie = nameCookie.get('name');
-      newCourses[0] = { key: nameCookie, courseList: userCourses };
+      newCourses[0] = { key: nameCookie, courseList: userCourses, classTimes: userClassTimes };
       userCourses = userCourses.map(e => " " + e)
       this.setState({
         userName: nameCookie,
@@ -208,7 +241,7 @@ class CourseMatcher extends Component {
         break;
       case "sections": this.displayOnTable("sections", this.findSameSections());
         break;
-      case "meet": this.displayOnTable("meet", this.findMeetTime());
+      case "meet": this.displayMeetBlocks(this.findMeetBlocks());
       default: break;
     }
   }
@@ -268,6 +301,46 @@ class CourseMatcher extends Component {
     });
 
     return sameSections;
+  }
+
+  findMeetBlocks = () => {
+    let blocksToAdd = this.state.courses.map(e => {
+      return {
+        key: e.key,
+        classTimes: this.breakBlocks(e.classTimes.map(e => {
+          return {
+            col: +e.substring(0, 1),
+            rowStart: e.substring(1, e.indexOf("-")),
+            rowEnd: e.substring(e.indexOf("-") + 1)
+          }
+        }))
+      }
+    })
+
+    return blocksToAdd;
+  }
+
+  breakBlocks = (classTimes) => {
+    let newClassTimes = [];
+    for (let i = 0; i < classTimes.length; i++) {
+      for (let j = this.stringToDate(classTimes[i].rowStart);
+        j < this.stringToDate(classTimes[i].rowEnd);
+        j.setMinutes(j.getMinutes() + 30)) {
+        let options = { hour: '2-digit', minute: '2-digit', hour12: false };
+        let newTime = j.toLocaleTimeString([], options);
+        newClassTimes.push({ tdId: "" + classTimes[i].col + newTime });
+      }
+    }
+
+    return newClassTimes;
+  }
+
+  stringToDate = (time) => {
+    var date = new Date();
+    var parts = time.split(':');
+    date.setHours(parts[0]);
+    date.setMinutes(parts[1]);
+    return date;
   }
 
   isFormValid = () => {
@@ -388,6 +461,31 @@ class CourseMatcher extends Component {
 
   //------------When to meet functions
 
+  generateTooltips = () => {
+    let newTooltips = {};
+    const startTime = new Date();
+    const endTime = new Date();
+    endTime.setHours(22);
+    endTime.setMinutes(0);
+    endTime.setSeconds(0);
+    let options = { hour: '2-digit', minute: '2-digit', hour12: false };
+
+    // Loop through the time range
+    for (let i = 1; i <= 5; i++) {
+      startTime.setHours(8);
+      startTime.setMinutes(0);
+      startTime.setSeconds(0);
+      for (let currentTime = startTime;
+        currentTime <= endTime;
+        currentTime.setMinutes(currentTime.getMinutes() + 30)) {
+        let currentLocaleTime = currentTime.toLocaleTimeString([], options);
+        newTooltips["" + i + currentLocaleTime] = "";
+      }
+    }
+
+    this.setState({ tooltips: newTooltips });
+  }
+
   generateMeetTable = () => {
     let meetTableText = [];
     let startTime = new Date();
@@ -402,22 +500,16 @@ class CourseMatcher extends Component {
     // Loop through the time range
     for (let currentTime = startTime; currentTime <= endTime; currentTime.setMinutes(currentTime.getMinutes() + 30)) {
       let options = { hour: '2-digit', minute: '2-digit', hour12: false };
-      let currentRowId = "";
-      let minutes = currentTime.getMinutes();
-      if (minutes < 10) {
-        minutes = "0" + minutes;
-      }
-      currentRowId = currentTime.getHours() + "" + minutes;
+      let currentLocaleTime = currentTime.toLocaleTimeString([], options);
       if (currentTime.getMinutes() == 0) {
-        let currentLocaleTime = currentTime.toLocaleTimeString([], options);
-        meetTableText.push(<tr>
-          <th scope='row' className='p-0'>{currentLocaleTime}</th>
-          {this.generateMeetRow(currentRowId)}
+        meetTableText.push(<tr className='d-flex'>
+          <th className='col-2 p-1' scope='row'>{currentLocaleTime}</th>
+          {this.generateMeetRow(currentLocaleTime)}
         </tr>);
       } else {
-        meetTableText.push(<tr>
-        <th scope='row' className='p-0'></th>
-        {this.generateMeetRow(currentRowId)}
+        meetTableText.push(<tr className='d-flex'>
+          <th className='col-2 p-1' scope='row'></th>
+          {this.generateMeetRow(currentLocaleTime)}
         </tr>);
       }
     }
@@ -427,17 +519,19 @@ class CourseMatcher extends Component {
 
   generateMeetRow = (currentRow) => {
     let meetRows = [];
-    for (let i = 0; i < 5; i++) {
-      const tdId = "td" + i + currentRow;
-      const tooltipId = "tooltip" + i + currentRow;
-      const tooltip = (<Tooltip id={tooltipId}>
-          Woohoo!
-        </Tooltip>)
-      meetRows.push(<td className='p-0'><OverlayTrigger
-      placement="bottom"
-      overlay={tooltip}>
-      <span className="d-flex text-light">.</span>
-      </OverlayTrigger>
+    for (let i = 1; i <= 5; i++) {
+      const tdId = "" + i + currentRow;
+      const tooltip = <Tooltip>
+        {this.state.tooltips[tdId]}
+      </Tooltip>
+      let overlay = (<span className='d-flex' style={{ opacity: 0 }}>.</span>);
+      if (this.state.tooltips[tdId] && this.state.tooltips[tdId] != "") {
+        overlay = (<OverlayTrigger placement="top" overlay={tooltip}>
+          <span className='d-flex' style={{ opacity: 0 }}>.</span>
+        </OverlayTrigger>)
+      }
+      meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}>
+        {overlay}
       </td>);
     }
 
@@ -455,11 +549,93 @@ class CourseMatcher extends Component {
   }
 
   displayOnTable = (table, text) => {
+    document.getElementById(table).innerHTML = "";
+    if (text.length <= 1) return;
     for (let i = 0; i < text.length; i++) {
       document.getElementById(table).innerHTML +=
         `<tr><td>${text[i].key}</td><td>${text[i].friends.toString().replaceAll(",", ", ")}</td></tr>`;
     }
   }
+
+  displayMeetBlocks = (courses) => {
+    let friendsList = this.state.courses.map(e => e.key);
+    this.generateTooltips();
+    //display tooltips for who's not free
+    for (let i = 0; i < courses.length; i++) {
+      courses[i].classTimes.map(e => {
+        this.addTooltip(e.tdId, friendsList, courses[i].key);
+        this.generateMeetTable();
+      })
+    }
+    for (let i = 0; i < courses.length; i++) {
+      courses[i].classTimes.map(e => {
+        let cell = document.getElementById(e.tdId);
+        this.addShade(cell);
+      });
+    }
+    this.placeNowPointer();
+  }
+
+  addShade = (cell) => {
+    let unit = 0.8 / this.state.courses.length;
+    if (cell.style.opacity == 0) {
+      cell.style.opacity = unit;
+    } else {
+      cell.style.opacity = +cell.style.opacity + unit;
+    }
+  }
+
+  addTooltip = (tooltipId, friendsList, name) => {
+    let newTooltips = this.state.tooltips;
+    if (newTooltips[tooltipId] == "") {
+      newTooltips[tooltipId] = "Free: " +
+        friendsList.filter(e => e != name).toString().replaceAll(",", ", ")
+        + ". Not free: " + name;
+    }
+    else {
+      let currentTooltip = this.state.tooltips[tooltipId].
+        replace("Not free:", "").
+        replace("Free:", "").
+        replaceAll(" ", "");
+      let splitText = currentTooltip.split(".");
+      console.log(splitText);
+      let free = splitText[0].split(",").filter(e => e !== name);
+      let cleanFree = new Set(free);
+      cleanFree = [...cleanFree];
+      cleanFree = cleanFree.toString().replaceAll(",", ", ")
+      let notFree = splitText[1].split(",")
+      notFree.push(name);
+      let cleanNotFree = new Set(notFree);
+      cleanNotFree = [...cleanNotFree];
+      cleanNotFree = cleanNotFree.toString().replaceAll(",", ", ")
+      if (cleanFree == "") {
+        newTooltips[tooltipId] = "No one's free"
+      } else {
+        newTooltips[tooltipId] = "Free: " + cleanFree +
+          ". " + "Not free: " + cleanNotFree;
+      }
+    }
+    this.setState({ tooltips: newTooltips });
+  }
+
+  placeNowPointer = () => {
+    var d = new Date();
+    var minutes = d.getMinutes();
+    var roundDownMinutes = 0;
+    if (minutes < 30) {
+      roundDownMinutes = 0;
+    } else {
+      roundDownMinutes = 30;
+    }
+    d.setMinutes(roundDownMinutes);
+    d.setSeconds(0);
+    let options = { hour: '2-digit', minute: '2-digit', hour12: false };
+    let currentLocaleTime = d.toLocaleTimeString([], options);
+    let timeNow = "" + d.getDay() + currentLocaleTime;
+    if (document.getElementById(timeNow))
+      document.getElementById(timeNow).innerHTML += `<span class="badge bg-primary">Now</span>`
+  }
+
 
   randomEmoji = () => {
     var emojis = [
@@ -658,14 +834,16 @@ class CourseMatcher extends Component {
                   <Tab.Pane eventKey="tab-4">
                     <div className="card">
                       <div className="card-body">
-                        <table className='table table-sm meet-table'>
+                        <table className='table table-bordered table-sm meet-table'>
                           <thead>
-                            <th></th>
-                            <th scope='col'>Mon</th>
-                            <th scope='col'>Tue</th>
-                            <th scope='col'>Wed</th>
-                            <th scope='col'>Thu</th>
-                            <th scope='col'>Fri</th>
+                            <tr className='d-flex'>
+                              <th className='col-2'></th>
+                              <th scope='col' className='col'>Mon</th>
+                              <th scope='col' className='col'>Tue</th>
+                              <th scope='col' className='col'>Wed</th>
+                              <th scope='col' className='col'>Thu</th>
+                              <th scope='col' className='col'>Fri</th>
+                            </tr>
                           </thead>
                           <tbody id="meet">{this.state.meetTableText}</tbody>
                         </table>
