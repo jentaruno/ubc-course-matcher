@@ -120,7 +120,7 @@ class CourseMatcher extends Component {
 
   handleSubmit = () => {
     if (this.isTableValid()) {
-      this.setState({ submitted: true, timetablesSubmitText: this.state.courses.length - 1 + " timetables loaded" });
+      this.setState({ submitted: true, timetablesSubmitText: "✓ " + (this.state.courses.length-1) + " timetables loaded" });
       this.displayOnTable("courses", [""]);
       this.displayOnTable("sections", [""]);
     }
@@ -146,6 +146,7 @@ class CourseMatcher extends Component {
 
     let extractedClassTimes = extractedClassDays.map((e, i) =>
       e + extractedClassStartTimes[i].toString() + "-" + extractedClassEndTimes[i].toString())
+      .filter((v, i, a) => a.indexOf(v) === i);
 
     newCourses[0] = {
       key: this.state.userName,
@@ -333,6 +334,7 @@ class CourseMatcher extends Component {
         newClassTimes.push({ tdId: "" + classTimes[i].col + newTime });
       }
     }
+    newClassTimes = newClassTimes.filter((v, i, a) => a.indexOf(v) === i);
 
     return newClassTimes;
   }
@@ -483,7 +485,7 @@ class CourseMatcher extends Component {
         currentTime <= endTime;
         currentTime.setMinutes(currentTime.getMinutes() + 30)) {
         let currentLocaleTime = currentTime.toLocaleTimeString([], options);
-        newTooltips["" + i + currentLocaleTime] = { text: "", free: [], notFree: [] };
+        newTooltips["" + i + currentLocaleTime] = { text: "Everyone's free!", free: [], notFree: [] };
       }
     }
 
@@ -521,24 +523,34 @@ class CourseMatcher extends Component {
     this.setState({ meetTableText: meetTableText });
   }
 
+
   generateMeetRow = (currentRow) => {
     let meetRows = [];
     for (let i = 1; i <= 5; i++) {
       const tdId = "" + i + currentRow;
-      let overlay = (<span className='d-flex' style={{ opacity: 0 }}>.</span>);
-      if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != "") {
-        const tooltip = (<Tooltip>
-          {this.state.tooltips[tdId].text}
-        </Tooltip>);
-        overlay = (<OverlayTrigger placement="top" overlay={tooltip}>
-          <span className='d-flex' style={{ opacity: 0 }}>.</span>
-        </OverlayTrigger>)
+      let tooltipText = "";
+      if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != null) {
+        tooltipText = this.state.tooltips[tdId].text;
       }
-      meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}>
-        {overlay}
-      </td>);
+      // let overlay = (<span className='d-flex' style={{ opacity: 0 }}>.</span>);
+      // if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != null) {
+      //   const tooltip = <Tooltip id="tooltip">{this.state.tooltips[tdId].text}</Tooltip>
+      //   overlay = (<OverlayTrigger placement="top" overlay={tooltip}>
+      //     <span className='d-flex' style={{ opacity: 0 }}>.</span>
+      //   </OverlayTrigger>)
+      // }
+      const tooltip = (<Tooltip>
+        {tooltipText}
+      </Tooltip>)
+      meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}><OverlayTrigger
+        placement="bottom"
+        overlay={tooltip}>
+        <span className="d-flex" style={{ opacity: 0 }}>.</span>
+      </OverlayTrigger></td>)
+      // meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}>
+      //   {overlay}
+      // </td>);
     }
-
     return meetRows;
   }
 
@@ -593,30 +605,31 @@ class CourseMatcher extends Component {
     let newTooltips = this.state.tooltips;
     let free = [];
     let notFree = [];
-    if (newTooltips[tooltipId].text == "") {
+    newTooltips[tooltipId].notFree.push(name);
+    if (newTooltips[tooltipId].text == "Everyone's free!") {
       free = friendsList.filter(e => e != name);
       notFree = [name];
-      newTooltips[tooltipId].text = "Free: " + free + ". Not free: " + notFree;
+      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",",", ");
     } else if (newTooltips[tooltipId].free.length == 0) {
-      console.log("nby free");
       return;
     } else {
-      console.log("changes");
-      free = newTooltips[tooltipId].free.filter(e => e != name);
-      notFree = newTooltips[tooltipId].notFree;
-      notFree.push(name);
-      console.log(notFree);
+      let rawFree = newTooltips[tooltipId].free.filter(e => e != name);
+      let rawNotFree = newTooltips[tooltipId].notFree;
+      rawNotFree.push(name);
+      free = new Set(rawFree);
+      free = [...free];
+      notFree = new Set(rawNotFree);
+      notFree = [...notFree];
+      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",",", ");
+
       if (free.length == 0) {
         newTooltips[tooltipId].text = "No one's free";
       }
     }
 
-    let cleanFree = new Set(free);
-    cleanFree = [...cleanFree];
-    let cleanNotFree = new Set(notFree);
-    cleanNotFree = [...cleanNotFree];
-    newTooltips[tooltipId].free = cleanFree;
-    newTooltips[tooltipId].notFree = cleanNotFree;
+    newTooltips[tooltipId].free = free;
+    newTooltips[tooltipId].notFree = notFree;
+
     this.setState({ tooltips: newTooltips });
   }
 
@@ -635,7 +648,9 @@ class CourseMatcher extends Component {
     let currentLocaleTime = d.toLocaleTimeString([], options);
     let timeNow = "" + d.getDay() + currentLocaleTime;
     if (document.getElementById(timeNow))
-      document.getElementById(timeNow).innerHTML += `<span class="badge bg-primary">Now</span>`
+    document.getElementById(timeNow).style.position = "relative";
+      document.getElementById(timeNow).innerHTML += `<span class="badge bg-primary"
+      style="position: absolute; top: 0; opacity: 1;">Now</span>`
   }
 
 
