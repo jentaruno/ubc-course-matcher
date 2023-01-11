@@ -10,7 +10,6 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
-import { findByLabelText } from '@testing-library/react';
 
 class CourseMatcher extends Component {
 
@@ -19,11 +18,12 @@ class CourseMatcher extends Component {
     friendsErrorMessage: "",
     userName: "User",
     userCourses: "",
-    viewCoursesText: "No loaded sections",
+    userSubmitState: { disabled: false, text: "Submit" },
     timetablesText: [],
     timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted text-center'><em><small>
       After you scan your friends' QR codes, their names will be displayed here.
     </small></em></td></tr>,
+    timetablesSubmitText: "Submit",
 
     meetTableText: ``,
 
@@ -98,7 +98,9 @@ class CourseMatcher extends Component {
       console.log(reader.error);
     };
     this.setState(prevState => ({
-      courseFiles: newCourses
+      courseFiles: newCourses,
+      userSubmitState: { disabled: false, text: "Submit" },
+      userErrorMessage: ""
     }));
   }
 
@@ -111,14 +113,14 @@ class CourseMatcher extends Component {
       let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
       this.setState({
         userCourses: String(newUserCourses),
-        viewCoursesText: "✓ " + newUserCourses.length + " loaded sections"
+        userSubmitState: { disabled: true, text: "✓ " + newUserCourses.length + " loaded sections" },
       });
     }
   }
 
   handleSubmit = () => {
     if (this.isTableValid()) {
-      this.setState({ submitted: true });
+      this.setState({ submitted: true, timetablesSubmitText: this.state.courses.length-1 + "timetables loaded" });
       this.displayOnTable("courses", [""]);
       this.displayOnTable("sections", [""]);
     }
@@ -223,7 +225,7 @@ class CourseMatcher extends Component {
       this.setState({
         userName: nameCookie,
         userCourses: String(userCourses),
-        viewCoursesText: "✓ " + userCourses.length + " loaded sections",
+        userSubmitState: { disabled: true, text: "✓ " + userCourses.length + " loaded sections" },
         courses: newCourses,
         submittedFile: true
       });
@@ -345,10 +347,11 @@ class CourseMatcher extends Component {
 
   isFormValid = () => {
     let newErrorMessage = "";
-    if (!document.getElementById("user-name").value.trim())
+    if (document.getElementById("user-name").value.trim() == "") {
       newErrorMessage = "Please fill in your name.";
-    if (document.getElementById("user-file").files.length < 1)
+    } else if (document.getElementById("user-file").files.length < 1) {
       newErrorMessage = "Please upload your file.";
+    }
     this.displayErrorMessage("user", newErrorMessage);
     if (newErrorMessage != "")
       return false;
@@ -360,7 +363,7 @@ class CourseMatcher extends Component {
     let courses = this.state.courses;
     let newErrorMessage = "";
     if (courses.length < 2)
-      newErrorMessage = "You need to have at least two files to start matching.";
+      newErrorMessage = "Please upload a file to start matching.";
     if (new Set(courses.map(e => e.key)).size !== courses.length || new Set(courses.map(e => e.courseList)).size !== courses.length)
       newErrorMessage = "There are duplicate names or files."
     this.displayErrorMessage("friends", newErrorMessage);
@@ -421,7 +424,8 @@ class CourseMatcher extends Component {
     this.setState({
       courses: currentCourses,
       timetablesText: newTimetablesText,
-      submitted: false
+      submitted: false,
+      friendsErrorMessage: ""
     });
 
     //Update placeholder text
@@ -585,7 +589,7 @@ class CourseMatcher extends Component {
     }
   }
 
-  addTooltip = (tooltipId, friendsList, name) => {
+addTooltip = (tooltipId, friendsList, name) => {
     let newTooltips = this.state.tooltips;
     if (newTooltips[tooltipId] == "") {
       newTooltips[tooltipId] = "Free: " +
@@ -598,7 +602,6 @@ class CourseMatcher extends Component {
         replace("Free:", "").
         replaceAll(" ", "");
       let splitText = currentTooltip.split(".");
-      console.log(splitText);
       let free = splitText[0].split(",").filter(e => e !== name);
       let cleanFree = new Set(free);
       cleanFree = [...cleanFree];
@@ -667,14 +670,12 @@ class CourseMatcher extends Component {
                       <input type="file" id='user-file' accept=".ics" className="form-control" onChange={(e) => this.handleUpload(e)} />
                     </div>
                   </div>
-                  <div className="row m-1">
-                    <button className="btn btn-outline-primary" onClick={this.handleSubmitFile}>Submit</button>
-                  </div>
+                  <p className='text-danger'>{this.state.userErrorMessage}</p>
                 </div>
                 <p><small className="card-text help-text text-muted">Use the button below to share your Timetable QR code with your friends.</small></p>
                 <div className="btn-group d-flex px-2 mb-2">
-                  <button className='btn btn-outline-secondary' style={{ pointerEvents: "none" }}>
-                    {this.state.viewCoursesText}
+                  <button className='btn btn-outline-primary' onClick={this.handleSubmitFile} disabled={this.state.userSubmitState.disabled}>
+                    {this.state.userSubmitState.text}
                   </button>
                   <Button variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
@@ -754,7 +755,7 @@ class CourseMatcher extends Component {
                   </tfoot>
                 </table>
                 <div className='row m-1'>
-                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>Submit</button>
+                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>{this.state.timetablesSubmitText}</button>
                 </div>
               </div>
             </div>
@@ -762,7 +763,7 @@ class CourseMatcher extends Component {
         </div>
 
         <div id="view-table" className="fixed col-11 col-md-9 p-0 mx-auto">
-          <Tab.Container defaultActiveKey="tab-4">
+          <Tab.Container defaultActiveKey="tab-1">
             <Row>
               <Col md={3} className="mb-3">
                 <Nav variant="pills" className="flex-column">
