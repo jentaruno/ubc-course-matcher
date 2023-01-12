@@ -18,12 +18,10 @@ class CourseMatcher extends Component {
     friendsErrorMessage: "",
     userName: "User",
     userCourses: "",
-    userSubmitState: { disabled: false, text: "Submit" },
     timetablesText: [],
     timetablesPlaceholder: <tr><td colSpan="2" className='table-secondary help-text text-muted text-center'><em><small>
       After you scan your friends' QR codes, their names will be displayed here.
     </small></em></td></tr>,
-    timetablesSubmitText: "Submit",
 
     meetTableText: ``,
 
@@ -32,8 +30,13 @@ class CourseMatcher extends Component {
     tooltips: {},
     term: "",
 
-    submittedFile: false,
-    submitted: false,
+    userSubmitState: { disabled: false, color: "primary", text: "Submit" },
+    shareQRCodeState: { disabled: true, color: "outline-primary" },
+    timetablesSubmitState: { color: "outline-primary", text: "Submit" },
+    pillsState: {
+      disabled: true,
+      text: "After uploading your files, click Submit and press one of the buttons to the left of this box. The information you need will be displayed here."
+    },
 
     modalDisplay: false,
     modalHeader: "",
@@ -64,8 +67,8 @@ class CourseMatcher extends Component {
     this.updatePlaceholder();
     this.setState(prevState => ({
       courses: newCourses,
-      submitted: false
     }));
+    this.nextButton(2);
     currentRow.remove();
   }
 
@@ -99,31 +102,34 @@ class CourseMatcher extends Component {
     };
     this.setState(prevState => ({
       courseFiles: newCourses,
-      userSubmitState: { disabled: false, text: "Submit" },
       userErrorMessage: ""
     }));
+    this.nextButton(0);
   }
 
   handleSubmitFile = (e) => {
     e.preventDefault();
     if (this.isFormValid()) {
-      this.setState({ submittedFile: true });
       this.readCourses();
       this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList, this.state.courses[0].classTimes);
       let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
-      this.setState({
-        userCourses: String(newUserCourses),
-        userSubmitState: { disabled: true, text: "✓ " + newUserCourses.length + " loaded sections" },
-      });
+      this.setState({ userCourses: String(newUserCourses) });
+      this.nextButton(1);
     }
   }
 
   handleSubmit = () => {
     if (this.isTableValid()) {
-      this.setState({ submitted: true, timetablesSubmitText: "✓ " + (this.state.courses.length-1) + " timetables loaded" });
-      this.displayOnTable("courses", [""]);
-      this.displayOnTable("sections", [""]);
+      this.nextButton(3);
     }
+  }
+
+  handleHoverSubmit = (e) => {
+    e.target.innerHTML = "Submit";
+  }
+
+  handleOutSubmit = (e) => {
+    e.target.innerHTML = this.state.timetablesSubmitState.text
   }
 
   readCourses = () => {
@@ -226,13 +232,49 @@ class CourseMatcher extends Component {
       this.setState({
         userName: nameCookie,
         userCourses: String(userCourses),
-        userSubmitState: { disabled: true, text: "✓ " + userCourses.length + " loaded sections" },
-        courses: newCourses,
-        submittedFile: true
+        courses: newCourses
       });
+      this.nextButton(1);
       document.getElementById('user-name').value = nameCookie;
     } catch (e) {
       console.log("No cookies were loaded.");
+    }
+  }
+
+  nextButton = (step) => {
+    switch (step) {
+      case 0:
+        this.setState({
+          userSubmitState: { disabled: false, color: "primary", text: "Submit" },
+          shareQRCodeState: { disabled: true, color: "outline-primary" }
+        });
+        break;
+      case 1:
+        this.setState({
+          userSubmitState: {
+            disabled: true,
+            color: "outline-primary",
+            text: "✓ " + this.state.courses[0].courseList.length + " loaded sections"
+          },
+          shareQRCodeState: { disabled: false, color: "primary" }
+        });
+        break;
+      case 2:
+        this.setState({ timetablesSubmitState: { color: "primary", text: "Submit" } });
+        break;
+      case 3:
+        this.setState({
+          timetablesSubmitState: {
+            color: "outline-primary",
+            text: "✓ " + (this.state.courses.length - 1) + " timetable(s) loaded"
+          },
+          pillsState: {
+            disabled: false,
+            text: "Start course matching! Press one of the buttons on the left to get the information you need."
+          }
+        });
+        break;
+      default: break;
     }
   }
 
@@ -256,18 +298,18 @@ class CourseMatcher extends Component {
     for (let i = 0; i < this.state.courses.length; i++) {
       //Loop for each course in this student's timetable
       for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
-        let currentSectionName = this.state.courses[i].courseList[a];
+        let currentCourseName = this.state.courses[i].courseList[a].substring(0, 8);
         let currentCourseFriends = [this.state.courses[i].key];
         //Loop for next students to check if they have the course
         for (let j = i + 1; j < this.state.courses.length; j++) {
           if (this.state.courses[j].courseList.map(e => e.substring(0, 8))
-            .indexOf(currentSectionName.substring(0, 8)) >= 0)
+            .indexOf(currentCourseName) != -1)
             currentCourseFriends.push(this.state.courses[j].key);
         }
         //If there are common occurences found, add to sameCourses
         if (currentCourseFriends.length > 1 && //Check if this is not a duplicate of a previous match record
-          sameCourses.map(e => { return (e.key === currentSectionName.substring(0, 8)) }).every(e => e === false))
-          sameCourses.push({ key: currentSectionName.substring(0, 8), friends: currentCourseFriends });
+          sameCourses.map(e => { return (e.key === currentCourseName) }).every(e => e === false))
+          sameCourses.push({ key: currentCourseName, friends: currentCourseFriends });
       }
     }
 
@@ -287,9 +329,9 @@ class CourseMatcher extends Component {
       for (let a = 0; a < this.state.courses[i].courseList.length; a++) {
         let currentSectionName = this.state.courses[i].courseList[a];
         let currentSectionFriends = [this.state.courses[i].key];
-        //Loop for next students to check if they have the course
+        //Loop for next students to check if they have the section
         for (let j = i + 1; j < this.state.courses.length; j++) {
-          if (this.state.courses[j].courseList.indexOf(currentSectionName) >= 0)
+          if (this.state.courses[j].courseList.indexOf(currentSectionName) != -1)
             currentSectionFriends.push(this.state.courses[j].key);
         }
         //If there are common occurences found, add to sameSections
@@ -379,7 +421,7 @@ class CourseMatcher extends Component {
   //-------------QR Code functions
 
   handleQrCode = () => {
-    if (!this.state.submittedFile)
+    if (!this.state.userSubmitState.disabled)
       return;
     this.setState({
       modalDisplay: true,
@@ -426,9 +468,9 @@ class CourseMatcher extends Component {
     this.setState({
       courses: currentCourses,
       timetablesText: newTimetablesText,
-      submitted: false,
       friendsErrorMessage: ""
     });
+    this.nextButton(2);
 
     //Update placeholder text
     this.updatePlaceholder();
@@ -493,7 +535,7 @@ class CourseMatcher extends Component {
   }
 
   generateMeetTable = () => {
-    let meetTableText = [];
+    let newMeetTableText = [];
     let startTime = new Date();
     startTime.setHours(8);
     startTime.setMinutes(0);
@@ -508,19 +550,19 @@ class CourseMatcher extends Component {
       let options = { hour: '2-digit', minute: '2-digit', hour12: false };
       let currentLocaleTime = currentTime.toLocaleTimeString([], options);
       if (currentTime.getMinutes() == 0) {
-        meetTableText.push(<tr className='d-flex'>
+        newMeetTableText.push(<tr className='d-flex'>
           <th className='col-2 p-1' scope='row'>{currentLocaleTime}</th>
           {this.generateMeetRow(currentLocaleTime)}
         </tr>);
       } else {
-        meetTableText.push(<tr className='d-flex'>
-          <th className='col-2 p-1' scope='row'></th>
+        newMeetTableText.push(<tr className='d-flex'>
+          <th className='col-2 p-1' scope='row'><span className='d-flex'></span></th>
           {this.generateMeetRow(currentLocaleTime)}
         </tr>);
       }
     }
 
-    this.setState({ meetTableText: meetTableText });
+    this.setState({ meetTableText: newMeetTableText });
   }
 
 
@@ -532,24 +574,14 @@ class CourseMatcher extends Component {
       if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != null) {
         tooltipText = this.state.tooltips[tdId].text;
       }
-      // let overlay = (<span className='d-flex' style={{ opacity: 0 }}>.</span>);
-      // if (this.state.tooltips[tdId] && this.state.tooltips[tdId].text != null) {
-      //   const tooltip = <Tooltip id="tooltip">{this.state.tooltips[tdId].text}</Tooltip>
-      //   overlay = (<OverlayTrigger placement="top" overlay={tooltip}>
-      //     <span className='d-flex' style={{ opacity: 0 }}>.</span>
-      //   </OverlayTrigger>)
-      // }
       const tooltip = (<Tooltip>
         {tooltipText}
       </Tooltip>)
       meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}><OverlayTrigger
         placement="bottom"
         overlay={tooltip}>
-        <span className="d-flex" style={{ opacity: 0 }}>.</span>
-      </OverlayTrigger></td>)
-      // meetRows.push(<td id={tdId} className='col p-0 bg-danger' style={{ opacity: 0 }}>
-      //   {overlay}
-      // </td>);
+        <span className='d-flex' style={{ opacity: 0 }}>.</span>
+      </OverlayTrigger></td>);
     }
     return meetRows;
   }
@@ -566,7 +598,7 @@ class CourseMatcher extends Component {
 
   displayOnTable = (table, text) => {
     document.getElementById(table).innerHTML = "";
-    if (text.length <= 1) return;
+    if (text.length < 1) return;
     for (let i = 0; i < text.length; i++) {
       document.getElementById(table).innerHTML +=
         `<tr><td>${text[i].key}</td><td>${text[i].friends.toString().replaceAll(",", ", ")}</td></tr>`;
@@ -580,9 +612,10 @@ class CourseMatcher extends Component {
     for (let i = 0; i < courses.length; i++) {
       courses[i].classTimes.map(e => {
         this.addTooltip(e.tdId, friendsList, courses[i].key);
-        this.generateMeetTable();
       })
     }
+    this.generateMeetTable();
+    this.removeShades();
     for (let i = 0; i < courses.length; i++) {
       courses[i].classTimes.map(e => {
         let cell = document.getElementById(e.tdId);
@@ -592,11 +625,19 @@ class CourseMatcher extends Component {
     this.placeNowPointer();
   }
 
+  removeShades = () => {
+    var table = document.getElementById("meet-table");
+    var tableCells = table.getElementsByTagName("td");
+    for (var i = 0; i < tableCells.length; i++) {
+      tableCells[i].style.opacity = "0";
+    }
+  }
+
   addShade = (cell) => {
-    let unit = 0.8 / this.state.courses.length;
+    let unit = 1 / this.state.courses.length;
     if (cell.style.opacity == 0) {
       cell.style.opacity = unit;
-    } else {
+    } else if (cell.style.opacity < 1) {
       cell.style.opacity = +cell.style.opacity + unit;
     }
   }
@@ -609,7 +650,7 @@ class CourseMatcher extends Component {
     if (newTooltips[tooltipId].text == "Everyone's free!") {
       free = friendsList.filter(e => e != name);
       notFree = [name];
-      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",",", ");
+      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",", ", ");
     } else if (newTooltips[tooltipId].free.length == 0) {
       return;
     } else {
@@ -620,7 +661,7 @@ class CourseMatcher extends Component {
       free = [...free];
       notFree = new Set(rawNotFree);
       notFree = [...notFree];
-      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",",", ");
+      newTooltips[tooltipId].text = ("Free: " + free + ". Not free: " + notFree).replaceAll(",", ", ");
 
       if (free.length == 0) {
         newTooltips[tooltipId].text = "No one's free";
@@ -648,9 +689,7 @@ class CourseMatcher extends Component {
     let currentLocaleTime = d.toLocaleTimeString([], options);
     let timeNow = "" + d.getDay() + currentLocaleTime;
     if (document.getElementById(timeNow))
-    document.getElementById(timeNow).style.position = "relative";
-      document.getElementById(timeNow).innerHTML += `<span class="badge bg-primary"
-      style="position: absolute; top: 0; opacity: 1;">Now</span>`
+      document.getElementById(timeNow).style.border = "2px solid yellow";
   }
 
 
@@ -688,10 +727,10 @@ class CourseMatcher extends Component {
                 </div>
                 <p><small className="card-text help-text text-muted">Use the button below to share your Timetable QR code with your friends.</small></p>
                 <div className="btn-group d-flex px-2 mb-2">
-                  <button className='btn btn-outline-primary' onClick={this.handleSubmitFile} disabled={this.state.userSubmitState.disabled}>
+                  <Button variant={this.state.userSubmitState.color} onClick={this.handleSubmitFile} disabled={this.state.userSubmitState.disabled}>
                     {this.state.userSubmitState.text}
-                  </button>
-                  <Button variant="primary" onClick={this.handleQrCode} disabled={!this.state.submittedFile}>
+                  </Button>
+                  <Button variant={this.state.shareQRCodeState.color} onClick={this.handleQrCode} disabled={this.state.shareQRCodeState.disabled}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-qr-code mb-1" viewBox="0 0 16 16">
                       <path d="M2 2h2v2H2V2Z" />
                       <path d="M6 0v6H0V0h6ZM5 1H1v4h4V1ZM4 12H2v2h2v-2Z" />
@@ -769,7 +808,10 @@ class CourseMatcher extends Component {
                   </tfoot>
                 </table>
                 <div className='row m-1'>
-                  <button className="btn btn-outline-primary" onClick={this.handleSubmit}>{this.state.timetablesSubmitText}</button>
+                  <Button variant={this.state.timetablesSubmitState.color}
+                    onClick={this.handleSubmit}
+                    onMouseOver={(e) => this.handleHoverSubmit(e)}
+                    onMouseOut={(e) => this.handleOutSubmit(e)}>{this.state.timetablesSubmitState.text}</Button>
                 </div>
               </div>
             </div>
@@ -783,21 +825,21 @@ class CourseMatcher extends Component {
                 <Nav variant="pills" className="flex-column">
                   <Nav.Item>
                     <Nav.Link eventKey="tab-1">
-                      ...
+                      Info
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="tab-2" onClick={() => this.handleView("courses")} disabled={!this.state.submitted}>
+                    <Nav.Link eventKey="tab-2" onClick={() => this.handleView("courses")} disabled={this.state.pillsState.disabled}>
                       📚 Courses in common
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="tab-3" onClick={() => this.handleView("sections")} disabled={!this.state.submitted}>
+                    <Nav.Link eventKey="tab-3" onClick={() => this.handleView("sections")} disabled={this.state.pillsState.disabled}>
                       🧑‍🏫 Sections in common
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="tab-4" onClick={() => this.handleView("meet")}>
+                    <Nav.Link eventKey="tab-4" onClick={() => this.handleView("meet")} disabled={this.state.pillsState.disabled}>
                       🕒 When to meet
                     </Nav.Link>
                   </Nav.Item>
@@ -810,7 +852,7 @@ class CourseMatcher extends Component {
                       <div className="card-body">
                         <small>
                           <em>
-                            After uploading your files, click Submit and press one of the buttons to the left of this box. The information you need will be displayed here.
+                            {this.state.pillsState.text}
                           </em>
                         </small>
                       </div>
@@ -849,7 +891,27 @@ class CourseMatcher extends Component {
                   <Tab.Pane eventKey="tab-4">
                     <div className="card">
                       <div className="card-body">
-                        <table className='table table-bordered table-sm meet-table'>
+                        <div className='row mb-2'>
+                          <div className="col">
+                            <div className="d-inline bg-danger bg-gradient">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                className="bi bi-square-fill mb-1" viewBox="0 0 16 16" style={{ opacity: 0 }}>
+                                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2z" />
+                              </svg>
+                            </div>
+                            <span className='d-inline'> No. of people not free</span>
+                          </div>
+                          <div className="col">
+                            <div className="d-inline text-warning">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                className="bi bi-square" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                              </svg>
+                            </div>
+                            <span className='d-inline'> Time now</span>
+                          </div>
+                        </div>
+                        <table className='table table-bordered table-sm' id='meet-table'>
                           <thead>
                             <tr className='d-flex'>
                               <th className='col-2'></th>
