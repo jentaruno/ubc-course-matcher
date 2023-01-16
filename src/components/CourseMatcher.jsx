@@ -37,6 +37,7 @@ class CourseMatcher extends Component {
       disabled: true,
       text: "After uploading your files, click Submit and press one of the buttons to the left of this box. The information you need will be displayed here."
     },
+    activeTab: "tab-1",
 
     modalDisplay: false,
     modalHeader: "",
@@ -65,9 +66,7 @@ class CourseMatcher extends Component {
     let newCourses = this.state.courses;
     newCourses.splice(currentRow.rowIndex, 1);
     this.updatePlaceholder();
-    this.setState(prevState => ({
-      courses: newCourses,
-    }));
+    this.setState({ courses: newCourses });
     this.nextButton(2);
     currentRow.remove();
   }
@@ -100,10 +99,10 @@ class CourseMatcher extends Component {
     reader.onerror = function () {
       console.log(reader.error);
     };
-    this.setState(prevState => ({
+    this.setState({
       courseFiles: newCourses,
       userErrorMessage: ""
-    }));
+    });
     this.nextButton(0);
   }
 
@@ -114,12 +113,14 @@ class CourseMatcher extends Component {
       this.saveCookies(this.state.courses[0].key, this.state.courses[0].courseList, this.state.courses[0].classTimes);
       let newUserCourses = this.state.courses[0].courseList.map(e => " " + e);
       this.setState({ userCourses: String(newUserCourses) });
+      this.generateTooltips();
       this.nextButton(1);
     }
   }
 
   handleSubmit = () => {
     if (this.isTableValid()) {
+      this.generateTooltips();
       this.nextButton(3);
     }
   }
@@ -138,7 +139,7 @@ class CourseMatcher extends Component {
     let newCourses = this.state.courses;
 
     //Read courses one by one
-    let extractedCourses = splitFiles[0].filter(e => e.includes("SUMMARY"))
+    let extractedCourses = currentTermFiles.filter(e => e.includes("SUMMARY"))
       .filter((v, i, a) => a.indexOf(v) === i)
       .map(e => e.substring(8, 20));
 
@@ -169,14 +170,15 @@ class CourseMatcher extends Component {
   sliceCurrentTerm = (splitFile) => {
     let currentDate = new Date();
     let currentYear = currentDate.getFullYear();
-    let i = splitFile.findIndex(e => e.includes("DTSTAMP:"));
-    let j = splitFile.findIndex(e => e.includes((currentYear).toString()));
-    if (splitFile[i].includes(currentYear.toString())) {
-      this.setState({ term: "Winter" });
+    let i = splitFile.findIndex(e => e.includes("UNTIL=" + currentYear));
+    let j = splitFile.findIndex(e => e.includes("UNTIL=" + (currentYear + 1)));
+    console.log("index", i, "to", j);
+    if (i == -1) {
+      this.setState({ term: "Fall" });
       return splitFile.slice(i, j);
     } else {
-      this.setState({ term: "Fall" });
-      return splitFile.slice(j);
+      this.setState({ term: "Winter" });
+      return splitFile.slice(i);
     };
   }
 
@@ -256,7 +258,9 @@ class CourseMatcher extends Component {
             color: "outline-primary",
             text: "✓ " + this.state.courses[0].courseList.length + " loaded sections"
           },
-          shareQRCodeState: { disabled: false, color: "primary" }
+          shareQRCodeState: { disabled: false, color: "primary" },
+          pillsState: { disabled: this.state.pillsState.disabled, text: this.state.pillsState.text },
+          activeTab: "tab-1"
         });
         break;
       case 2:
@@ -271,7 +275,8 @@ class CourseMatcher extends Component {
           pillsState: {
             disabled: false,
             text: "Start course matching! Press one of the buttons on the left to get the information you need."
-          }
+          },
+          activeTab: "tab-1"
         });
         break;
       default: break;
@@ -282,11 +287,15 @@ class CourseMatcher extends Component {
 
   handleView = (view) => {
     switch (view) {
-      case "courses": this.displayOnTable("courses", this.findSameCourses());
+      case "courses":
+        this.displayOnTable("courses", this.findSameCourses());
+        this.setState({ activeTab: "tab-2" });
         break;
       case "sections": this.displayOnTable("sections", this.findSameSections());
+        this.setState({ activeTab: "tab-3" });
         break;
       case "meet": this.displayMeetBlocks(this.findMeetBlocks());
+        this.setState({ activeTab: "tab-4" });
       default: break;
     }
   }
@@ -425,7 +434,7 @@ class CourseMatcher extends Component {
       return;
     this.setState({
       modalDisplay: true,
-      modalHeader: this.state.userName + "'s Timetable QR Code",
+      modalHeader: this.state.userName + "'s " + this.state.term + " Timetable QR Code",
       qrCodeValue: JSON.stringify(this.state.courses[0])
     });
   }
@@ -607,14 +616,16 @@ class CourseMatcher extends Component {
 
   displayMeetBlocks = (courses) => {
     let friendsList = this.state.courses.map(e => e.key);
-    this.generateTooltips();
-    //display tooltips for who's not free
+    //this.generateTooltips();
+    //Display tooltips for who's not free
     for (let i = 0; i < courses.length; i++) {
       courses[i].classTimes.map(e => {
         this.addTooltip(e.tdId, friendsList, courses[i].key);
       })
     }
     this.generateMeetTable();
+
+    //Add shades to table
     this.removeShades();
     for (let i = 0; i < courses.length; i++) {
       courses[i].classTimes.map(e => {
@@ -819,7 +830,7 @@ class CourseMatcher extends Component {
         </div>
 
         <div id="view-table" className="fixed col-11 col-md-9 p-0 mx-auto">
-          <Tab.Container defaultActiveKey="tab-1">
+          <Tab.Container defaultActiveKey="tab-1" activeKey={this.state.activeTab}>
             <Row>
               <Col md={3} className="mb-3">
                 <Nav variant="pills" className="flex-column">
