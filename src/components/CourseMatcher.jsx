@@ -35,7 +35,7 @@ class CourseMatcher extends Component {
     timetablesSubmitState: { color: "outline-primary", text: "Submit" },
     pillsState: {
       disabled: true,
-      text: "After uploading your files, click Submit and press one of the buttons to the left of this box. The information you need will be displayed here."
+      text: "After uploading your files, click Submit and press one of the buttons under Info. The information you need will be displayed here."
     },
     activeTab: "tab-1",
 
@@ -274,7 +274,7 @@ class CourseMatcher extends Component {
           },
           pillsState: {
             disabled: false,
-            text: "Start course matching! Press one of the buttons on the left to get the information you need."
+            text: "Start course matching! Press one of the buttons under Info to get the information you need."
           },
           activeTab: "tab-1"
         });
@@ -377,8 +377,9 @@ class CourseMatcher extends Component {
   breakBlocks = (classTimes) => {
     let newClassTimes = [];
     for (let i = 0; i < classTimes.length; i++) {
+      let endTime = this.stringToDate(classTimes[i].rowEnd);
       for (let j = this.stringToDate(classTimes[i].rowStart);
-        j < this.stringToDate(classTimes[i].rowEnd);
+        j < endTime;
         j.setMinutes(j.getMinutes() + 30)) {
         let options = { hour: '2-digit', minute: '2-digit', hour12: false };
         let newTime = j.toLocaleTimeString([], options);
@@ -442,7 +443,7 @@ class CourseMatcher extends Component {
   handleScanQRCode = () => {
     this.setState({
       QRScannerWidth: "100%",
-      closeQRButton: <button type="button" class="btn-close" aria-label="Close" onClick={this.handleStopQR}
+      closeQRButton: <button type="button" class="btn-close-white" aria-label="Close" onClick={this.handleStopQR}
         style={{ position: 'absolute', top: 10, right: 10 }} />
     })
 
@@ -717,6 +718,9 @@ class CourseMatcher extends Component {
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
+          <div className="alert alert-warning alert-dismissible fade show" role="alert">
+            QR codes from the previous version (before January 16, 2023) will not work anymore. Please generate new ones with this version!
+          </div>
           <div className='col-md-5 p-0 mb-4'>
             <div className="card">
               <div className="card-body">
