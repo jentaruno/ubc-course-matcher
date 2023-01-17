@@ -4,10 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './custom.scss';
+import { CookiesProvider } from 'react-cookie';
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container); // createRoot(container!) if you use TypeScript
-root.render(<App tab="home" />);
+root.render(<CookiesProvider><App tab="home" /></CookiesProvider>);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
