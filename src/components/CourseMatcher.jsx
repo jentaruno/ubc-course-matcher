@@ -134,7 +134,7 @@ class CourseMatcher extends Component {
   }
 
   readCourses = () => {
-    let splitFiles = this.state.courseFiles.map(e => e.file.split('\n'));
+    let splitFiles = this.state.courseFiles.map(e => e.file.split('BEGIN:VEVENT'));
     let currentTermFiles = this.sliceCurrentTerm(splitFiles[0]);
     let newCourses = this.state.courses;
 
@@ -170,16 +170,23 @@ class CourseMatcher extends Component {
   sliceCurrentTerm = (splitFile) => {
     let currentDate = new Date();
     let currentYear = currentDate.getFullYear();
-    let i = splitFile.findIndex(e => e.includes("UNTIL=" + currentYear));
-    let j = splitFile.findIndex(e => e.includes("UNTIL=" + (currentYear + 1)));
-    console.log("index", i, "to", j);
-    if (i == -1) {
-      this.setState({ term: "Fall" });
-      return splitFile.slice(i, j);
-    } else {
+    let winter = splitFile.filter(e => e.includes("UNTIL=" + currentYear));
+    let fall = splitFile.filter(e => e.includes("UNTIL=" + (currentYear + 1)));
+    if (winter.length > 0) {
       this.setState({ term: "Winter" });
-      return splitFile.slice(i);
-    };
+      let winterCourses = [];
+      for (let i = 0; i < winter.length; i++) {
+        winter[i].split("\n").map(e => winterCourses.push(e));
+      }
+      return winterCourses;
+    } else {
+      this.setState({ term: "Fall" });
+      let fallCourses = [];
+      for (let i = 0; i < fall.length; i++) {
+        fall[i].split("\n").map(e => fallCourses.push(e));
+      }
+      return fallCourses;
+    }
   }
 
   dayToNum = (s) => {
