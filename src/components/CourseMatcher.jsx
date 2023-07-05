@@ -725,9 +725,6 @@ class CourseMatcher extends Component {
     return (
       <div className="App">
         <div className="row m-4 justify-content-around">
-          <div className="alert alert-warning alert-dismissible fade show" role="alert">
-            QR codes from the previous version (before January 16, 2023) will not work anymore. Please generate new ones with this version!
-          </div>
           <div className='col-md-5 p-0 mb-4'>
             <div className="card">
               <div className="card-body">
