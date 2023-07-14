@@ -13,24 +13,40 @@ import Friends from "./pages/Friends";
 import Match from "./pages/Match";
 import Meet from "./pages/Meet";
 import {Box} from "@mui/material";
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+
+export const theme = createTheme({
+    palette: {
+        mode: 'light',
+        primary: {
+            main: '#002145',
+        },
+        secondary: {
+            main: '#D29A15',
+        },
+        divider: '#E2E3E5',
+    },
+});
 
 export default function App() {
     return (
         <Router>
-            <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
-                <Header/>
-                <Box sx={{p: '1rem', flexGrow: 1}}>
-                    <Routes>
-                        <Route path="/" element={<CourseMatcher/>}/>
-                        <Route path="/profile" element={<Profile/>}/>
-                        <Route path="/friends" element={<Friends/>}/>
-                        <Route path="/match" element={<Match/>}/>
-                        <Route path="/meet" element={<Meet/>}/>
-                        <Route path="/your-classes" element={<YourClasses/>}/>
-                    </Routes>
+            <ThemeProvider theme={theme}>
+                <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
+                    <Header/>
+                    <Box sx={{p: '1rem', flexGrow: 1}}>
+                        <Routes>
+                            <Route path="/" element={<CourseMatcher/>}/>
+                            <Route path="/profile" element={<Profile/>}/>
+                            <Route path="/friends" element={<Friends/>}/>
+                            <Route path="/match" element={<Match/>}/>
+                            <Route path="/meet" element={<Meet/>}/>
+                            <Route path="/your-classes" element={<YourClasses/>}/>
+                        </Routes>
+                    </Box>
+                    <BottomNav/>
                 </Box>
-                <BottomNav/>
-            </Box>
+            </ThemeProvider>
         </Router>
     );
 }
