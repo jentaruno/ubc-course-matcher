@@ -1,19 +1,24 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
+import {Box} from "@mui/material";
 
 class Header extends Component {
     state = {}
+
     render() {
         return (
-            <div className="container-fluid bg-light px-5 py-2 mb-4 border-bottom">
-                <nav className="navbar navbar-light bg-light justify-content-between">
-                    <div className="mt-1 mb-1">
-                        <h3 className='mb-0'>UBC Course Matcher</h3>
-                        <span className='small text-muted'>Skip the tedious timetable talk and quickly get to sit with your friends!</span>
-                    </div>
-                </nav>
-
-
-            </div>
+            <Box
+                sx={{
+                    px: '1rem',
+                    py: '0.5rem',
+                    position: 'sticky',
+                    top: 0,
+                    borderBottom: '1px solid #f5f5f5'
+                }}
+            >
+                <h3 className='mb-0'>
+                    🙌 UBC Course Matcher
+                </h3>
+            </Box>
         );
     }
 }
