@@ -6,36 +6,37 @@ $gradient: linear-gradient(90deg, rgba(white, 0.8), rgba(white, 0));
 @import "../node_modules/bootstrap/scss/bootstrap";
 
 @font-face {
-    font-family: 'Satoshi';
-    font-style: normal;
-    font-weight: normal;
-    src: url(./fonts/Satoshi-Regular.otf) format('opentype');
+  font-family: 'Satoshi';
+  font-style: normal;
+  font-weight: normal;
+  src: url(./fonts/Satoshi-Regular.otf) format('opentype');
 }
 
 @font-face {
-    font-family: 'Satoshi';
-    font-style: normal;
-    font-weight: bold;
-    src: url(./fonts/Satoshi-Bold.otf) format('opentype')
+  font-family: 'Satoshi';
+  font-style: normal;
+  font-weight: bold;
+  src: url(./fonts/Satoshi-Bold.otf) format('opentype')
 }
 
 @font-face {
-    font-family: 'Satoshi';
-    font-style: italic;
-    font-weight: normal;
-    src: url(./fonts/Satoshi-Italic.otf) format('opentype');
+  font-family: 'Satoshi';
+  font-style: italic;
+  font-weight: normal;
+  src: url(./fonts/Satoshi-Italic.otf) format('opentype');
 }
 
 @font-face {
-    font-family: 'Satoshi';
-    font-style: italic;
-    font-weight: bold;
-    src: url(./fonts/Satoshi-BoldItalic.otf) format('opentype');
+  font-family: 'Satoshi';
+  font-style: italic;
+  font-weight: bold;
+  src: url(./fonts/Satoshi-BoldItalic.otf) format('opentype');
 }
 
 // Then add additional custom code here
 body {
-    font-family: 'Satoshi', sans-serif;
+  font-family: 'Satoshi', sans-serif;
+  font-size: large;
 }
 
 h1,
@@ -43,5 +44,5 @@ h2,
 h3,
 h4,
 h5 {
-    font-weight: bold;
+  font-weight: bold;
 }
