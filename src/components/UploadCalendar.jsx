@@ -1,12 +1,11 @@
 import {Button, Stack} from "@mui/material";
 import React, {useState} from "react";
 
-export function CalendarFileTab(
+export function UploadCalendar(
     {
         setTerm,
         userName,
-        courses,
-        setCourses,
+        handleUpdate,
     }
 ) {
     const [courseFiles, setCourseFiles] = useState([]);
@@ -29,13 +28,12 @@ export function CalendarFileTab(
     function handleSubmitFile() {
         const newCourses = readCourses();
         //saveCookies(courses[0].key, courses[0].courseList, courses[0].classTimes);
-        setCourses(newCourses);
+        handleUpdate(newCourses);
     }
 
     function readCourses() {
         let splitFiles = courseFiles.map(e => e.file.split('BEGIN:VEVENT'));
         let currentTermFiles = sliceCurrentTerm(splitFiles[0]);
-        let newCourses = courses;
 
         //Read courses one by one
         let extractedCourses = currentTermFiles.filter(e => e.includes("SUMMARY"))
@@ -54,14 +52,12 @@ export function CalendarFileTab(
             e + extractedClassStartTimes[i].toString() + "-" + extractedClassEndTimes[i].toString())
             .filter((v, i, a) => a.indexOf(v) === i);
 
-        newCourses[0] = {
-            key: userName,
+        //Change state of courses data
+        return {
+            name: userName,
             courseList: extractedCourses,
             classTimes: extractedClassTimes
-        }
-
-        //Change state of courses data
-        return newCourses;
+        };
     }
 
     function sliceCurrentTerm(splitFile) {

@@ -6,27 +6,21 @@ import {Divider, Stack} from "@mui/material";
 export default function LoadedCourses({courses}) {
     return (
         <Stack
+            sx={{height: '100%', overflowY: 'scroll'}}
             direction={'column'}
             spacing={1}
-            overflowY={'scroll'}
+            divider={<Divider orientation="horizontal" flexItem/>}
         >
-            <h2>Loaded sections</h2>
-            <Stack
-                direction={'column'}
-                spacing={1}
-                divider={<Divider orientation="horizontal" flexItem/>}
-            >
-                {courses[0]?.courseList && courses[0].courseList.length > 0
-                    ? courses[0].courseList.map((course) =>
-                        <CourseBlock
-                            course={course}
-                            location={"Earth & Sciences Building"}
-                            days={"Mon Wed Fri"}
-                            time={"11.00-12.00"}
-                        />
-                    )
-                    : <p>No courses loaded</p>}
-            </Stack>
+            {courses && courses?.length > 0
+                ? courses.map((course) =>
+                    <CourseBlock
+                        course={course}
+                        location={"Earth & Sciences Building"}
+                        days={"Mon Wed Fri"}
+                        time={"11.00-12.00"}
+                    />
+                )
+                : <p>No courses loaded</p>}
         </Stack>
     )
 }
