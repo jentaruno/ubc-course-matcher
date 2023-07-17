@@ -2,14 +2,11 @@ import {Box, Stack, Tab, Tabs} from "@mui/material";
 import React, {useState} from "react";
 import {CalendarFileTab} from "../components/profile/CalendarFileTab";
 import TypeManuallyTab from "../components/profile/TypeManuallyTab";
-import {ShareQRButton} from "../components/profile/ShareQRButton";
 import LoadedCourses from "../components/profile/LoadedCourses";
 
 const YourClasses = () => {
     const [value, setValue] = useState(0);
     const userName = "User";
-    const [userCourses, setUserCourses] = useState("");
-    const [courseFiles, setCourseFiles] = useState([]);
     const [courses, setCourses] = useState([]);
     const [term, setTerm] = useState("Winter");
 
@@ -32,10 +29,6 @@ const YourClasses = () => {
                     ? <CalendarFileTab
                         setTerm={setTerm}
                         userName={userName}
-                        userCourses={userCourses}
-                        setUserCourses={setUserCourses}
-                        courseFiles={courseFiles}
-                        setCourseFiles={setCourseFiles}
                         courses={courses}
                         setCourses={setCourses}
                     />
@@ -44,10 +37,6 @@ const YourClasses = () => {
                     />}
                 <LoadedCourses
                     courses={courses}
-                    setCourses={setCourses}
-                />
-                <ShareQRButton
-                    onShare={shareQRCode}
                 />
             </Stack>
         </Box>

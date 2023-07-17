@@ -8,6 +8,8 @@ class Header extends Component {
         return (
             <Box
                 sx={{
+                    zIndex: 50,
+                    background: 'white',
                     px: '1rem',
                     py: '0.5rem',
                     position: 'sticky',
