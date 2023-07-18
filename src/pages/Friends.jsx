@@ -7,8 +7,8 @@ const Friends = () => {
     const [friends, setFriends] = useState([]);
 
     function handleDelete(index) {
-        let newFriends = friends;
-        newFriends.splice(index, 1);
+        const newFriends = [...friends];
+        newFriends.splice(index, 1)
         setFriends(newFriends);
     }
 

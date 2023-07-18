@@ -18,7 +18,7 @@ export function AddFriendButton({friends, setFriends}) {
 
     return (
         <Box>
-            <Fab sx={{position: "fixed", right: "1rem", bottom: "5rem"}}
+            <Fab sx={{position: "fixed", right: "2rem", bottom: "5rem"}}
                  onClick={handleClick}
                  size="large"
                  color="secondary"

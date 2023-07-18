@@ -1,6 +1,8 @@
-import {Box, Modal, Stack, TextField} from "@mui/material";
-import {useState} from "react";
+import {Box, Button, IconButton, Modal, Stack, TextField} from "@mui/material";
+import React, {useState} from "react";
 import {UploadCalendar} from "../UploadCalendar";
+import LoadedCourses from "../profile/LoadedCourses";
+import {Close} from "@mui/icons-material";
 
 export default function CalendarFileModal(
     {
@@ -18,16 +20,24 @@ export default function CalendarFileModal(
         bgcolor: 'background.paper',
         borderRadius: '1rem',
         boxShadow: 12,
-        p: 4,
+        p: 2,
     };
 
-    const [friendName, setFriendName] = useState("Friend");
+    const [friendName, setFriendName] = useState("");
     const [term, setTerm] = useState("Winter");
+    const [previewCourses, setPreviewCourses] = useState({});
 
-    function handleUpdateCourses(courses) {
-        let newCourses = friends;
-        newCourses.push(courses);
-        setFriends(newCourses);
+    function handleUpdateCourses() {
+        if (friendName.trim() !== "" && Object.keys(previewCourses).length > 0) {
+            const newCourses = [...friends];
+            const newCourse = previewCourses;
+            newCourse.name = friendName;
+            newCourses.push(newCourse);
+            setFriends(newCourses);
+            setFriendName("");
+            setPreviewCourses({});
+            handleClose();
+        }
     }
 
     return (
@@ -39,7 +49,15 @@ export default function CalendarFileModal(
         >
             <Box sx={style}>
                 <Stack spacing={2}>
-                    <h2>Add Friend's Calendar</h2>
+                    <Stack direction={'row'} justifyContent={'space-between'}>
+                        <h2>Add Friend's Calendar</h2>
+                        <IconButton
+                            aria-label={'close'}
+                            onClick={handleClose}
+                        >
+                            <Close/>
+                        </IconButton>
+                    </Stack>
                     <TextField
                         required
                         id="outlined-required"
@@ -50,8 +68,20 @@ export default function CalendarFileModal(
                         setTerm={setTerm}
                         userName={friendName}
                         courses={friends}
-                        handleUpdate={handleUpdateCourses}
+                        handleUpdate={setPreviewCourses}
                     />
+                    <h2>Preview</h2>
+                    <Box sx={{height: '30vh'}}>
+                        <LoadedCourses
+                            courses={previewCourses.courseList}
+                        />
+                    </Box>
+                    <Button
+                        variant={'contained'}
+                        onClick={handleUpdateCourses}
+                    >
+                        Add Friend
+                    </Button>
                 </Stack>
             </Box>
         </Modal>

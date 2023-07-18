@@ -57,11 +57,7 @@ export default function FriendBlock(
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box
-                    // component="form"
-                    sx={style}
-                    // autoComplete="off"
-                >
+                <Box sx={style}>
                     <Stack
                         direction={'column'}
                         spacing={1}

@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 
 export default function BottomNav() {
 
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState(2);
     const navigate = useNavigate();
 
     return (
