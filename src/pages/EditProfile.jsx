@@ -1,8 +1,7 @@
 import {Button, InputLabel, Link, MenuItem, Select, Stack, TextField} from "@mui/material";
-import React, {Suspense, useEffect, useState} from "react";
+import React, {useState} from "react";
 import {ArrowBack} from "@mui/icons-material";
-import axios from "axios";
-import * as cheerio from "cheerio";
+import useDegrees from "../data/useDegrees";
 
 export default function EditProfile() {
     // TODO: load name year level degree major from database
@@ -15,32 +14,7 @@ export default function EditProfile() {
         degree: '',
         major: '',
     });
-    const [degreesData, setDegreesData] = useState([]);
-    useEffect(() => {
-        async function scrapeDegrees() {
-            const url = "https://courses.students.ubc.ca/cs/courseschedule?pname=spec&tname=spec";
-            const config = {
-                headers: {
-                    // 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36',
-                    'Accept-Language': 'en-US,en;q=0.9,ja-JP;q=0.8,ja;q=0.7'
-                }
-
-            }
-            try {
-                console.log('select')
-                const response = await axios.get(url, config);
-                const $ = cheerio.load(response.data);
-                const listDegrees = $(".plainlist ul li");
-                console.log(listDegrees);
-                //const degrees = ["BA", "BSc"];
-                setDegreesData(listDegrees);
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-        scrapeDegrees();
-    }, []);
+    const degrees = useDegrees();
 
     function handleChange(event) {
         const {name, value} = event.target;
@@ -96,19 +70,27 @@ export default function EditProfile() {
             <InputLabel id="degree" required>
                 Degree
             </InputLabel>
-            <Suspense fallback={<p>Loading...</p>}>
-                <Select
-                    name="degree"
-                    value={formData.degree}
-                    onChange={handleChange}
-                    variant="outlined"
-                    required
-                >
-                    {degreesData.length > 0 && degreesData.map((e, i) =>
-                        <MenuItem key={`degrees-${i}`} value={e}>{e}</MenuItem>
-                    )}
-                </Select>
-            </Suspense>
+            {degrees
+                ? degrees.length === 0
+                    ? <p>Loading...</p>
+                    : <Select
+                        name="degree"
+                        value={formData.degree}
+                        onChange={handleChange}
+                        variant="outlined"
+                        required
+                    >
+                        {degrees.map((degree, i) =>
+                            <MenuItem
+                                key={`degree-${i}`}
+                                value={degree}
+                            >
+                                {degree}
+                            </MenuItem>
+                        )}
+                    </Select>
+                : <p className={'text-danger'}>Error fetching data</p>
+            }
             <InputLabel id="major" required>
                 Major
             </InputLabel>

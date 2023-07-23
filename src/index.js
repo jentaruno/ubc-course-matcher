@@ -16,7 +16,7 @@ import {Box} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import Login from "./components/login/login";
-import useToken from "./components/login/useToken";
+import useToken from "./data/useToken";
 
 export const theme = createTheme({
     palette: {
