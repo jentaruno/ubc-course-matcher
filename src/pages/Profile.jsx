@@ -20,7 +20,7 @@ const Profile = () => {
                 <span>Computer Science</span>
             </Stack>
         </Stack>
-        <Link href={'/your-classes'} underline={'none'}>
+        <Link href={'/profile/your-classes'} underline={'none'}>
             <Card>
                 <CardContent>
                     <Grid
@@ -64,7 +64,9 @@ const Profile = () => {
             </CardContent>
         </Card>
 
-        <p><Edit/> Edit your profile</p>
+        <Link href={'/profile/edit'} underline={'none'}>
+            <p><Edit/> Edit your profile</p>
+        </Link>
         <p><Logout/> Log out</p>
     </Stack>;
 }

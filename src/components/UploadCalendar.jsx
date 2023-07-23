@@ -10,6 +10,8 @@ export function UploadCalendar(
 ) {
     const [courseFiles, setCourseFiles] = useState([]);
 
+    // TODO: handle error reading file
+
     function handleUpload(e) {
         let file = e.target.files[0];
         let newCourses = [];

@@ -22,6 +22,8 @@ export default function FriendBlock(
         p: 2,
     };
 
+    // TODO: whole card tappable
+    
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);

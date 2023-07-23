@@ -14,6 +14,9 @@ import Match from "./pages/Match";
 import Meet from "./pages/Meet";
 import {Box} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
+import EditProfile from "./pages/EditProfile";
+import Login from "./components/login/login";
+import useToken from "./components/login/useToken";
 
 export const theme = createTheme({
     palette: {
@@ -29,23 +32,28 @@ export const theme = createTheme({
 });
 
 export default function App() {
+    const {token, setToken} = useToken();
+
     return (
         <Router>
             <ThemeProvider theme={theme}>
-                <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
-                    <Header/>
-                    <Box sx={{p: '1rem', flexGrow: 1}}>
-                        <Routes>
-                            <Route path="/" element={<CourseMatcher/>}/>
-                            <Route path="/profile" element={<Profile/>}/>
-                            <Route path="/friends" element={<Friends/>}/>
-                            <Route path="/match" element={<Match/>}/>
-                            <Route path="/meet" element={<Meet/>}/>
-                            <Route path="/your-classes" element={<YourClasses/>}/>
-                        </Routes>
+                {token
+                    ? <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
+                        <Header/>
+                        <Box sx={{p: '1rem', flexGrow: 1}}>
+                            <Routes>
+                                <Route path="/" element={<CourseMatcher/>}/>
+                                <Route path="/profile" element={<Profile/>}/>
+                                <Route path="/profile/your-classes" element={<YourClasses/>}/>
+                                <Route path="/profile/edit" element={<EditProfile/>}/>
+                                <Route path="/friends" element={<Friends/>}/>
+                                <Route path="/match" element={<Match/>}/>
+                                <Route path="/meet" element={<Meet/>}/>
+                            </Routes>
+                        </Box>
+                        <BottomNav/>
                     </Box>
-                    <BottomNav/>
-                </Box>
+                    : <Login setToken={setToken}/>}
             </ThemeProvider>
         </Router>
     );

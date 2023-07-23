@@ -15,6 +15,14 @@ export function AddFriendButton({friends, setFriends}) {
     const handleOpenCalendarFile = () => setOpenCalendarFile(true);
     const handleCloseCalendarFile = () => setOpenCalendarFile(false);
 
+    const [openQrCode, setOpenQrCode] = useState(false);
+    const handleOpenQrCode = () => setOpenQrCode(true);
+    const handleCloseQrCode = () => setOpenQrCode(false);
+
+    const [openTypeManually, setOpenTypeManually] = useState(false);
+    const handleOpenTypeManually = () => setOpenTypeManually(true);
+    const handleCloseTypeManually = () => setOpenTypeManually(false);
+
 
     return (
         <Box>
@@ -45,13 +53,13 @@ export function AddFriendButton({friends, setFriends}) {
                     spacing={1}
                     divider={<Divider orientation={'horizontal'} flexItem/>}
                 >
-                    <Link underline={'none'}>
+                    <Link onClick={handleOpenQrCode} underline={'none'}>
                         <QrCode/> QR code
                     </Link>
                     <Link onClick={handleOpenCalendarFile} underline={'none'}>
                         <CalendarMonth/> Calendar file
                     </Link>
-                    <Link underline={'none'}>
+                    <Link onClick={handleOpenTypeManually} underline={'none'}>
                         <Title/> Type manually
                     </Link>
                 </Stack>
