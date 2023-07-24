@@ -10,7 +10,7 @@ export default function BottomNav() {
 
     return (
         <Box
-            style={{position: 'sticky', bottom: 0, borderTop: '1px solid #f5f5f5'}}
+            style={{position: 'sticky', bottom: 0, borderTop: '1px solid #e0e0e0'}}
         >
             <BottomNavigation
                 value={value}

@@ -14,7 +14,8 @@ class Header extends Component {
                     py: '0.5rem',
                     position: 'sticky',
                     top: 0,
-                    borderBottom: '1px solid #f5f5f5'
+                    textAlign: 'center',
+                    borderBottom: '1px solid #e0e0e0'
                 }}
             >
                 <h3 className='mb-0'>

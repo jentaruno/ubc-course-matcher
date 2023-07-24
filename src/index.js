@@ -12,7 +12,7 @@ import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import Match from "./pages/Match";
 import Meet from "./pages/Meet";
-import {Box} from "@mui/material";
+import {Box, Container} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import Login from "./components/login/login";
@@ -40,7 +40,7 @@ export default function App() {
                 {token
                     ? <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
                         <Header/>
-                        <Box sx={{p: '1rem', flexGrow: 1}}>
+                        <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
                             <Routes>
                                 <Route path="/" element={<CourseMatcher/>}/>
                                 <Route path="/profile" element={<Profile/>}/>
@@ -50,7 +50,7 @@ export default function App() {
                                 <Route path="/match" element={<Match/>}/>
                                 <Route path="/meet" element={<Meet/>}/>
                             </Routes>
-                        </Box>
+                        </Container>
                         <BottomNav/>
                     </Box>
                     : <Login setToken={setToken}/>}
