@@ -10,6 +10,7 @@ const YourClasses = () => {
     const userName = "User";
     // TODO: user name is loaded from login page
     // TODO: option to go back with saving / without saving
+    // TODO: detect term from SSC?
     const [courses, setCourses] = useState([]);
     const [term, setTerm] = useState("Winter");
 

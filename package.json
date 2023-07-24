@@ -17,7 +17,6 @@
     "cheerio": "^1.0.0-rc.12",
     "exports-loader": "^4.0.0",
     "gh-pages": "^4.0.0",
-    "pretty": "^2.0.0",
     "qr-scanner": "^1.4.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
