@@ -32,7 +32,7 @@ export default function EditProfile() {
         <Stack spacing={1} component={'form'}>
             <h1>
                 <Link
-                    href={'profile'}
+                    href={'/profile'}
                     underline={'none'}
                 >
                     <ArrowBack/>

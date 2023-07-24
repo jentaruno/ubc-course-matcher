@@ -17,7 +17,7 @@ const YourClasses = () => {
         <Box>
             <h1>
                 <Link
-                    href={'profile'}
+                    href={'/profile'}
                     underline={'none'}
                 >
                     <ArrowBack/>
