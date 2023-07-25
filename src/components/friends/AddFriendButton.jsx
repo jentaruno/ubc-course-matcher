@@ -2,6 +2,7 @@ import {Box, Divider, Fab, Link, Popover, Stack} from "@mui/material";
 import {Add, CalendarMonth, QrCode, Title} from "@mui/icons-material";
 import React, {useState} from "react";
 import CalendarFileModal from "./CalendarFileModal";
+import TypeManuallyModal from "./TypeManuallyModal";
 
 export function AddFriendButton({friends, setFriends}) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -71,6 +72,15 @@ export function AddFriendButton({friends, setFriends}) {
                 open={openCalendarFile}
                 handleClose={handleCloseCalendarFile}
             />
+
+            <TypeManuallyModal
+                friends={friends}
+                setFriends={setFriends}
+                open={openTypeManually}
+                handleClose={handleCloseTypeManually}
+            />
+
+
         </Box>
     );
 }
