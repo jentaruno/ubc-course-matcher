@@ -9,6 +9,10 @@ const SSC_LINKS = {
     subjects: 'https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea',
     courseNumbers: 'https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-department&dept=',
     sections: {
+        link: 'https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-course',
+        queries: ['&dept=', '&course='],
+    },
+    sectionInfo: {
         link: 'https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-section',
         queries: ['&dept=', '&course=', '&section='],
     }

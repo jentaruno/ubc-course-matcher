@@ -13,13 +13,13 @@ router.get('/:section', async (req, res) => {
         const section = req.params.section;
         const queryArray = section.split("-");
 
-        if (queryArray.length !== SSC_LINKS.sections.queries.length) {
+        if (queryArray.length !== SSC_LINKS.sectionInfo.queries.length) {
             throw new Error('Invalid section.');
         }
 
-        let queryURL = SSC_LINKS.sections.link;
-        for (let i = 0; i < SSC_LINKS.sections.queries.length; i++) {
-            queryURL += SSC_LINKS.sections.queries[i] + queryArray[i];
+        let queryURL = SSC_LINKS.sectionInfo.link;
+        for (let i = 0; i < SSC_LINKS.sectionInfo.queries.length; i++) {
+            queryURL += SSC_LINKS.sectionInfo.queries[i] + queryArray[i];
         }
 
         const response = await axios.get(queryURL, HEADERS);
