@@ -10,11 +10,33 @@ const sectionInfoRouter = require('./routes/sectionInfo');
 
 app.use(cors());
 
-app.use('/api/degrees', degreesRouter);
-app.use('/api/subjects', subjectsRouter);
-app.use('/api/course-numbers', courseNumbersRouter);
-app.use('/api/sections', sectionsRouter);
-app.use('/api/section-info', sectionInfoRouter);
+const API_LINKS = {
+    degrees: {
+        link: '/degrees',
+        router: degreesRouter
+    },
+    subjects: {
+        link: '/subjects',
+        router: subjectsRouter
+    },
+    courseNumbers: {
+        link: '/course-numbers',
+        router: courseNumbersRouter
+    },
+    sections: {
+        link: '/sections',
+        router: sectionsRouter
+    },
+    sectionInfo: {
+        link: '/section-info',
+        router: sectionInfoRouter
+    },
+}
+
+Object.keys(API_LINKS).forEach(routeName => {
+    const {link, router} = API_LINKS[routeName];
+    app.use('/api' + link, router);
+});
 app.use('/login', (req, res) => {
     res.send({
         token: 'test123'
