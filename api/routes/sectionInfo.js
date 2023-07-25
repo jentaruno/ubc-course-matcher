@@ -3,9 +3,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const router = express.Router();
 
-// Import the constants from the config file
 const {HEADERS, SSC_LINKS} = require('../config');
-
 router.get('/:section', async (req, res) => {
     // TODO: check if section exist
     // TODO: check if no longer offered
