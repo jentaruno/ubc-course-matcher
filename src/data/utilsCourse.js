@@ -41,3 +41,12 @@ export function getCalTimes(classTimes) {
         return "";
     }
 }
+
+// Takes a user's courses array and returns class times (array of strings)
+export function getAllClassTimes(courses) {
+    let classTimes = [];
+    courses.map(e => {
+        classTimes = classTimes.concat(e.classTimes)
+    });
+    return classTimes;
+}
