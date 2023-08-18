@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 
-function useLocalUser(key) {
+function useLocalStorage(key) {
     const [value, setValue] = useState(() => {
         const storedValue = localStorage.getItem(key);
         return storedValue
@@ -23,4 +23,4 @@ function useLocalUser(key) {
     return [value, updateValue];
 }
 
-export default useLocalUser;
+export default useLocalStorage;

@@ -4,14 +4,14 @@ import {UploadCalendar} from "../components/UploadCalendar";
 import TypeManuallyTab from "../components/profile/TypeManuallyTab";
 import LoadedCourses from "../components/profile/LoadedCourses";
 import {ArrowBack} from "@mui/icons-material";
-import useLocalUser from "../data/useLocalUser";
+import useLocalStorage from "../data/useLocalStorage";
 
 const YourClasses = () => {
-    const [value, setValue] = useState(0);
+    const [tab, setTab] = useState(0);
     // TODO: user name is loaded from login page
     // TODO: option to go back with saving / without saving
     // TODO: detect term from SSC?
-    const [courses, setCourses] = useLocalUser("user");
+    const [userData, setUserData] = useLocalStorage("user");
     const [term, setTerm] = useState("Winter");
 
     return (
@@ -27,20 +27,20 @@ const YourClasses = () => {
             </h1>
             <Stack spacing={3}>
                 <Tabs
-                    value={value}
-                    onChange={(event, val) => setValue(val)}
+                    value={tab}
+                    onChange={(event, val) => setTab(val)}
                     aria-label={'input-type'}>
                     <Tab label="Calendar file" value={0}/>
                     <Tab label="Type manually" value={1}/>
                 </Tabs>
-                {value === 0
+                {tab === 0
                     ? <UploadCalendar
                         setTerm={setTerm}
-                        courses={courses}
-                        handleUpdate={setCourses}
+                        courses={userData}
+                        handleUpdate={setUserData}
                     />
                     : <TypeManuallyTab
-                        courses={courses}
+                        courses={userData}
                     />}
                 <Stack
                     direction={'column'}
@@ -48,17 +48,17 @@ const YourClasses = () => {
                     overflowY={'scroll'}
                 >
                     <h2>Loaded sections</h2>
-                    {courses && courses.courseList &&
+                    {userData && userData.courseList &&
                         <div>
                             <p>
-                                {courses.courseList.length
+                                {userData.courseList.length
                                     + " "
                                     + term
                                     + " sections"
                                 }
                             </p>
                             <LoadedCourses
-                                courses={courses.courseList}
+                                courses={userData.courseList}
                             />
                         </div>
                     }

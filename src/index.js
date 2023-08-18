@@ -22,11 +22,12 @@ export const theme = createTheme({
         mode: 'light',
         primary: {
             main: '#002145',
+            light: '#6B778A'
         },
         secondary: {
             main: '#D29A15',
         },
-        divider: '#E2E3E5',
+        divider: '#AAAAAA',
     },
 });
 

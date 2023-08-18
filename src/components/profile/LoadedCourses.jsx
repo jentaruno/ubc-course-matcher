@@ -9,7 +9,11 @@ export default function LoadedCourses({courses}) {
             sx={{height: '100%', overflowY: 'scroll'}}
             direction={'column'}
             spacing={1}
-            divider={<Divider orientation="horizontal" flexItem/>}
+            divider={<Divider
+                variant={'fullWidth'}
+                orientation="horizontal"
+                flexItem
+            />}
         >
             {courses && courses?.length > 0
                 ? courses.map((course) =>

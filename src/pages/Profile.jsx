@@ -1,9 +1,9 @@
 import {Card, CardContent, Grid, Link, Stack} from "@mui/material";
 import {ArrowForwardIos, Book, Edit, Logout, QrCode} from "@mui/icons-material";
-import useLocalUser from "../data/useLocalUser";
+import useLocalStorage from "../data/useLocalStorage";
 
 const Profile = () => {
-    const [userData, setUserData] = useLocalUser("user");
+    const [userData, setUserData] = useLocalStorage("user");
     // TODO: replace user, img, major, term with whatever user uploaded as profpic
     return <Stack spacing={3}>
         <Stack

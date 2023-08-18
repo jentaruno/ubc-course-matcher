@@ -2,13 +2,13 @@ import {Button, InputLabel, Link, MenuItem, Select, Stack, TextField} from "@mui
 import React, {useState} from "react";
 import {ArrowBack} from "@mui/icons-material";
 import useDegrees from "../data/useDegrees";
-import useLocalUser from "../data/useLocalUser";
+import useLocalStorage from "../data/useLocalStorage";
 
 export default function EditProfile() {
     // TODO: default profpic
     // TODO: implem ID
 
-    const [userData, setUserData] = useLocalUser("user");
+    const [userData, setUserData] = useLocalStorage("user");
     const [formData, setFormData] = useState(userData ?? {
         name: 'UBC Student',
         yearLevel: 1,

@@ -1,6 +1,9 @@
+import React from "react";
+
 const Meet = () => {
+
     return <div>
-        <h1>Your Classes</h1>
+        <h1>When to Meet</h1>
     </div>;
 }
 

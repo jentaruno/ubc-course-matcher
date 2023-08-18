@@ -1,11 +1,11 @@
 import {Stack} from "@mui/material";
 import FriendBlock from "../components/friends/FriendBlock";
 import {AddFriendButton} from "../components/friends/AddFriendButton";
-import useLocalUser from "../data/useLocalUser";
+import useLocalStorage from "../data/useLocalStorage";
 import {useState} from "react";
 
 const Friends = () => {
-    const [userData, setUserData] = useLocalUser("user");
+    const [userData, setUserData] = useLocalStorage("user");
     const [friends, setFriends] = useState(userData.friends);
 
     const handleAddFriend = (friend) => {
