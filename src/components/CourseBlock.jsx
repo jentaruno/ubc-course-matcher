@@ -10,24 +10,28 @@ export default function CourseBlock(
         friends,
     }
 ) {
+    function convertDay(day) {
+        switch (day) {
+            case "MO":
+                return "Mon";
+            case "TU":
+                return "Tue";
+            case "WE":
+                return "Wed";
+            case "TH":
+                return "Thu";
+            case "FR":
+                return "Fri";
+            default:
+                return "";
+        }
+    }
+
     const theme = useTheme();
     // TODO: days and times
     return (
         <Box sx={{p: '2px'}}>
             <Grid container spacing={0}>
-                {friends &&
-                    <Grid
-                        item
-                        xs={12}
-                        overflow={'hidden'}
-                        mb={1}
-                    >
-                        <Stack direction={'row'} spacing={1}>
-                            <PeopleAlt/>
-                            <span>{friends}</span>
-                        </Stack>
-                    </Grid>
-                }
                 <Grid item xs={8} overflow={'hidden'}>
                     <b>{course}</b>
                 </Grid>
@@ -59,6 +63,19 @@ export default function CourseBlock(
                 >
                     <small>{time ?? ""}</small>
                 </Grid>
+                {friends &&
+                    <Grid
+                        item
+                        xs={12}
+                        overflow={'hidden'}
+                        // mt={1}
+                    >
+                        <Stack direction={'row'} spacing={1}>
+                            <PeopleAlt/>
+                            <span>{friends}</span>
+                        </Stack>
+                    </Grid>
+                }
             </Grid>
         </Box>
     )
