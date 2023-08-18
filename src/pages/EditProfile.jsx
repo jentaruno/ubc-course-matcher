@@ -2,18 +2,14 @@ import {Button, InputLabel, Link, MenuItem, Select, Stack, TextField} from "@mui
 import React, {useState} from "react";
 import {ArrowBack} from "@mui/icons-material";
 import useDegrees from "../data/useDegrees";
+import useLocalUser from "../data/useLocalUser";
 
 export default function EditProfile() {
-    // TODO: load name year level degree major from database
     // TODO: default profpic
     // TODO: implem ID
 
-    const [formData, setFormData] = useState({
-        name: '',
-        yearLevel: 1,
-        degree: '',
-        major: '',
-    });
+    const [userData, setUserData] = useLocalUser("user")
+    const [formData, setFormData] = useState(userData);
     const degrees = useDegrees();
 
     function handleChange(event) {
@@ -24,8 +20,8 @@ export default function EditProfile() {
         }));
     }
 
-    function handleSubmit() {
-        // TODO: save to database
+    function saveUserData() {
+        setUserData(formData);
     }
 
     return (
@@ -104,7 +100,7 @@ export default function EditProfile() {
             <Button
                 variant="contained"
                 color="primary"
-                onClick={handleSubmit}
+                onClick={saveUserData}
             >
                 Save
             </Button>

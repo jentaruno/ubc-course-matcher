@@ -15,7 +15,6 @@ import Meet from "./pages/Meet";
 import {Box, Container} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
-import Login from "./components/login/login";
 import useToken from "./data/useToken";
 
 export const theme = createTheme({
@@ -37,23 +36,23 @@ export default function App() {
     return (
         <Router>
             <ThemeProvider theme={theme}>
-                {token
-                    ? <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
-                        <Header/>
-                        <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
-                            <Routes>
-                                <Route path="/" element={<CourseMatcher/>}/>
-                                <Route path="/profile" element={<Profile/>}/>
-                                <Route path="/profile/your-classes" element={<YourClasses/>}/>
-                                <Route path="/profile/edit" element={<EditProfile/>}/>
-                                <Route path="/friends" element={<Friends/>}/>
-                                <Route path="/match" element={<Match/>}/>
-                                <Route path="/meet" element={<Meet/>}/>
-                            </Routes>
-                        </Container>
-                        <BottomNav/>
-                    </Box>
-                    : <Login setToken={setToken}/>}
+                {/*{token ?*/}
+                <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
+                    <Header/>
+                    <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
+                        <Routes>
+                            <Route path="/" element={<CourseMatcher/>}/>
+                            <Route path="/profile" element={<Profile/>}/>
+                            <Route path="/profile/your-classes" element={<YourClasses/>}/>
+                            <Route path="/profile/edit" element={<EditProfile/>}/>
+                            <Route path="/friends" element={<Friends/>}/>
+                            <Route path="/match" element={<Match/>}/>
+                            <Route path="/meet" element={<Meet/>}/>
+                        </Routes>
+                    </Container>
+                    <BottomNav/>
+                </Box>
+                {/*: <Login setToken={setToken}/>}*/}
             </ThemeProvider>
         </Router>
     );

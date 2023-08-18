@@ -4,14 +4,15 @@ import {UploadCalendar} from "../components/UploadCalendar";
 import TypeManuallyTab from "../components/profile/TypeManuallyTab";
 import LoadedCourses from "../components/profile/LoadedCourses";
 import {ArrowBack} from "@mui/icons-material";
+import useLocalUser from "../data/useLocalUser";
 
 const YourClasses = () => {
     const [value, setValue] = useState(0);
-    const userName = "User";
+    const [userName, setUserName] = useLocalUser("name");
     // TODO: user name is loaded from login page
     // TODO: option to go back with saving / without saving
     // TODO: detect term from SSC?
-    const [courses, setCourses] = useState([]);
+    const [courses, setCourses] = useLocalUser("user");
     const [term, setTerm] = useState("Winter");
 
     return (
@@ -49,6 +50,15 @@ const YourClasses = () => {
                     overflowY={'scroll'}
                 >
                     <h2>Loaded sections</h2>
+                    {courses.courseList &&
+                        <p>
+                            {courses.courseList.length
+                                + " "
+                                + term
+                                + " sections"
+                            }
+                        </p>
+                    }
                     <LoadedCourses
                         courses={courses.courseList}
                     />

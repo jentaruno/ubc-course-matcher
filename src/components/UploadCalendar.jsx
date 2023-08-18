@@ -4,7 +4,6 @@ import React, {useState} from "react";
 export function UploadCalendar(
     {
         setTerm,
-        userName,
         handleUpdate,
     }
 ) {
@@ -21,16 +20,20 @@ export function UploadCalendar(
             newCourses[0] = {file: reader.result};
         };
         reader.onerror = function () {
-            console.log(reader.error);
+            console.error(reader.error);
         };
         setCourseFiles(newCourses);
         //userErrorMessage: ""
     }
 
     function handleSubmitFile() {
-        const newCourses = readCourses();
-        //saveCookies(courses[0].key, courses[0].courseList, courses[0].classTimes);
-        handleUpdate(newCourses);
+        // TODO: visible error msg
+        try {
+            const newCourses = readCourses();
+            handleUpdate(newCourses);
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     function readCourses() {
@@ -56,7 +59,6 @@ export function UploadCalendar(
 
         //Change state of courses data
         return {
-            name: userName,
             courseList: extractedCourses,
             classTimes: extractedClassTimes
         };

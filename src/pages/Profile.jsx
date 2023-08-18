@@ -1,7 +1,9 @@
 import {Card, CardContent, Grid, Link, Stack} from "@mui/material";
 import {ArrowForwardIos, Book, Edit, Logout, QrCode} from "@mui/icons-material";
+import useLocalUser from "../data/useLocalUser";
 
 const Profile = () => {
+    const [userData, setUserData] = useLocalUser("user");
     // TODO: replace user, img, major, term with whatever user uploaded as profpic
     return <Stack spacing={3}>
         <Stack
@@ -9,15 +11,15 @@ const Profile = () => {
             direction={'row'}
             spacing={2}
         >
-            <img
-                alt={'user-profile'}
-                className={'rounded-circle'}
-                style={{width: '5rem', height: '5rem'}}
-                src={'https://jentaruno.github.io/profile.jpeg'}
-            />
+            {/*<img*/}
+            {/*    alt={'user-profile'}*/}
+            {/*    className={'rounded-circle'}*/}
+            {/*    style={{width: '5rem', height: '5rem'}}*/}
+            {/*    src={'https://jentaruno.github.io/profile.jpeg'}*/}
+            {/*/>*/}
             <Stack direction={'column'}>
-                <h1>Jen Taruno</h1>
-                <span>Computer Science</span>
+                <h1>{userData.name}</h1>
+                <span>{userData.major}</span>
             </Stack>
         </Stack>
         <Link href={'/profile/your-classes'} underline={'none'}>
