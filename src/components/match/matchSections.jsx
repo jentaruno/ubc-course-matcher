@@ -37,7 +37,7 @@ export default function MatchSections() {
         }
 
         sameSections.sort(function (a, b) {
-            return (a.key < b.key) ? -1 : (a.key > b.key) ? 1 : 0;
+            return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
         });
 
         console.log("same sections", sameSections);
@@ -49,7 +49,6 @@ export default function MatchSections() {
             [{
                 name: userData.name,
                 courses: userData.courses,
-                classTimes: userData.classTimes
             }
                 , ...userData.friends];
         console.log(userAndFriends);

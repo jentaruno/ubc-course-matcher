@@ -18,19 +18,6 @@ export default function CourseBlock(
     return (
         <Box sx={{p: '2px'}}>
             <Grid container spacing={0}>
-                {Array.isArray(friends) && friends.length > 0 &&
-                    <Grid
-                        item
-                        xs={12}
-                        overflow={'hidden'}
-                        mb={1}
-                    >
-                        <Stack direction={'row'} spacing={1}>
-                            <PeopleAlt/>
-                            <span>{friends.join(", ")}</span>
-                        </Stack>
-                    </Grid>
-                }
                 <Grid item xs={8} overflow={'hidden'}>
                     <b>{course}</b>
                 </Grid>
@@ -58,6 +45,18 @@ export default function CourseBlock(
                 >
                     <small>{time ?? ""}</small>
                 </Grid>
+                {Array.isArray(friends) && friends.length > 0 &&
+                    <Grid
+                        item
+                        xs={12}
+                        overflow={'hidden'}
+                    >
+                        <Stack direction={'row'} spacing={1}>
+                            <PeopleAlt/>
+                            <span>{friends.join(", ")}</span>
+                        </Stack>
+                    </Grid>
+                }
             </Grid>
         </Box>
     )

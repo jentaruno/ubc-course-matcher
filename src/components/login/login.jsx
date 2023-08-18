@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {Box, Button, Link, Stack, TextField} from "@mui/material";
 
+// TODO: reg page
 // TODO: auth0
 async function loginUser(credentials) {
     return fetch('http://localhost:8080/login', {

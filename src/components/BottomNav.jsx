@@ -5,24 +5,26 @@ import {useNavigate} from "react-router-dom";
 
 export default function BottomNav() {
 
-    const [value, setValue] = useState(2);
+    const [value, setValue] = useState(0);
     const navigate = useNavigate();
+
+    // TODO: when nav subpage don't reset
 
     return (
         <Box
             style={{position: 'sticky', bottom: 0, borderTop: '1px solid #e0e0e0'}}
         >
+            <BottomNavigationAction
+                label="You"
+                icon={<AccountCircle/>}
+                onClick={() => navigate('/profile')}
+            />
             <BottomNavigation
                 value={value}
                 onChange={(event, newValue) => {
                     setValue(newValue);
                 }}
             >
-                <BottomNavigationAction
-                    label="You"
-                    icon={<AccountCircle/>}
-                    onClick={() => navigate('/profile')}
-                />
                 <BottomNavigationAction
                     label="Friends"
                     icon={<People/>}
