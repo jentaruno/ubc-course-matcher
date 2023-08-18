@@ -73,9 +73,9 @@ export default function CalendarFileModal(
                         handleUpdate={setPreviewCourses}
                     />
                     <h2>Preview</h2>
-                    {previewCourses.courseList &&
+                    {previewCourses.courses &&
                         <p>
-                            {previewCourses.courseList.length
+                            {previewCourses.courses.length
                                 + " "
                                 + term
                                 + " sections"
@@ -84,7 +84,7 @@ export default function CalendarFileModal(
                     }
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
-                            courses={previewCourses.courseList}
+                            courses={previewCourses.courses}
                         />
                     </Box>
                     <Button

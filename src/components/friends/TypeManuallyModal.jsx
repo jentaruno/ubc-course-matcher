@@ -129,7 +129,7 @@ export default function TypeManuallyModal(
                     <h2>Preview</h2>
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
-                            courses={previewCourses.courseList}
+                            courses={previewCourses.courses}
                         />
                     </Box>
                     <Button

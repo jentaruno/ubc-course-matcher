@@ -48,17 +48,17 @@ const YourClasses = () => {
                     overflowY={'scroll'}
                 >
                     <h2>Loaded sections</h2>
-                    {userData && userData.courseList &&
+                    {userData && userData.courses &&
                         <div>
                             <p>
-                                {userData.courseList.length
+                                {userData.courses.length
                                     + " "
                                     + term
                                     + " sections"
                                 }
                             </p>
                             <LoadedCourses
-                                courses={userData.courseList}
+                                courses={userData.courses}
                             />
                         </div>
                     }

@@ -16,12 +16,12 @@ export default function LoadedCourses({courses}) {
             />}
         >
             {courses && courses?.length > 0
-                ? courses.map((course) =>
+                ? courses.map(({name, location, friends, classTimes}) =>
                     <CourseBlock
-                        course={course}
-                        location={"Earth & Sciences Building"}
-                        days={"Mon Wed Fri"}
-                        time={"11.00-12.00"}
+                        course={name}
+                        location={location}
+                        friends={friends}
+                        classTimes={classTimes}
                     />
                 )
                 : <p>No courses loaded</p>}

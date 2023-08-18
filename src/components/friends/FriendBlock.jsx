@@ -23,7 +23,7 @@ export default function FriendBlock(
     };
 
     // TODO: whole card tappable
-    
+
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
@@ -41,7 +41,7 @@ export default function FriendBlock(
                             <Link onClick={handleOpenModal} underline={'none'}>
                                 <h2>{name}</h2>
                                 <span>
-                                    {courses.slice(0, 2).join(", ") + ',...'}
+                                    {courses.map(e => e.name).slice(0, 2).join(", ") + ',...'}
                                 </span>
                             </Link>
                         </Grid>

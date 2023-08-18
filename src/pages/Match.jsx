@@ -10,8 +10,8 @@ const Match = () => {
     const [tab, setTab] = useState(0);
 
     const canMatch = () => {
-        return userData.courseList
-            && userData.courseList.length > 0
+        return userData.courses
+            && userData.courses.length > 0
             && userData.friends
             && userData.friends.length > 0;
     }

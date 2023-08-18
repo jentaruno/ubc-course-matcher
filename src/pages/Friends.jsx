@@ -29,7 +29,7 @@ const Friends = () => {
                 <FriendBlock
                     key={i}
                     name={friend.name}
-                    courses={friend.courseList}
+                    courses={friend.courses}
                     handleDelete={() => handleDeleteFriend(i)}
                 />
             )
