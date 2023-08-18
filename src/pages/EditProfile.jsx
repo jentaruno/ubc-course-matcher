@@ -8,8 +8,13 @@ export default function EditProfile() {
     // TODO: default profpic
     // TODO: implem ID
 
-    const [userData, setUserData] = useLocalUser("user")
-    const [formData, setFormData] = useState(userData);
+    const [userData, setUserData] = useLocalUser("user");
+    const [formData, setFormData] = useState(userData ?? {
+        name: 'UBC Student',
+        yearLevel: 1,
+        courseList: [],
+        classTimes: [],
+    });
     const degrees = useDegrees();
 
     function handleChange(event) {

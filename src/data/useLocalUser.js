@@ -5,14 +5,7 @@ function useLocalUser(key) {
         const storedValue = localStorage.getItem(key);
         return storedValue
             ? JSON.parse(storedValue)
-            : {
-                name: 'UBC Student',
-                yearLevel: 1,
-                degree: '',
-                major: '',
-                courseList: [],
-                classTimes: [],
-            };
+            : null;
     });
 
     useEffect(() => {

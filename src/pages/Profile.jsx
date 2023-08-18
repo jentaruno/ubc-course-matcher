@@ -18,8 +18,8 @@ const Profile = () => {
             {/*    src={'https://jentaruno.github.io/profile.jpeg'}*/}
             {/*/>*/}
             <Stack direction={'column'}>
-                <h1>{userData.name}</h1>
-                <span>{userData.major}</span>
+                <h1>{(userData && userData.name) ?? "UBC Student"}</h1>
+                <span>{(userData && userData.major) ?? ""}</span>
             </Stack>
         </Stack>
         <Link href={'/profile/your-classes'} underline={'none'}>

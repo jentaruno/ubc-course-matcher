@@ -4,7 +4,7 @@ import React, {useState} from "react";
 import CalendarFileModal from "./CalendarFileModal";
 import TypeManuallyModal from "./TypeManuallyModal";
 
-export function AddFriendButton({friends, setFriends}) {
+export function AddFriendButton({friends, setFriends, handleAddFriend}) {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
@@ -70,6 +70,7 @@ export function AddFriendButton({friends, setFriends}) {
                 friends={friends}
                 setFriends={setFriends}
                 open={openCalendarFile}
+                handleAddFriend={handleAddFriend}
                 handleClose={handleCloseCalendarFile}
             />
 

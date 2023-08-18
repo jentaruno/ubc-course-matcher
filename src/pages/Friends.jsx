@@ -1,15 +1,25 @@
 import {Stack} from "@mui/material";
 import FriendBlock from "../components/friends/FriendBlock";
 import {AddFriendButton} from "../components/friends/AddFriendButton";
+import useLocalUser from "../data/useLocalUser";
 import {useState} from "react";
 
 const Friends = () => {
-    const [friends, setFriends] = useState([]);
+    const [userData, setUserData] = useLocalUser("user");
+    const [friends, setFriends] = useState(userData.friends);
 
-    function handleDelete(index) {
-        const newFriends = [...friends];
-        newFriends.splice(index, 1)
+    const handleAddFriend = (friend) => {
+        const loadedFriends = friends ?? [];
+        const newFriends = [...loadedFriends];
+        newFriends.push(friend);
         setFriends(newFriends);
+        setUserData({friends: newFriends});
+    }
+    const handleDeleteFriend = (index) => {
+        const newFriends = [...friends];
+        newFriends.splice(index, 1);
+        setFriends(newFriends);
+        setUserData({friends: newFriends});
     }
 
     return <Stack spacing={3}>
@@ -20,12 +30,13 @@ const Friends = () => {
                     key={i}
                     name={friend.name}
                     courses={friend.courseList}
-                    handleDelete={() => handleDelete(i)}
+                    handleDelete={() => handleDeleteFriend(i)}
                 />
             )
             : 'Add friends with the (+) button.'
         }
         <AddFriendButton
+            handleAddFriend={handleAddFriend}
             friends={friends}
             setFriends={setFriends}
         />

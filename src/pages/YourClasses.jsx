@@ -8,7 +8,6 @@ import useLocalUser from "../data/useLocalUser";
 
 const YourClasses = () => {
     const [value, setValue] = useState(0);
-    const [userName, setUserName] = useLocalUser("name");
     // TODO: user name is loaded from login page
     // TODO: option to go back with saving / without saving
     // TODO: detect term from SSC?
@@ -37,7 +36,6 @@ const YourClasses = () => {
                 {value === 0
                     ? <UploadCalendar
                         setTerm={setTerm}
-                        userName={userName}
                         courses={courses}
                         handleUpdate={setCourses}
                     />
@@ -50,18 +48,20 @@ const YourClasses = () => {
                     overflowY={'scroll'}
                 >
                     <h2>Loaded sections</h2>
-                    {courses.courseList &&
-                        <p>
-                            {courses.courseList.length
-                                + " "
-                                + term
-                                + " sections"
-                            }
-                        </p>
+                    {courses && courses.courseList &&
+                        <div>
+                            <p>
+                                {courses.courseList.length
+                                    + " "
+                                    + term
+                                    + " sections"
+                                }
+                            </p>
+                            <LoadedCourses
+                                courses={courses.courseList}
+                            />
+                        </div>
                     }
-                    <LoadedCourses
-                        courses={courses.courseList}
-                    />
                 </Stack>
             </Stack>
         </Box>

@@ -9,10 +9,12 @@ export default function CalendarFileModal(
         friends,
         setFriends,
         open,
+        handleAddFriend,
         handleClose
     }) {
     // TODO: form validation error handling
-    // TODO: empty form when close
+    // TODO: disallow duplicate names
+    // TODO: disallow naming the friend "user"
     const style = {
         position: 'absolute',
         top: '50%',
@@ -31,14 +33,12 @@ export default function CalendarFileModal(
 
     function handleUpdateCourses() {
         if (friendName.trim() !== "" && Object.keys(previewCourses).length > 0) {
-            const newCourses = [...friends];
             const newCourse = previewCourses;
             newCourse.name = friendName;
-            newCourses.push(newCourse);
-            setFriends(newCourses);
             setFriendName("");
             setPreviewCourses({});
             handleClose();
+            handleAddFriend(newCourse);
         }
     }
 
@@ -73,6 +73,15 @@ export default function CalendarFileModal(
                         handleUpdate={setPreviewCourses}
                     />
                     <h2>Preview</h2>
+                    {previewCourses.courseList &&
+                        <p>
+                            {previewCourses.courseList.length
+                                + " "
+                                + term
+                                + " sections"
+                            }
+                        </p>
+                    }
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
                             courses={previewCourses.courseList}

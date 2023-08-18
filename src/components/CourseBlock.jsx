@@ -9,6 +9,7 @@ export default function CourseBlock(
         time,
     }
 ) {
+    // TODO: days and times
     return (
         <Box sx={{p: '2px'}}>
             <Grid container spacing={0}>
