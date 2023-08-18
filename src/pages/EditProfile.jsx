@@ -12,7 +12,7 @@ export default function EditProfile() {
     const [formData, setFormData] = useState(userData ?? {
         name: 'UBC Student',
         yearLevel: 1,
-        courseList: [],
+        courses: [],
         classTimes: [],
     });
     const degrees = useDegrees();
