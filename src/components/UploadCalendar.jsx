@@ -112,11 +112,7 @@ export function UploadCalendar(
 
         console.log(sectionsArray);
         //Change state of courses data
-        return {
-            courses: sectionsArray,
-            courseList: extractedCourses,
-            classTimes: extractedClassTimes
-        };
+        return {courses: sectionsArray};
     }
 
     function sliceCurrentTerm(splitFile) {
