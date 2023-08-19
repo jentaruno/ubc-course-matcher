@@ -60,20 +60,29 @@ export default function QRCodeModal(
     }
 
     const onClose = () => {
+        qrScanner.stop();
         setFriendBlock(null);
         setQrScanner(null);
         handleClose();
     }
 
     useEffect(() => {
-        // TODO: wait for useRef to hv ref
-        if (open && !friendBlock && qrVideo.current) {
-            if (!qrScanner) {
-                createQrScanner();
-            } else {
-                qrScanner.start();
+        const startQrScanner = async () => {
+            console.log('use effect')
+            await qrVideo.current;
+            if (open && !friendBlock && qrVideo.current) {
+                if (!qrScanner) {
+                    console.log('ifd')
+                    createQrScanner();
+                } else {
+                    console.log('elsed')
+                    qrScanner.start();
+                }
             }
-        }
+        };
+
+        startQrScanner()
+            .catch(console.error);
     }, [friendBlock, open, qrVideo, qrScanner]);
 
     return (
@@ -94,20 +103,22 @@ export default function QRCodeModal(
                             <Close/>
                         </IconButton>
                     </Stack>
-                    {!friendBlock
-                        ? <video
-                            ref={qrVideo}
-                            style={{width: '100%'}}
-                            disablePictureInPicture
-                            playsInline
-                        />
-                        : <Stack>
-                            <h2>{friendBlock.name}'s courses</h2>
-                            <LoadedCourses
-                                courses={friendBlock.courses}
+                    <Box sx={{maxHeight: '80vh'}}>
+                        {!friendBlock
+                            ? <video
+                                ref={qrVideo}
+                                style={{width: '100%', height: '100%'}}
+                                disablePictureInPicture
+                                playsInline
                             />
-                        </Stack>
-                    }
+                            : <Stack>
+                                <h2>{friendBlock.name}'s courses</h2>
+                                <LoadedCourses
+                                    courses={friendBlock.courses}
+                                />
+                            </Stack>
+                        }
+                    </Box>
                 </Stack>
             </Box>
         </Modal>
