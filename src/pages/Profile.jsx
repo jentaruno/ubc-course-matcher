@@ -1,10 +1,13 @@
 import {Card, CardContent, Grid, Link, Stack} from "@mui/material";
 import {ArrowForwardIos, Book, Edit, Logout, QrCode} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
+import {useState} from "react";
+import ShareQRModal from "../components/profile/ShareQRModal";
 
 const Profile = () => {
     const [userData, setUserData] = useLocalStorage("user");
-    // TODO: replace user, img, major, term with whatever user uploaded as profpic
+    const [openQRModal, setOpenQRModal] = useState(false);
+
     return <Stack spacing={3}>
         <Stack
             alignItems={'center'}
@@ -45,7 +48,7 @@ const Profile = () => {
             </Card>
         </Link>
 
-        <Card>
+        <Card onClick={() => setOpenQRModal(true)}>
             <CardContent>
                 <Grid
                     container
@@ -65,6 +68,12 @@ const Profile = () => {
                 </Grid>
             </CardContent>
         </Card>
+
+        <ShareQRModal
+            open={openQRModal}
+            handleClose={() => setOpenQRModal(false)}
+            qrData={{name: userData.name, courses: userData.courses}}
+        />
 
         <Link href={'/profile/edit'} underline={'none'}>
             <p><Edit/> Edit your profile</p>
