@@ -5,9 +5,8 @@ import {MeetTableBody} from "./MeetTableBody";
 
 export const MeetTable = ({friends}) => {
     // TODO: placeholder if no user data / friends
-    // TODO: y it shaking
-    // TODO: tooltips
     // TODO: borders
+    // TODO: pick which friends to meet with
 
     const [loading, setLoading] = useState(true);
     const [blocksShades, setBlocksShades] = useState([]);
@@ -49,9 +48,9 @@ export const MeetTable = ({friends}) => {
             friend.classTimes.map(time => {
                 if (shades[time]) {
                     shades[time].shade += oneShade;
-                    shades[time].friends.push(friend);
+                    shades[time].friends.push(friend.name);
                 } else {
-                    shades[time] = {shade: oneShade, friends: [friend]};
+                    shades[time] = {shade: oneShade, friends: [friend.name]};
                 }
             })
         });
