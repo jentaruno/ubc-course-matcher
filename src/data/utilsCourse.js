@@ -50,3 +50,12 @@ export function getAllClassTimes(courses) {
     });
     return classTimes;
 }
+
+// Time string "18:00" to Date object
+export function stringToDate(time) {
+    var date = new Date();
+    var parts = time.split(':');
+    date.setHours(parts[0]);
+    date.setMinutes(parts[1]);
+    return date;
+}
