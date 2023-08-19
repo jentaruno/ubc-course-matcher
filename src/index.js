@@ -15,7 +15,8 @@ import Meet from "./pages/Meet";
 import {Box, Container} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
-import useToken from "./data/useToken";
+import useLocalStorage from "./data/useLocalStorage";
+import Register from "./pages/Register";
 
 export const theme = createTheme({
     palette: {
@@ -32,28 +33,28 @@ export const theme = createTheme({
 });
 
 export default function App() {
-    const {token, setToken} = useToken();
+    const [userData, setUserData] = useLocalStorage("user");
 
     return (
         <Router>
             <ThemeProvider theme={theme}>
-                {/*{token ?*/}
                 <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
                     <Header/>
                     <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
-                        <Routes>
-                            <Route path="/" element={<CourseMatcher/>}/>
-                            <Route path="/profile" element={<Profile/>}/>
-                            <Route path="/profile/your-classes" element={<YourClasses/>}/>
-                            <Route path="/profile/edit" element={<EditProfile/>}/>
-                            <Route path="/friends" element={<Friends/>}/>
-                            <Route path="/match" element={<Match/>}/>
-                            <Route path="/meet" element={<Meet/>}/>
-                        </Routes>
+                        {userData
+                            ? <Routes>
+                                <Route path="/" element={<CourseMatcher/>}/>
+                                <Route path="/profile" element={<Profile/>}/>
+                                <Route path="/profile/your-classes" element={<YourClasses/>}/>
+                                <Route path="/profile/edit" element={<EditProfile/>}/>
+                                <Route path="/friends" element={<Friends/>}/>
+                                <Route path="/match" element={<Match/>}/>
+                                <Route path="/meet" element={<Meet/>}/>
+                            </Routes>
+                            : <Register setUserData={setUserData}/>}
                     </Container>
-                    <BottomNav/>
+                    {userData && <BottomNav/>}
                 </Box>
-                {/*: <Login setToken={setToken}/>}*/}
             </ThemeProvider>
         </Router>
     );

@@ -9,6 +9,7 @@ const Friends = () => {
     const [friends, setFriends] = useState(userData.friends);
 
     const handleAddFriend = (friend) => {
+        // TODO: prevent duplicates and adding self
         const loadedFriends = friends ?? [];
         const newFriends = [...loadedFriends];
         newFriends.push(friend);

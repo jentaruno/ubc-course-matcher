@@ -6,8 +6,6 @@ import {Close} from "@mui/icons-material";
 
 export default function CalendarFileModal(
     {
-        friends,
-        setFriends,
         open,
         handleAddFriend,
         handleClose
@@ -68,8 +66,6 @@ export default function CalendarFileModal(
                     />
                     <UploadCalendar
                         setTerm={setTerm}
-                        userName={friendName}
-                        courses={friends}
                         handleUpdate={setPreviewCourses}
                     />
                     <h2>Preview</h2>

@@ -3,6 +3,7 @@ import {Add, CalendarMonth, QrCode, Title} from "@mui/icons-material";
 import React, {useState} from "react";
 import CalendarFileModal from "./CalendarFileModal";
 import TypeManuallyModal from "./TypeManuallyModal";
+import QRCodeModal from "./QRCodeModal";
 
 export function AddFriendButton({friends, setFriends, handleAddFriend}) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -67,10 +68,8 @@ export function AddFriendButton({friends, setFriends, handleAddFriend}) {
             </Popover>
 
             <CalendarFileModal
-                friends={friends}
-                setFriends={setFriends}
-                open={openCalendarFile}
                 handleAddFriend={handleAddFriend}
+                open={openCalendarFile}
                 handleClose={handleCloseCalendarFile}
             />
 
@@ -81,6 +80,10 @@ export function AddFriendButton({friends, setFriends, handleAddFriend}) {
                 handleClose={handleCloseTypeManually}
             />
 
+            <QRCodeModal
+                open={openQrCode}
+                handleClose={handleCloseQrCode}
+            />
 
         </Box>
     );

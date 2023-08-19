@@ -1,11 +1,10 @@
-import {Box, Card, CardContent, Grid, IconButton, Link, Modal, Stack} from "@mui/material";
-import {Close, Delete} from "@mui/icons-material";
+import {Box, Card, CardContent, Grid, IconButton, Link} from "@mui/material";
+import {Delete} from "@mui/icons-material";
 import React, {useState} from "react";
-import LoadedCourses from "../profile/LoadedCourses";
+import {FriendModal} from "./FriendModal";
 
 export default function FriendBlock(
     {
-        key,
         name,
         courses,
         handleDelete
@@ -22,14 +21,12 @@ export default function FriendBlock(
         p: 2,
     };
 
-    // TODO: whole card tappable
-
     const [openModal, setOpenModal] = useState(false);
     const handleOpenModal = () => setOpenModal(true);
     const handleCloseModal = () => setOpenModal(false);
 
     return (
-        <Box key={key}>
+        <Box>
             <Card>
                 <CardContent>
                     <Grid
@@ -53,32 +50,7 @@ export default function FriendBlock(
                     </Grid>
                 </CardContent>
             </Card>
-            <Modal
-                open={openModal}
-                onClose={handleCloseModal}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style}>
-                    <Stack
-                        direction={'column'}
-                        spacing={1}
-                    >
-                        <Stack direction={'row'} justifyContent={'space-between'}>
-                            <h2>{name}'s sections</h2>
-                            <IconButton
-                                aria-label={'close'}
-                                onClick={handleCloseModal}
-                            >
-                                <Close/>
-                            </IconButton>
-                        </Stack>
-                        <Box height={'50vh'}>
-                            <LoadedCourses courses={courses}/>
-                        </Box>
-                    </Stack>
-                </Box>
-            </Modal>
+            <FriendModal open={openModal} onClose={handleCloseModal} sx={style} name={name} courses={courses}/>
         </Box>
     )
 }
