@@ -22,7 +22,6 @@ export default function ShareQRModal(
     };
 
     const qrString = JSON.stringify(qrData);
-    console.log(qrString);
 
     return (
         <Modal

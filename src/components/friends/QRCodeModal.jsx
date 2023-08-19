@@ -25,32 +25,26 @@ export default function QRCodeModal(
     const [qrScanner, setQrScanner] = useState(null);
     const qrVideo = useRef(null);
 
-    const handleScanQRCode = () => {
-        if (!qrScanner) {
-            console.log("set qr scanner")
-            let qrScanner = new QrScanner(
-                qrVideo.current,
-                result => processQRCode(result, qrScanner),
-                {
-                    returnDetailedScanResult: true,
-                    highlightScanRegion: true
-                }
-            );
-            setQrScanner(qrScanner)
-            qrScanner.start();
-        } else {
-            qrScanner.start();
-        }
+    const createQrScanner = () => {
+        let qrScanner = new QrScanner(
+            qrVideo.current,
+            result => processQRCode(result, qrScanner),
+            {
+                returnDetailedScanResult: true,
+                highlightScanRegion: true
+            }
+        );
+        setQrScanner(qrScanner);
     }
 
-    const processQRCode = (result, qrScanner) => {
+    const processQRCode = (result) => {
         if (isQRValid(result.data)) {
+            console.log('valid qr');
             setFriendBlock(JSON.parse(result.data));
         } else {
-            // TODO: close modal and toast error
-            return
+            // TODO: toast error
+            handleClose();
         }
-        ;
     }
 
     const isQRValid = (str) => {
@@ -58,24 +52,34 @@ export default function QRCodeModal(
         let data;
         try {
             data = JSON.parse(str);
+            console.log(data);
             return (data.name && data.courses);
         } catch (e) {
             return false;
         }
-        return false;
+    }
+
+    const onClose = () => {
+        setFriendBlock(null);
+        setQrScanner(null);
+        handleClose();
     }
 
     useEffect(() => {
-        console.log("effect used")
+        // TODO: wait for useRef to hv ref
         if (open && !friendBlock && qrVideo.current) {
-            handleScanQRCode()
+            if (!qrScanner) {
+                createQrScanner();
+            } else {
+                qrScanner.start();
+            }
         }
-    }, [open, friendBlock, qrVideo.current]);
+    }, [friendBlock, open, qrVideo, qrScanner]);
 
     return (
         <Modal
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
@@ -85,7 +89,7 @@ export default function QRCodeModal(
                         <h2>Scan QR Code</h2>
                         <IconButton
                             aria-label={'close'}
-                            onClick={handleClose}
+                            onClick={onClose}
                         >
                             <Close/>
                         </IconButton>
