@@ -1,20 +1,19 @@
 import {useEffect, useState} from "react";
+import {API_LINK, ENDPOINTS} from "./utilsServer";
 
 export default function useCourses(subject) {
     const [courses, setCourses] = useState([]);
     useEffect(() => {
-        const fetchData = async () => {
+        async function fetchData() {
             try {
-                const response = await fetch(`http://localhost:8080/api/sections/${subject}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const jsonData = await response.json();
-                setCourses(jsonData);
+                const response = await fetch(API_LINK + ENDPOINTS.courseNumbers + subject);
+                const json = await response.json();
+                console.log(json);
+                setCourses(json);
             } catch (error) {
                 console.error('Error fetching JSON data:', error);
             }
-        };
+        }
 
         fetchData();
     }, [subject]);

@@ -68,14 +68,11 @@ export default function QRCodeModal(
 
     useEffect(() => {
         const startQrScanner = async () => {
-            console.log('use effect')
             await qrVideo.current;
             if (open && !friendBlock && qrVideo.current) {
                 if (!qrScanner) {
-                    console.log('ifd')
                     createQrScanner();
                 } else {
-                    console.log('elsed')
                     qrScanner.start();
                 }
             }
@@ -83,7 +80,7 @@ export default function QRCodeModal(
 
         startQrScanner()
             .catch(console.error);
-    }, [friendBlock, open, qrVideo, qrScanner]);
+    }, [friendBlock, open, qrVideo, qrScanner, createQrScanner]);
 
     return (
         <Modal

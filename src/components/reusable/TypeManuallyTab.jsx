@@ -1,10 +1,7 @@
 import {Button, Stack} from "@mui/material";
-import React, {useState} from "react";
+import React from "react";
 
 export default function TypeManuallyTab() {
-
-    const [course, setCourse] = useState({});
-
     function handleType(e) {
         // TODO: suggest autofill
     }

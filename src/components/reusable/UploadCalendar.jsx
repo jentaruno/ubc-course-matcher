@@ -87,31 +87,10 @@ export function UploadCalendar(
             } else {
                 parsedSections[newSection.name] = newSection;
             }
-            return;
         });
-        const sectionsArray = Object.values(parsedSections);
 
-        console.log("parsed sections", parsedSections);
-
-        //Read courses one by one
-        let extractedCourses = currentTermFiles.filter(e => e.includes("SUMMARY"))
-            .filter((v, i, a) => a.indexOf(v) === i)
-            .map(e => e.substring(8, 20));
-
-        //Read times that student is in class
-        let extractedClassDays = currentTermFiles.filter(e => e.includes("BYDAY"))
-            .map(e => e.slice(e.lastIndexOf("BYDAY") + 6).replace("\r", "")).map((e) => dayToNum(e));
-        let extractedClassStartTimes = currentTermFiles.filter(e => e.includes("DTSTART;"))
-            .map(e => e.substring(40, 42) + ":" + e.substring(42, 44));
-        let extractedClassEndTimes = currentTermFiles.filter(e => e.includes("DTEND;"))
-            .map(e => e.substring(38, 40) + ":" + e.substring(40, 42));
-
-        let extractedClassTimes = extractedClassDays.map((e, i) =>
-            e + extractedClassStartTimes[i].toString() + "-" + extractedClassEndTimes[i].toString())
-            .filter((v, i, a) => a.indexOf(v) === i);
-
-        console.log(sectionsArray);
         //Change state of courses data
+        const sectionsArray = Object.values(parsedSections);
         return {courses: sectionsArray};
     }
 

@@ -1,6 +1,6 @@
 import {Box, Grid, Stack, useTheme} from "@mui/material";
 import {PeopleAlt} from "@mui/icons-material";
-import {getCalDays, getCalTimes} from "../data/utilsCourse";
+import {getCalDays, getCalTimes} from "../../data/utilsCourse";
 
 export default function CourseBlock(
     {

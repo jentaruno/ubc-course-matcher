@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import LoadedCourses from "../profile/LoadedCourses";
 import {Close} from "@mui/icons-material";
 import useSubjects from "../../data/useSubjects";
+import DropdownCourseNumbers from "./DropdownCourseNumbers";
 
 export default function TypeManuallyModal(
     {
@@ -25,7 +26,10 @@ export default function TypeManuallyModal(
         p: 2,
     };
 
+    // TODO: make lazy
     const subjects = useSubjects();
+    const [courses, setCourses] = useState();
+    const [section, setSections] = useState();
 
     const [friendName, setFriendName] = useState("");
     const [term, setTerm] = useState("Winter");
@@ -98,14 +102,9 @@ export default function TypeManuallyModal(
                             />
                         </Grid>
                         <Grid item xs={4} pr={1}>
-                            <Autocomplete
-                                disablePortal
-                                id="course"
-                                options={subjects ?? []}
-                                renderInput={(params) =>
-                                    <TextField {...params} label="Course"/>
-                                }
-                                onChange={(e) => handleChange(e)}
+                            <DropdownCourseNumbers
+                                subject={formData.subject}
+                                handleChange={handleChange}
                             />
                         </Grid>
                         <Grid item xs={4}>

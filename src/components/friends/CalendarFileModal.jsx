@@ -1,6 +1,6 @@
 import {Box, Button, IconButton, Modal, Stack, TextField} from "@mui/material";
 import React, {useState} from "react";
-import {UploadCalendar} from "../UploadCalendar";
+import {UploadCalendar} from "../reusable/UploadCalendar";
 import LoadedCourses from "../profile/LoadedCourses";
 import {Close} from "@mui/icons-material";
 

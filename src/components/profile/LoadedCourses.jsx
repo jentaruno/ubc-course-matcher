@@ -1,4 +1,4 @@
-import CourseBlock from "../CourseBlock";
+import CourseBlock from "../reusable/CourseBlock";
 import React from "react";
 import {Divider, Stack} from "@mui/material";
 
