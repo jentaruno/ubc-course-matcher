@@ -3,9 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import './custom.scss';
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import Header from "./components/navigation/Header";
-import CourseMatcher from "./pages/CourseMatcher";
 import YourClasses from "./pages/YourClasses";
 import BottomNav from "./components/navigation/BottomNav";
 import Profile from "./pages/Profile";
@@ -43,7 +42,7 @@ export default function App() {
                     <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
                         {userData
                             ? <Routes>
-                                <Route path="/" element={<CourseMatcher/>}/>
+                                <Route path="/" element={<Navigate to="/profile" replace/>}/>
                                 <Route path="/profile" element={<Profile/>}/>
                                 <Route path="/profile/your-classes" element={<YourClasses/>}/>
                                 <Route path="/profile/edit" element={<EditProfile/>}/>
