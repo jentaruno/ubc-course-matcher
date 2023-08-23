@@ -4,6 +4,7 @@ import LoadedCourses from "../profile/LoadedCourses";
 import {Close} from "@mui/icons-material";
 import useSubjects from "../../data/useSubjects";
 import DropdownCourseNumbers from "./DropdownCourseNumbers";
+import DropdownSectionNumbers from "./DropdownSectionNumbers";
 
 export default function TypeManuallyModal(
     {
@@ -103,11 +104,14 @@ export default function TypeManuallyModal(
                         <Grid item xs={4} pr={1}>
                             <DropdownCourseNumbers
                                 subject={formData.subject}
-                                handleChange={handleChange}
+                                handleChange={(e, value) => handleChange("course", value)}
                             />
                         </Grid>
                         <Grid item xs={4}>
-
+                            <DropdownSectionNumbers
+                                course={formData.subject + "-" + formData.course}
+                                handleChange={(e, value) => handleChange("section", value)}
+                            />
                         </Grid>
                     </Grid>
                     <Button

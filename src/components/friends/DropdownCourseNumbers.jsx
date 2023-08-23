@@ -18,7 +18,7 @@ export default function DropdownCourseNumbers(
             renderInput={(params) =>
                 <TextField {...params} label="Course"/>
             }
-            onChange={(e) => handleChange(e)}
+            onInputChange={(e, value) => handleChange(e, value)}
         />
     )
 }
