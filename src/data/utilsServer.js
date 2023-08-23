@@ -2,7 +2,7 @@ export const API_LINK = "https://fkmttw1nph.execute-api.us-east-2.amazonaws.com/
 export const ENDPOINTS = {
     degrees: 'degrees',
     subjects: 'subjects',
-    courseNumbers: 'course-numbers/',
+    courseNumbers: 'courses/',
     sections: 'sections/',
     sectionInfo: 'section-info/',
 }

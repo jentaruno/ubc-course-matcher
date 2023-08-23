@@ -40,11 +40,10 @@ export default function TypeManuallyModal(
         section: '',
     });
 
-    const handleChange = (event) => {
-        const {id, value} = event.target;
+    const handleChange = (key, value) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            [id]: value,
+            [key]: value,
         }));
     }
     const handleAddCourse = () => {
@@ -98,7 +97,7 @@ export default function TypeManuallyModal(
                                 renderInput={(params) =>
                                     <TextField {...params} label="Subject"/>
                                 }
-                                onChange={(e) => handleChange(e)}
+                                onInputChange={(e, value) => handleChange("subject", value)}
                             />
                         </Grid>
                         <Grid item xs={4} pr={1}>
@@ -108,15 +107,7 @@ export default function TypeManuallyModal(
                             />
                         </Grid>
                         <Grid item xs={4}>
-                            <Autocomplete
-                                disablePortal
-                                id="section"
-                                options={subjects ?? []}
-                                renderInput={(params) =>
-                                    <TextField {...params} label="Section"/>
-                                }
-                                onChange={(e) => handleChange(e)}
-                            />
+
                         </Grid>
                     </Grid>
                     <Button

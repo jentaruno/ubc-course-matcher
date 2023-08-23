@@ -8,14 +8,16 @@ export default function useCourses(subject) {
             try {
                 const response = await fetch(API_LINK + ENDPOINTS.courseNumbers + subject);
                 const json = await response.json();
-                console.log(json);
-                setCourses(json);
+                const numbersOnly = json.map(e => e.split(" ")[1]);
+                setCourses(numbersOnly);
             } catch (error) {
                 console.error('Error fetching JSON data:', error);
             }
         }
 
-        fetchData();
+        if (subject) {
+            fetchData();
+        }
     }, [subject]);
 
     return courses;
