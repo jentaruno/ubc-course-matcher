@@ -20,7 +20,7 @@ export const MeetTable = ({friends}) => {
         }));
     }
 
-    // Breaks class times into 30-minute blocks and returns array of strings e.g. ["MO17:00-18:00"]
+    // Breaks class times into 30-minute blocks and returns array of strings e.g. ["Mon17:00-18:00"]
     const breakBlocks = (courses) => {
         const classTimes = getAllClassTimes(courses);
         let newClassTimes = [];
@@ -52,7 +52,9 @@ export const MeetTable = ({friends}) => {
                 } else {
                     shades[time] = {shade: oneShade, friends: [friend.name]};
                 }
+                return time;
             })
+            return friend;
         });
         return shades;
     }
@@ -64,7 +66,7 @@ export const MeetTable = ({friends}) => {
             setBlocksShades(shades);
             setLoading(false);
         }
-    }, []);
+    }, [friends, loading]);
 
     return (
         <Box overflow={'hidden'}>

@@ -7,7 +7,7 @@ export const MeetTableRow = ({time, shades}) => {
             ? <TableCell>{time}</TableCell>
             : <TableCell><span style={{opacity: 0}}>.</span></TableCell>
         }
-        {["MO", "TU", "WE", "TH", "FR"].map(i => {
+        {["Mon", "Tue", "Wed", "Thu", "Fri"].map(i => {
             const tdId = "" + i + time;
             if (shades[tdId]) {
                 const opacity = shades[tdId].shade;

@@ -1,18 +1,12 @@
-function convertDay(day) {
-    switch (day) {
-        case "MO":
-            return "Mon";
-        case "TU":
-            return "Tue";
-        case "WE":
-            return "Wed";
-        case "TH":
-            return "Thu";
-        case "FR":
-            return "Fri";
-        default:
-            return "";
+export function convertDay(day) {
+    const days = {
+        "MO": "Mon",
+        "TU": "Tue",
+        "WE": "Wed",
+        "TH": "Thu",
+        "FR": "Fri"
     }
+    return days[day];
 }
 
 // Takes classTimes object and returns days in string e.g. "Tue Thu"

@@ -1,5 +1,6 @@
 import {Button, Stack} from "@mui/material";
 import React, {useState} from "react";
+import {convertDay} from "../../data/utilsCourse";
 
 export function UploadCalendar(
     {
@@ -46,7 +47,8 @@ export function UploadCalendar(
             section.indexOf(", Room") - 1);
 
         const dayIndex = section.indexOf("BYDAY=");
-        const day = section.substring(dayIndex + 6, dayIndex + 8);
+        const dayCode = section.substring(dayIndex + 6, dayIndex + 8);
+        const day = convertDay(dayCode);
 
         const startIndex = section.indexOf("DTSTART;");
         const startTime = section.substring(startIndex + 40, startIndex + 42)
