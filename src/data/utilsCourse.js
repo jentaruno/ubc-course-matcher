@@ -20,7 +20,13 @@ export function getCalDays(classTimes) {
     if (Array.isArray(classTimes) && classTimes.length > 0) {
         return classTimes
             .map(e => e.day)
-            .map(e => convertDay(e))
+            .map(e => {
+                if (e.length === 2 && e === e.toUpperCase()) {
+                    return convertDay(e);
+                } else {
+                    return e;
+                }
+            })
             .join(", ");
     } else {
         return "";
@@ -47,6 +53,7 @@ export function getAllClassTimes(courses) {
     let classTimes = [];
     courses.map(e => {
         classTimes = classTimes.concat(e.classTimes)
+        return e;
     });
     return classTimes;
 }

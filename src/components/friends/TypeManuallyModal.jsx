@@ -5,12 +5,12 @@ import {Close} from "@mui/icons-material";
 import useSubjects from "../../data/useSubjects";
 import DropdownCourseNumbers from "./DropdownCourseNumbers";
 import DropdownSectionNumbers from "./DropdownSectionNumbers";
+import AddSectionButton from "./AddSectionButton";
 
 export default function TypeManuallyModal(
     {
-        friends,
-        setFriends,
         open,
+        handleAddFriend,
         handleClose
     }) {
     // TODO: form validation error handling
@@ -28,13 +28,12 @@ export default function TypeManuallyModal(
     };
 
     // TODO: make lazy
+    // TODO: set term
     const subjects = useSubjects();
-    const [courses, setCourses] = useState();
-    const [section, setSections] = useState();
 
     const [friendName, setFriendName] = useState("");
-    const [term, setTerm] = useState("Winter");
-    const [previewCourses, setPreviewCourses] = useState({});
+    // const [term, setTerm] = useState("Winter");
+    const [previewCourses, setPreviewCourses] = useState([]);
     const [formData, setFormData] = useState({
         subject: '',
         course: '',
@@ -47,19 +46,22 @@ export default function TypeManuallyModal(
             [key]: value,
         }));
     }
-    const handleAddCourse = () => {
-        // TODO: add to courses state
+
+    const handleAddCourse = (course) => {
+        console.log("course", course)
+        const newCourses = [...previewCourses];
+        newCourses.push(course);
+        setPreviewCourses(newCourses);
     }
-    const handleUpdateCourses = () => {
-        if (friendName.trim() !== "" && Object.keys(previewCourses).length > 0) {
-            const newCourses = [...friends];
-            const newCourse = previewCourses;
+
+    function handleUpdateCourses() {
+        if (friendName.trim() !== "" && previewCourses.length > 0) {
+            const newCourse = {courses: previewCourses};
             newCourse.name = friendName;
-            newCourses.push(newCourse);
-            setFriends(newCourses);
             setFriendName("");
-            setPreviewCourses({});
+            setPreviewCourses([]);
             handleClose();
+            handleAddFriend(newCourse);
         }
     }
 
@@ -87,7 +89,7 @@ export default function TypeManuallyModal(
                         label="Name"
                         onChange={(e) => setFriendName(e.target.value)}
                     />
-                    <p>Search for sections</p>
+                    <b>Search for sections</b>
                     <Grid container>
                         <Grid item xs={4} pr={1}>
                             <Autocomplete
@@ -114,16 +116,14 @@ export default function TypeManuallyModal(
                             />
                         </Grid>
                     </Grid>
-                    <Button
-                        variant={'outlined'}
-                        onClick={handleAddCourse}
-                    >
-                        Add
-                    </Button>
+                    <AddSectionButton
+                        section={formData.subject + "-" + formData.course + "-" + formData.section}
+                        handleAddCourse={handleAddCourse}
+                    />
                     <h2>Preview</h2>
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
-                            courses={previewCourses.courses}
+                            courses={previewCourses}
                         />
                     </Box>
                     <Button

@@ -87,6 +87,7 @@ export function UploadCalendar(
             } else {
                 parsedSections[newSection.name] = newSection;
             }
+            return section;
         });
 
         //Change state of courses data
@@ -115,23 +116,6 @@ export function UploadCalendar(
             //     fall[i].split("\n").map(e => fallCourses.push(e));
             // }
             // return fallCourses;
-        }
-    }
-
-    function dayToNum(s) {
-        switch (s) {
-            case "MO":
-                return 1;
-            case "TU":
-                return 2;
-            case "WE":
-                return 3;
-            case "TH":
-                return 4;
-            case "FR":
-                return 5;
-            default:
-                break;
         }
     }
 

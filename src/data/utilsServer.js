@@ -4,5 +4,5 @@ export const ENDPOINTS = {
     subjects: 'subjects',
     courseNumbers: 'courses/',
     sections: 'sections/',
-    sectionInfo: 'section-info/',
+    sectionInfo: 'sectionInfo/',
 }

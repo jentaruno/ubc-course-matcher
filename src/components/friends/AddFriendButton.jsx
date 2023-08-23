@@ -5,7 +5,7 @@ import CalendarFileModal from "./CalendarFileModal";
 import TypeManuallyModal from "./TypeManuallyModal";
 import QRCodeModal from "./QRCodeModal";
 
-export function AddFriendButton({friends, setFriends, handleAddFriend}) {
+export function AddFriendButton({handleAddFriend}) {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => setAnchorEl(event.currentTarget);
@@ -74,8 +74,7 @@ export function AddFriendButton({friends, setFriends, handleAddFriend}) {
             />
 
             <TypeManuallyModal
-                friends={friends}
-                setFriends={setFriends}
+                handleAddFriend={handleAddFriend}
                 open={openTypeManually}
                 handleClose={handleCloseTypeManually}
             />

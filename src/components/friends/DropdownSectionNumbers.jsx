@@ -18,7 +18,7 @@ export default function DropdownSectionNumbers(
             renderInput={(params) =>
                 <TextField {...params} label="Section"/>
             }
-            onChange={(e) => handleChange(e)}
+            onInputChange={(e, value) => handleChange(e, value)}
         />
     )
 }
