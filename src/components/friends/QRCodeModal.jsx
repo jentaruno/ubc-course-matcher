@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {Box, IconButton, Modal, Stack} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import QrScanner from "qr-scanner";
-import LoadedCourses from "../profile/LoadedCourses";
+import LoadedCourses from "../reusable/LoadedCourses";
 
 export default function QRCodeModal(
     {
@@ -80,7 +80,7 @@ export default function QRCodeModal(
 
         startQrScanner()
             .catch(console.error);
-    }, [friendBlock, open, qrVideo, qrScanner, createQrScanner]);
+    }, [friendBlock, open, qrVideo, qrScanner]);
 
     return (
         <Modal

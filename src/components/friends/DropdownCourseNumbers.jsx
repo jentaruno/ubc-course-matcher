@@ -5,6 +5,7 @@ import useCourses from "../../data/useCourses";
 export default function DropdownCourseNumbers(
     {
         subject,
+        value,
         handleChange
     }) {
 
@@ -15,10 +16,11 @@ export default function DropdownCourseNumbers(
             disablePortal
             id="course"
             options={courseNumbers ?? []}
+            value={value}
             renderInput={(params) =>
                 <TextField {...params} label="Course"/>
             }
-            onInputChange={(e, value) => handleChange(e, value)}
+            onChange={(e, value) => handleChange(e, value)}
         />
     )
 }

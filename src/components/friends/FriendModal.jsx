@@ -1,6 +1,6 @@
 import {Box, IconButton, Modal, Stack} from "@mui/material";
 import {Close} from "@mui/icons-material";
-import LoadedCourses from "../profile/LoadedCourses";
+import LoadedCourses from "../reusable/LoadedCourses";
 import React from "react";
 import * as PropTypes from "prop-types";
 

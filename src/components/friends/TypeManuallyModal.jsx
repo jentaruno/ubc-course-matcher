@@ -1,6 +1,6 @@
 import {Autocomplete, Box, Button, Grid, IconButton, Modal, Stack, TextField} from "@mui/material";
 import React, {useState} from "react";
-import LoadedCourses from "../profile/LoadedCourses";
+import LoadedCourses from "../reusable/LoadedCourses";
 import {Close} from "@mui/icons-material";
 import useSubjects from "../../data/useSubjects";
 import DropdownCourseNumbers from "./DropdownCourseNumbers";
@@ -48,9 +48,19 @@ export default function TypeManuallyModal(
     }
 
     const handleAddCourse = (course) => {
-        console.log("course", course)
         const newCourses = [...previewCourses];
         newCourses.push(course);
+        setPreviewCourses(newCourses);
+        setFormData({
+            subject: '',
+            course: '',
+            section: '',
+        });
+    }
+
+    const handleDeleteCourse = (i) => {
+        const newCourses = [...previewCourses];
+        newCourses.splice(i, 1);
         setPreviewCourses(newCourses);
     }
 
@@ -59,6 +69,11 @@ export default function TypeManuallyModal(
             const newCourse = {courses: previewCourses};
             newCourse.name = friendName;
             setFriendName("");
+            setFormData({
+                subject: '',
+                course: '',
+                section: '',
+            });
             setPreviewCourses([]);
             handleClose();
             handleAddFriend(newCourse);
@@ -97,33 +112,43 @@ export default function TypeManuallyModal(
                                 disablePortal
                                 id="subject"
                                 options={subjects ?? []}
+                                value={formData.subject}
                                 renderInput={(params) =>
                                     <TextField {...params} label="Subject"/>
                                 }
-                                onInputChange={(e, value) => handleChange("subject", value)}
+                                onChange={(e, value) => handleChange("subject", value)}
                             />
                         </Grid>
                         <Grid item xs={4} pr={1}>
                             <DropdownCourseNumbers
                                 subject={formData.subject}
+                                value={formData.course}
                                 handleChange={(e, value) => handleChange("course", value)}
                             />
                         </Grid>
                         <Grid item xs={4}>
                             <DropdownSectionNumbers
                                 course={formData.subject + "-" + formData.course}
+                                value={formData.section}
                                 handleChange={(e, value) => handleChange("section", value)}
                             />
                         </Grid>
                     </Grid>
                     <AddSectionButton
-                        section={formData.subject + "-" + formData.course + "-" + formData.section}
+                        disabled={!formData.subject ||
+                            !formData.course ||
+                            !formData.section ||
+                            formData.subject.trim() === "" ||
+                            formData.course.trim() === "" ||
+                            formData.section.trim() === ""}
+                        formData={formData}
                         handleAddCourse={handleAddCourse}
                     />
                     <h2>Preview</h2>
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
                             courses={previewCourses}
+                            handleDelete={handleDeleteCourse}
                         />
                     </Box>
                     <Button

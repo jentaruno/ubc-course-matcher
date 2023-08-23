@@ -2,7 +2,7 @@ import {Box, Link, Stack, Tab, Tabs} from "@mui/material";
 import React, {useState} from "react";
 import {UploadCalendar} from "../components/reusable/UploadCalendar";
 import TypeManuallyTab from "../components/reusable/TypeManuallyTab";
-import LoadedCourses from "../components/profile/LoadedCourses";
+import LoadedCourses from "../components/reusable/LoadedCourses";
 import {ArrowBack} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
 

@@ -1,9 +1,9 @@
-import CourseBlock from "../reusable/CourseBlock";
+import CourseBlock from "./CourseBlock";
 import React from "react";
 import {Divider, Stack} from "@mui/material";
 
 // TODO: placeholder when no courses loaded yet
-export default function LoadedCourses({courses}) {
+export default function LoadedCourses({courses, handleDelete}) {
     return (
         <Stack
             sx={{height: '100%', overflowY: 'scroll'}}
@@ -16,12 +16,13 @@ export default function LoadedCourses({courses}) {
             />}
         >
             {courses && courses?.length > 0
-                ? courses.map(({name, location, friends, classTimes}) =>
+                ? courses.map(({name, location, friends, classTimes}, i) =>
                     <CourseBlock
                         course={name}
                         location={location}
                         friends={friends}
                         classTimes={classTimes}
+                        handleDelete={handleDelete ? () => handleDelete(i) : null}
                     />
                 )
                 : <p>No courses loaded</p>}

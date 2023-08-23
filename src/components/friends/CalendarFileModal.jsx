@@ -1,7 +1,7 @@
 import {Box, Button, IconButton, Modal, Stack, TextField} from "@mui/material";
 import React, {useState} from "react";
 import {UploadCalendar} from "../reusable/UploadCalendar";
-import LoadedCourses from "../profile/LoadedCourses";
+import LoadedCourses from "../reusable/LoadedCourses";
 import {Close} from "@mui/icons-material";
 
 export default function CalendarFileModal(

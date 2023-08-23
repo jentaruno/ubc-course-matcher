@@ -5,6 +5,7 @@ import useSections from "../../data/useSections";
 export default function DropdownSectionNumbers(
     {
         course,
+        value,
         handleChange
     }) {
 
@@ -15,10 +16,11 @@ export default function DropdownSectionNumbers(
             disablePortal
             id="course"
             options={sectionNumbers ?? []}
+            value={value}
             renderInput={(params) =>
                 <TextField {...params} label="Section"/>
             }
-            onInputChange={(e, value) => handleChange(e, value)}
+            onChange={(e, value) => handleChange(e, value)}
         />
     )
 }

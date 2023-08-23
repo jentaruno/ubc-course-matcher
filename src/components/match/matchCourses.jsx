@@ -1,7 +1,7 @@
 import {Stack} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import useLocalStorage from "../../data/useLocalStorage";
-import LoadedCourses from "../profile/LoadedCourses";
+import LoadedCourses from "../reusable/LoadedCourses";
 
 export default function MatchSections() {
     // TODO: only common sections with you in it vs everything
