@@ -135,12 +135,6 @@ export default function TypeManuallyModal(
                         </Grid>
                     </Grid>
                     <AddSectionButton
-                        disabled={!formData.subject ||
-                            !formData.course ||
-                            !formData.section ||
-                            formData.subject.trim() === "" ||
-                            formData.course.trim() === "" ||
-                            formData.section.trim() === ""}
                         formData={formData}
                         handleAddCourse={handleAddCourse}
                     />

@@ -4,7 +4,6 @@ import useSectionInfo from "../../data/useSectionInfo";
 
 export default function AddSectionButton(
     {
-        disabled,
         formData,
         handleAddCourse
     }) {
@@ -12,14 +11,19 @@ export default function AddSectionButton(
     const sectionInfo = useSectionInfo(formData.subject + "-" + formData.course + "-" + formData.section);
 
     const handleClick = () => {
-        if (sectionInfo) {
+        if (formData.subject && formData.course && formData.section && sectionInfo) {
             handleAddCourse(sectionInfo);
         }
     }
 
     return (
         <Button
-            disabled={disabled}
+            disabled={!formData.subject ||
+                !formData.course ||
+                !formData.section ||
+                formData.subject.trim() === "" ||
+                formData.course.trim() === "" ||
+                formData.section.trim() === ""}
             variant={'contained'}
             onClick={handleClick}
         >
