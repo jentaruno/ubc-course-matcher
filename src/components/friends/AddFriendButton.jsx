@@ -4,6 +4,7 @@ import React, {useState} from "react";
 import CalendarFileModal from "./CalendarFileModal";
 import TypeManuallyModal from "./TypeManuallyModal";
 import QRCodeModal from "./QRCodeModal";
+import AlertToast from "../reusable/AlertToast";
 
 export function AddFriendButton({handleAddFriend}) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -20,6 +21,8 @@ export function AddFriendButton({handleAddFriend}) {
     const [openQrCode, setOpenQrCode] = useState(false);
     const handleOpenQrCode = () => setOpenQrCode(true);
     const handleCloseQrCode = () => setOpenQrCode(false);
+    const handleErrorQrCode = () => setOpenToast(true);
+    const [openToast, setOpenToast] = useState(false);
 
     const [openTypeManually, setOpenTypeManually] = useState(false);
     const handleOpenTypeManually = () => setOpenTypeManually(true);
@@ -83,6 +86,14 @@ export function AddFriendButton({handleAddFriend}) {
                 handleAddFriend={handleAddFriend}
                 open={openQrCode}
                 handleClose={handleCloseQrCode}
+                handleError={handleErrorQrCode}
+            />
+
+            <AlertToast
+                open={openToast}
+                setOpen={setOpenToast}
+                variant={"Error"}
+                message={"Invalid QR code."}
             />
 
         </Box>

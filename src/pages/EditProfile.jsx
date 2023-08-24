@@ -4,6 +4,7 @@ import {ArrowBack} from "@mui/icons-material";
 import useDegrees from "../data/useDegrees";
 import useLocalStorage from "../data/useLocalStorage";
 import {EditProfileForm} from "../components/profile/EditProfileForm";
+import AlertToast from "../components/reusable/AlertToast";
 
 export default function EditProfile() {
     // TODO: default profpic
@@ -11,6 +12,8 @@ export default function EditProfile() {
 
     const [userData, setUserData] = useLocalStorage("user");
     const [formData, setFormData] = useState(userData);
+    const [openToastError, setOpenToastError] = useState(false);
+    const [openToastSuccess, setOpenToastSuccess] = useState(false);
     const degrees = useDegrees();
 
     function handleChange(event) {
@@ -23,9 +26,10 @@ export default function EditProfile() {
 
     function saveUserData() {
         if (Object.keys(formData).every(key => formData[key] !== "")) {
+            setOpenToastSuccess(true);
             setUserData(formData);
         } else {
-            // TODO: toast error
+            setOpenToastError(true);
         }
     }
 
@@ -56,6 +60,18 @@ export default function EditProfile() {
             >
                 Save
             </Button>
+            <AlertToast
+                open={openToastError}
+                setOpen={setOpenToastError}
+                variant={"error"}
+                message={"Please fill in all fields."}
+            />
+            <AlertToast
+                open={openToastSuccess}
+                setOpen={setOpenToastSuccess}
+                variant={"success"}
+                message={"Profile saved successfully!"}
+            />
         </Stack>
     );
 }

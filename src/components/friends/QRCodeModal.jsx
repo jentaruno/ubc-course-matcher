@@ -10,6 +10,7 @@ export default function QRCodeModal(
         open,
         handleAddFriend,
         handleClose,
+        handleError,
     }) {
     const style = {
         position: 'absolute',
@@ -27,7 +28,6 @@ export default function QRCodeModal(
     const [qrScanner, setQrScanner] = useState(null);
     const [isLoading, setScanned] = useState(false);
     const qrVideo = useRef(null);
-
 
     const createQrScanner = () => {
         let qrScanner = new QrScanner(
@@ -55,7 +55,7 @@ export default function QRCodeModal(
                 setQrScanner(null);
             }
         } else {
-            // TODO: toast error
+            handleError();
             handleClose();
         }
     }

@@ -4,6 +4,7 @@ import DropdownCourseNumbers from "../friends/DropdownCourseNumbers";
 import DropdownSectionNumbers from "../friends/DropdownSectionNumbers";
 import AddSectionButton from "../friends/AddSectionButton";
 import useSubjects from "../../data/useSubjects";
+import AlertToast from "./AlertToast";
 
 export default function TypeCourseManually({courses, handleUpdate}) {
     const subjects = useSubjects();
@@ -12,6 +13,7 @@ export default function TypeCourseManually({courses, handleUpdate}) {
         course: '',
         section: '',
     });
+    const [openToast, setOpenToast] = useState(false);
 
     const handleChange = (key, value) => {
         setFormData((prevFormData) => ({
@@ -21,6 +23,10 @@ export default function TypeCourseManually({courses, handleUpdate}) {
     }
 
     const handleAddCourse = (course) => {
+        if (courses.map(course => course.name).includes(course.name)) {
+            setOpenToast(true);
+            return;
+        }
         const newCourses = [...courses];
         newCourses.push(course);
         handleUpdate(newCourses);
@@ -30,6 +36,7 @@ export default function TypeCourseManually({courses, handleUpdate}) {
             section: '',
         });
     }
+
 
     return (
         <Stack spacing={2}>
@@ -68,6 +75,12 @@ export default function TypeCourseManually({courses, handleUpdate}) {
             <AddSectionButton
                 formData={formData}
                 handleAddCourse={handleAddCourse}
+            />
+            <AlertToast
+                open={openToast}
+                setOpen={setOpenToast}
+                variant={"error"}
+                message={"You've already added this section."}
             />
         </Stack>
     );
