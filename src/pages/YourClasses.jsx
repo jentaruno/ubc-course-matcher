@@ -1,7 +1,7 @@
 import {Box, Link, Stack, Tab, Tabs} from "@mui/material";
 import React, {useState} from "react";
 import {UploadCalendar} from "../components/reusable/UploadCalendar";
-import TypeManuallyTab from "../components/reusable/TypeManuallyTab";
+import TypeCourseManually from "../components/reusable/TypeCourseManually";
 import LoadedCourses from "../components/reusable/LoadedCourses";
 import {ArrowBack} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
@@ -13,6 +13,12 @@ const YourClasses = () => {
     // TODO: detect term from SSC?
     const [userData, setUserData] = useLocalStorage("user");
     const [term, setTerm] = useState("Winter");
+
+    const handleDeleteCourse = (i) => {
+        const newCourses = [...userData.courses];
+        newCourses.splice(i, 1);
+        setUserData({courses: newCourses});
+    }
 
     return (
         <Box>
@@ -39,8 +45,9 @@ const YourClasses = () => {
                         courses={userData}
                         handleUpdate={setUserData}
                     />
-                    : <TypeManuallyTab
-                        courses={userData}
+                    : <TypeCourseManually
+                        courses={userData.courses}
+                        handleUpdate={(c) => setUserData({courses: c})}
                     />}
                 <Stack
                     direction={'column'}
@@ -59,6 +66,7 @@ const YourClasses = () => {
                             </p>
                             <LoadedCourses
                                 courses={userData.courses}
+                                handleDelete={handleDeleteCourse}
                             />
                         </div>
                     }

@@ -3,6 +3,7 @@ import React from "react";
 import {Divider, Stack} from "@mui/material";
 
 // TODO: placeholder when no courses loaded yet
+// TODO: refactor, change handleDelete to setCourses. add delete={true/false} prop. handle deletion internally
 export default function LoadedCourses({courses, handleDelete}) {
     return (
         <Stack

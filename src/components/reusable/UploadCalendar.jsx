@@ -94,6 +94,7 @@ export function UploadCalendar(
 
         //Change state of courses data
         const sectionsArray = Object.values(parsedSections);
+        // TODO: refactor, return array only
         return {courses: sectionsArray};
     }
 
