@@ -13,7 +13,7 @@ export default function AddSectionButton(
     return (
         <Button
             disabled={!sectionInfo || !sectionInfo.classTimes ||
-                [formData.subject, formData.course, formData.section].some(e => e === "Loading...")}
+                [formData.subject, formData.course, formData.section].some(e => (e === "Loading..." || e === ""))}
             variant={'contained'}
             onClick={() => handleAddCourse(sectionInfo)}
         >

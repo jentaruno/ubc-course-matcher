@@ -101,7 +101,7 @@ export default function QRCodeModal(
             aria-describedby="modal-modal-description"
         >
             <Box sx={style}>
-                <Stack spacing={2}>
+                <Stack spacing={2} overflow={'hidden'}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
                         <h2>Scan QR Code</h2>
                         <IconButton
