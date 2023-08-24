@@ -3,6 +3,7 @@ import {Close} from "@mui/icons-material";
 import LoadedCourses from "../reusable/LoadedCourses";
 import React from "react";
 import * as PropTypes from "prop-types";
+import {ModalBox} from "../reusable/ModalBox";
 
 export function FriendModal(props) {
     // TODO: timetable view
@@ -12,7 +13,7 @@ export function FriendModal(props) {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
     >
-        <Box sx={props.sx}>
+        <ModalBox>
             <Stack
                 direction={"column"}
                 spacing={1}
@@ -30,24 +31,13 @@ export function FriendModal(props) {
                     <LoadedCourses courses={props.courses}/>
                 </Box>
             </Stack>
-        </Box>
+        </ModalBox>
     </Modal>;
 }
 
 FriendModal.propTypes = {
     open: PropTypes.bool,
     onClose: PropTypes.func,
-    sx: PropTypes.shape({
-        p: PropTypes.number,
-        boxShadow: PropTypes.number,
-        transform: PropTypes.string,
-        bgcolor: PropTypes.string,
-        top: PropTypes.string,
-        borderRadius: PropTypes.string,
-        left: PropTypes.string,
-        width: PropTypes.string,
-        position: PropTypes.string
-    }),
     name: PropTypes.any,
     courses: PropTypes.any
 };

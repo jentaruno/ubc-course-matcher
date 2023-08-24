@@ -4,6 +4,7 @@ import {Close} from "@mui/icons-material";
 import QrScanner from "qr-scanner";
 import LoadedCourses from "../reusable/LoadedCourses";
 import {isQRValid, qrToUserData} from "../../data/utilsQr";
+import {ModalBox} from "../reusable/ModalBox";
 
 export default function QRCodeModal(
     {
@@ -12,17 +13,6 @@ export default function QRCodeModal(
         handleClose,
         handleError,
     }) {
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '90vw',
-        bgcolor: 'background.paper',
-        borderRadius: '1rem',
-        boxShadow: 12,
-        p: 2,
-    };
 
     const [friendBlock, setFriendBlock] = useState(null);
     const [qrScanner, setQrScanner] = useState(null);
@@ -100,7 +90,7 @@ export default function QRCodeModal(
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <ModalBox>
                 <Stack spacing={2} overflow={'hidden'}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
                         <h2>Scan QR Code</h2>
@@ -138,7 +128,7 @@ export default function QRCodeModal(
                         }
                     </Box>
                 </Stack>
-            </Box>
+            </ModalBox>
         </Modal>
     );
 }

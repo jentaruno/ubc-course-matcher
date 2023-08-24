@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Box, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Box, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
 import {getAllClassTimes, stringToDate} from "../../data/utilsCourse";
 import {MeetTableBody} from "./MeetTableBody";
 
@@ -69,7 +69,7 @@ export const MeetTable = ({friends, loading, setLoading}) => {
 
     return (
         <Box overflow={'hidden'}>
-            <Table size="small">
+            <Table size="small" sx={{opacity: loading ? '50%' : '100%'}}>
                 <TableHead>
                     <TableRow>
                         <TableCell></TableCell>
@@ -81,12 +81,10 @@ export const MeetTable = ({friends, loading, setLoading}) => {
                     </TableRow>
                 </TableHead>
                 <TableBody id="meet">
-                    {loading
-                        ? <CircularProgress/>
-                        : <MeetTableBody shades={blocksShades ?? []}/>
-                    }
+                    <MeetTableBody shades={blocksShades ?? []}/>
                 </TableBody>
             </Table>
+            }
         </Box>
     );
 }

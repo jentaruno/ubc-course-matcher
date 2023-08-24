@@ -14,7 +14,7 @@ export default function FriendsChecklist({friends, setFriends}) {
                 {friends.map((friend, i) =>
                     <FormControlLabel
                         key={`checkbox-${friend.name}`}
-                        control={<Checkbox value={friend.checked}/>}
+                        control={<Checkbox checked={friend.checked}/>}
                         label={friend.name}
                         onChange={(e) => handleChange(e, i)}
                     />

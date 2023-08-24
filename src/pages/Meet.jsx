@@ -7,7 +7,6 @@ import FriendsChecklist from "../components/meet/FriendsChecklist";
 const Meet = () => {
     const [userData, setUserData] = useLocalStorage("user");
     const [loading, setLoading] = useState(true);
-
     const friendsCheckbox = () => {
         const userBlock = {
             name: userData.name,

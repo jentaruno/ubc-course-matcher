@@ -1,14 +1,20 @@
 import {BottomNavigation, BottomNavigationAction, Box} from "@mui/material";
 import {useState} from "react";
 import {AccountCircle, Handshake, People, Today} from "@mui/icons-material";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 export default function BottomNav() {
-
-    const [value, setValue] = useState(0);
     const navigate = useNavigate();
+    const currentLocation = useLocation();
 
-    // TODO: when nav subpage don't reset
+    const pages = {
+        profile: 0,
+        friends: 1,
+        match: 2,
+        meet: 3
+    }
+    const currentPage = currentLocation.pathname.split('/')[1];
+    const [value, setValue] = useState(pages[currentPage] || 0);
 
     return (
         <Box

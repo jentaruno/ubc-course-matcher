@@ -3,6 +3,7 @@ import React, {useState} from "react";
 import {Close} from "@mui/icons-material";
 import TypeCourseManually from "../reusable/TypeCourseManually";
 import LoadedCourses from "../reusable/LoadedCourses";
+import {ModalBox} from "../reusable/ModalBox";
 
 export default function TypeManuallyModal(
     {
@@ -11,19 +12,6 @@ export default function TypeManuallyModal(
         handleClose
     }) {
     // TODO: form validation error handling
-    // TODO: empty form when close
-    const style = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: '90vw',
-        bgcolor: 'background.paper',
-        borderRadius: '1rem',
-        boxShadow: 12,
-        p: 2,
-    };
-
     // TODO: make lazy
     // TODO: set term
 
@@ -56,7 +44,7 @@ export default function TypeManuallyModal(
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box sx={style}>
+            <ModalBox>
                 <Stack spacing={2}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
                         <h2>Add Friend's Sections</h2>
@@ -91,7 +79,7 @@ export default function TypeManuallyModal(
                         Submit
                     </Button>
                 </Stack>
-            </Box>
+            </ModalBox>
         </Modal>
     );
 }
