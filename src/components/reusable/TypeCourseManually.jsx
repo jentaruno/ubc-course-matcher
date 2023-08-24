@@ -51,6 +51,8 @@ export default function TypeCourseManually({courses, handleUpdate}) {
                         id="subject"
                         options={subjects ?? []}
                         value={formData.subject}
+                        defaultValue=""
+                        isOptionEqualToValue={(option, value) => option === value || value === ''}
                         renderInput={(params) =>
                             <TextField {...params} label="Subject"/>
                         }

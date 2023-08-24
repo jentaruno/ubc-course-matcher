@@ -8,7 +8,7 @@ export default function AddSectionButton(
         handleAddCourse
     }) {
 
-    const sectionInfo = useSectionInfo(formData.subject + "-" + formData.course + "-" + formData.section);
+    const sectionInfo = useSectionInfo(formData);
 
     return (
         <Button

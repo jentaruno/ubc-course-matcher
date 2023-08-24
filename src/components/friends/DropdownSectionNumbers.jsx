@@ -19,6 +19,8 @@ export default function DropdownSectionNumbers(
             id="course"
             options={sectionNumbers ?? []}
             value={value}
+            defaultValue=""
+            isOptionEqualToValue={(option, value) => option === value || value === ''}
             renderInput={(params) =>
                 <TextField {...params} label="Section"/>
             }
