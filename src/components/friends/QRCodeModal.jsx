@@ -76,7 +76,7 @@ export default function QRCodeModal(
     }
 
     useEffect(() => {
-        const startQrScanner = async () => {
+        const handleQrScanner = async () => {
             await qrVideo.current;
             if (open && !friendBlock && qrVideo.current) {
                 if (!qrScanner) {
@@ -84,10 +84,12 @@ export default function QRCodeModal(
                 } else {
                     qrScanner.start();
                 }
+            } else if (qrScanner) {
+                qrScanner.stop();
             }
         };
 
-        startQrScanner()
+        handleQrScanner()
             .catch(console.error);
     }, [friendBlock, open, qrVideo, qrScanner]);
 

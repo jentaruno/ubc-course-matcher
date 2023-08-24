@@ -14,6 +14,8 @@ export default function DropdownCourseNumbers(
     return (
         <Autocomplete
             disablePortal
+            autoHighlight={true}
+            autoSelect={true}
             id="course"
             options={courseNumbers ?? []}
             value={value}

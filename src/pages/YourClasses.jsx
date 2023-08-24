@@ -42,11 +42,10 @@ const YourClasses = () => {
                 {tab === 0
                     ? <UploadCalendar
                         setTerm={setTerm}
-                        courses={userData}
                         handleUpdate={setUserData}
                     />
                     : <TypeCourseManually
-                        courses={userData.courses}
+                        courses={userData.courses ?? []}
                         handleUpdate={(c) => setUserData({courses: c})}
                     />}
                 <Stack

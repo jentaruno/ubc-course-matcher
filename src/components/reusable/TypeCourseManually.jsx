@@ -39,6 +39,8 @@ export default function TypeCourseManually({courses, handleUpdate}) {
                     <Autocomplete
                         // TODO: move on to next autocomplete after pick
                         disablePortal
+                        autoHighlight={true}
+                        autoSelect={true}
                         id="subject"
                         options={subjects ?? []}
                         value={formData.subject}

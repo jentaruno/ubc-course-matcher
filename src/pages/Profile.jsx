@@ -1,5 +1,5 @@
 import {Card, CardContent, Grid, Link, Stack} from "@mui/material";
-import {ArrowForwardIos, Book, Edit, Logout, QrCode} from "@mui/icons-material";
+import {ArrowForwardIos, Book, Edit, QrCode} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
 import {useState} from "react";
 import ShareQRModal from "../components/profile/ShareQRModal";
@@ -78,7 +78,7 @@ const Profile = () => {
         <Link href={'/profile/edit'} underline={'none'}>
             <p><Edit/> Edit your profile</p>
         </Link>
-        <p><Logout/> Log out</p>
+        {/*<p><Logout/> Log out</p>*/}
     </Stack>;
 }
 
