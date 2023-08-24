@@ -3,12 +3,11 @@ import {Box, CircularProgress, Table, TableBody, TableCell, TableHead, TableRow}
 import {getAllClassTimes, stringToDate} from "../../data/utilsCourse";
 import {MeetTableBody} from "./MeetTableBody";
 
-export const MeetTable = ({friends}) => {
+export const MeetTable = ({friends, loading, setLoading}) => {
     // TODO: placeholder if no user data / friends
     // TODO: borders
     // TODO: pick which friends to meet with
 
-    const [loading, setLoading] = useState(true);
     const [blocksShades, setBlocksShades] = useState([]);
 
     // Takes array of user data and returns array of friend time blocks to add

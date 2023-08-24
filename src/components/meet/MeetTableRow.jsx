@@ -12,7 +12,6 @@ export const MeetTableRow = ({time, shades}) => {
             if (shades[tdId]) {
                 const opacity = shades[tdId].shade;
                 const friends = "Not free: " + shades[tdId].friends.join(", ");
-                console.log(friends);
                 return <Tooltip title={friends} arrow>
                     <TableCell
                         style={{backgroundColor: '#DC3545', opacity: opacity}}

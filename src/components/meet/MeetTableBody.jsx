@@ -17,6 +17,7 @@ export const MeetTableBody = ({shades}) => {
         let options = {hour: '2-digit', minute: '2-digit', hour12: false};
         let currentLocaleTime = currentTime.toLocaleTimeString([], options);
         newMeetTableText.push(<MeetTableRow
+            key={`row-${currentTime}`}
             time={currentLocaleTime}
             shades={shades}
         />);

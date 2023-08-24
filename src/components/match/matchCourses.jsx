@@ -39,7 +39,6 @@ export default function MatchSections() {
             return (a.name < b.name) ? -1 : (a.name > b.name) ? 1 : 0;
         });
 
-        console.log("same sections", sameSections);
         return sameSections;
     }
 
@@ -50,7 +49,6 @@ export default function MatchSections() {
                 courses: userData.courses,
             }
                 , ...userData.friends];
-        console.log(userAndFriends);
         const matchedSections = findSameCourses(userAndFriends);
         setCourses(matchedSections);
     }, [userData.classTimes, userData.courses, userData.name, userData.friends]);
