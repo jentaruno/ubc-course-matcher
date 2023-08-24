@@ -10,24 +10,15 @@ export default function AddSectionButton(
 
     const sectionInfo = useSectionInfo(formData.subject + "-" + formData.course + "-" + formData.section);
 
-    const handleClick = () => {
-        if (formData.subject && formData.course && formData.section && sectionInfo) {
-            handleAddCourse(sectionInfo);
-        }
-    }
-
     return (
         <Button
-            disabled={!formData.subject ||
-                !formData.course ||
-                !formData.section ||
-                formData.subject.trim() === "" ||
-                formData.course.trim() === "" ||
-                formData.section.trim() === ""}
+            disabled={!sectionInfo || !sectionInfo.classTimes || sectionInfo.classTimes.length === 0}
             variant={'contained'}
-            onClick={handleClick}
+            onClick={() => handleAddCourse(sectionInfo)}
         >
-            Add Section
+            {formData.subject && formData.course && formData.section && !sectionInfo
+                ? "Loading..."
+                : "Add Section"}
         </Button>
     )
 }
