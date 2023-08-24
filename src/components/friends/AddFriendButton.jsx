@@ -80,6 +80,7 @@ export function AddFriendButton({handleAddFriend}) {
             />
 
             <QRCodeModal
+                handleAddFriend={handleAddFriend}
                 open={openQrCode}
                 handleClose={handleCloseQrCode}
             />

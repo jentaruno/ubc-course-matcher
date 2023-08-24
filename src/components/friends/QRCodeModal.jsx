@@ -1,12 +1,14 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Box, IconButton, Modal, Stack} from "@mui/material";
+import {Box, Button, CircularProgress, IconButton, Modal, Stack} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import QrScanner from "qr-scanner";
 import LoadedCourses from "../reusable/LoadedCourses";
+import {isQRValid, qrToUserData} from "../../data/utilsQr";
 
 export default function QRCodeModal(
     {
         open,
+        handleAddFriend,
         handleClose,
     }) {
     const style = {
@@ -23,12 +25,18 @@ export default function QRCodeModal(
 
     const [friendBlock, setFriendBlock] = useState(null);
     const [qrScanner, setQrScanner] = useState(null);
+    const [isLoading, setScanned] = useState(false);
     const qrVideo = useRef(null);
+
 
     const createQrScanner = () => {
         let qrScanner = new QrScanner(
             qrVideo.current,
-            result => processQRCode(result, qrScanner),
+            result => {
+                if (!friendBlock && !isLoading) {
+                    processQRCode(result, qrScanner);
+                }
+            },
             {
                 returnDetailedScanResult: true,
                 highlightScanRegion: true
@@ -37,32 +45,33 @@ export default function QRCodeModal(
         setQrScanner(qrScanner);
     }
 
-    const processQRCode = (result) => {
+    const processQRCode = async (result) => {
+        setScanned(true);
         if (isQRValid(result.data)) {
-            console.log('valid qr');
-            setFriendBlock(JSON.parse(result.data));
+            const userData = await qrToUserData(result.data);
+            setFriendBlock(userData);
+            if (qrScanner) {
+                qrScanner.stop();
+                setQrScanner(null);
+            }
         } else {
             // TODO: toast error
             handleClose();
         }
     }
 
-    const isQRValid = (str) => {
-        // TODO: u can do better than this
-        let data;
-        try {
-            data = JSON.parse(str);
-            console.log(data);
-            return (data.name && data.courses);
-        } catch (e) {
-            return false;
-        }
+    const handleSubmit = () => {
+        handleAddFriend(friendBlock);
+        onClose();
     }
 
     const onClose = () => {
-        qrScanner.stop();
+        if (qrScanner) {
+            qrScanner.stop();
+        }
         setFriendBlock(null);
         setQrScanner(null);
+        setScanned(false);
         handleClose();
     }
 
@@ -102,17 +111,27 @@ export default function QRCodeModal(
                     </Stack>
                     <Box sx={{maxHeight: '80vh'}}>
                         {!friendBlock
-                            ? <video
-                                ref={qrVideo}
-                                style={{width: '100%', height: '100%'}}
-                                disablePictureInPicture
-                                playsInline
-                            />
-                            : <Stack>
-                                <h2>{friendBlock.name}'s courses</h2>
-                                <LoadedCourses
-                                    courses={friendBlock.courses}
+                            ? !isLoading
+                                ? <video
+                                    ref={qrVideo}
+                                    style={{width: '100%', height: '100%'}}
+                                    disablePictureInPicture
+                                    playsInline
                                 />
+                                : <CircularProgress/>
+                            : <Stack spacing={2}>
+                                <h2>{friendBlock.name}'s courses</h2>
+                                <Box sx={{height: '30vh'}}>
+                                    <LoadedCourses
+                                        courses={friendBlock.courses}
+                                    />
+                                </Box>
+                                <Button
+                                    variant={'contained'}
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </Button>
                             </Stack>
                         }
                     </Box>

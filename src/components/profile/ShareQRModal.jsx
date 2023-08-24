@@ -2,6 +2,7 @@ import React from "react";
 import {Box, IconButton, Modal, Stack} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import QRCode from "react-qr-code";
+import {userDataToQr} from "../../data/utilsQr";
 
 export default function ShareQRModal(
     {
@@ -21,7 +22,7 @@ export default function ShareQRModal(
         p: 2,
     };
 
-    const qrString = JSON.stringify(qrData);
+    const qrString = JSON.stringify(userDataToQr(qrData));
 
     return (
         <Modal
