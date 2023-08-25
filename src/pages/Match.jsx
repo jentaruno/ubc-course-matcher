@@ -1,4 +1,4 @@
-import {Stack, Tab, Tabs} from "@mui/material";
+import {Stack, Tab, Tabs, Typography} from "@mui/material";
 import MatchSections from "../components/match/matchSections";
 import MatchCourses from "../components/match/matchCourses";
 import React, {useState} from "react";
@@ -17,7 +17,7 @@ const Match = () => {
     }
 
     return <div>
-        <h1>Course Match</h1>
+        <Typography variant={'h4'}>Course Match</Typography>
         {canMatch &&
             <Stack direction={'column'} spacing={2}>
                 <Tabs

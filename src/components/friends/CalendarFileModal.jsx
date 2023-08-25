@@ -1,4 +1,4 @@
-import {Box, Button, IconButton, Modal, Stack, TextField} from "@mui/material";
+import {Box, Button, IconButton, Modal, Stack, TextField, Typography} from "@mui/material";
 import React, {useState} from "react";
 import {UploadCalendar} from "../reusable/UploadCalendar";
 import LoadedCourses from "../reusable/LoadedCourses";
@@ -40,7 +40,7 @@ export default function CalendarFileModal(
             <ModalBox>
                 <Stack spacing={2}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
-                        <h2>Add Friend's Calendar</h2>
+                        <Typography variant={'h5'}>Add Friend's Calendar</Typography>
                         <IconButton
                             aria-label={'close'}
                             onClick={handleClose}
@@ -58,15 +58,15 @@ export default function CalendarFileModal(
                         setTerm={setTerm}
                         handleUpdate={setPreviewCourses}
                     />
-                    <h2>Preview</h2>
+                    <Typography variant={'h5'}>Preview</Typography>
                     {previewCourses.courses &&
-                        <p>
+                        <Typography>
                             {previewCourses.courses.length
                                 + " "
                                 + term
                                 + " sections"
                             }
-                        </p>
+                        </Typography>
                     }
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses

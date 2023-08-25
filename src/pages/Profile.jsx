@@ -1,4 +1,4 @@
-import {Card, CardContent, Grid, Link, Stack} from "@mui/material";
+import {Card, CardContent, Grid, Link, Stack, Typography} from "@mui/material";
 import {ArrowForwardIos, Book, Edit, QrCode} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
 import {useState} from "react";
@@ -21,8 +21,8 @@ const Profile = () => {
             {/*    src={'https://jentaruno.github.io/profile.jpeg'}*/}
             {/*/>*/}
             <Stack direction={'column'}>
-                <h1>{(userData && userData.name) ?? "UBC Student"}</h1>
-                <span>{(userData && userData.major) ?? ""}</span>
+                <Typography variant={'h4'}>{(userData && userData.name) ?? "UBC Student"}</Typography>
+                <Typography>{(userData && userData.major) ?? ""}</Typography>
             </Stack>
         </Stack>
         <Link href={'/profile/your-classes'} underline={'none'}>
@@ -37,8 +37,8 @@ const Profile = () => {
                             <Book fontSize={'large'}/>
                         </Grid>
                         <Grid item xs={9}>
-                            <h2>Edit Your Classes</h2>
-                            <span>Winter 2023</span>
+                            <Typography variant={'h5'}>Edit Your Classes</Typography>
+                            <Typography>Winter 2023</Typography>
                         </Grid>
                         <Grid item xs={1}>
                             <ArrowForwardIos/>
@@ -59,8 +59,8 @@ const Profile = () => {
                         <QrCode fontSize={'large'}/>
                     </Grid>
                     <Grid item xs={9}>
-                        <h2>Share Your Classes</h2>
-                        <span>QR Code sharing</span>
+                        <Typography variant={'h5'}>Share Your Classes</Typography>
+                        <Typography>QR Code sharing</Typography>
                     </Grid>
                     <Grid item xs={1}>
                         <ArrowForwardIos/>
@@ -76,9 +76,12 @@ const Profile = () => {
         />
 
         <Link href={'/profile/edit'} underline={'none'}>
-            <p><Edit/> Edit your profile</p>
+            <Stack direction={'row'} spacing={1}>
+                <Edit/>
+                <Typography>Edit your profile</Typography>
+            </Stack>
         </Link>
-        {/*<p><Logout/> Log out</p>*/}
+        {/*<Typography><Logout/> Log out</Typography>*/}
     </Stack>;
 }
 

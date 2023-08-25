@@ -1,4 +1,4 @@
-import {Stack} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import FriendBlock from "../components/friends/FriendBlock";
 import {AddFriendButton} from "../components/friends/AddFriendButton";
 import useLocalStorage from "../data/useLocalStorage";
@@ -24,7 +24,7 @@ const Friends = () => {
     }
 
     return <Stack spacing={3}>
-        <h1>Friends</h1>
+        <Typography variant={'h4'}>Friends</Typography>
         {friends && friends?.length > 0
             ? friends.map((friend, i) =>
                 <FriendBlock

@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Grid, IconButton, Link} from "@mui/material";
+import {Box, Card, CardContent, Grid, IconButton, Link, Typography} from "@mui/material";
 import {Delete} from "@mui/icons-material";
 import React, {useState} from "react";
 import {FriendModal} from "./FriendModal";
@@ -36,10 +36,10 @@ export default function FriendBlock(
                     >
                         <Grid item xs={11}>
                             <Link onClick={handleOpenModal} underline={'none'}>
-                                <h2>{name}</h2>
-                                <span>
+                                <Typography variant={'h5'}>{name}</Typography>
+                                <Typography>
                                     {courses.map(e => e.name).slice(0, 2).join(", ") + ',...'}
-                                </span>
+                                </Typography>
                             </Link>
                         </Grid>
                         <Grid item xs={1}>

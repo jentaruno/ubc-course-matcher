@@ -1,11 +1,11 @@
-import {TableCell, TableRow, Tooltip} from "@mui/material";
+import {TableCell, TableRow, Tooltip, Typography} from "@mui/material";
 import React from "react";
 
 export const MeetTableRow = ({time, shades}) => {
     return <TableRow key={time}>
         {(time.substring(3, 5) === "00")
             ? <TableCell>{time}</TableCell>
-            : <TableCell><span style={{opacity: 0}}>.</span></TableCell>
+            : <TableCell><Typography style={{opacity: 0}}>.</Typography></TableCell>
         }
         {["Mon", "Tue", "Wed", "Thu", "Fri"].map(i => {
             const tdId = "" + i + time;

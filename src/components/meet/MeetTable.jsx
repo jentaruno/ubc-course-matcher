@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Box, Table, TableBody, TableCell, TableHead, TableRow} from "@mui/material";
+import {Box, Table, TableBody, TableCell, TableHead, TableRow, Typography} from "@mui/material";
 import {getAllClassTimes, stringToDate} from "../../data/utilsCourse";
 import {MeetTableBody} from "./MeetTableBody";
 
@@ -75,7 +75,7 @@ export const MeetTable = ({friends, loading, setLoading}) => {
                         <TableCell></TableCell>
                         {["Mon", "Tue", "Wed", "Thu", "Fri"].map((e) =>
                             <TableCell width={"16%"} key={e}>
-                                <b>{e}</b>
+                                <Typography sx={{fontWeight: 'bold'}}>{e}</Typography>
                             </TableCell>
                         )}
                     </TableRow>
@@ -84,7 +84,6 @@ export const MeetTable = ({friends, loading, setLoading}) => {
                     <MeetTableBody shades={blocksShades ?? []}/>
                 </TableBody>
             </Table>
-            }
         </Box>
     );
 }

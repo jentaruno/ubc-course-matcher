@@ -1,4 +1,4 @@
-import {Button, Stack} from "@mui/material";
+import {Button, Stack, Typography} from "@mui/material";
 import * as PropTypes from "prop-types";
 import {EditProfileForm} from "../components/profile/EditProfileForm";
 import React, {useState} from "react";
@@ -36,7 +36,7 @@ export default function Register(props) {
 
     return (
         <Stack spacing={2}>
-            <h2>Let's start with you</h2>
+            <Typography variant={'h5'}>Let's start with you</Typography>
             <EditProfileForm
                 formData={formData}
                 onChange={handleChange}

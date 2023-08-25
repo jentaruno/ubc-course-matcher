@@ -1,4 +1,4 @@
-import {Autocomplete, Grid, Stack, TextField} from "@mui/material";
+import {Autocomplete, Grid, Stack, TextField, Typography} from "@mui/material";
 import React, {useState} from "react";
 import DropdownCourseNumbers from "../friends/DropdownCourseNumbers";
 import DropdownSectionNumbers from "../friends/DropdownSectionNumbers";
@@ -40,7 +40,7 @@ export default function TypeCourseManually({courses, handleUpdate}) {
 
     return (
         <Stack spacing={2}>
-            <b>Search for sections</b>
+            <Typography sx={{fontWeight: 'bold'}}>Search for sections</Typography>
             <Grid container>
                 <Grid item xs={4} pr={1}>
                     <Autocomplete

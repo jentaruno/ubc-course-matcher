@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Stack} from "@mui/material";
+import {Stack, Typography} from "@mui/material";
 import {MeetTable} from "../components/meet/MeetTable";
 import useLocalStorage from "../data/useLocalStorage";
 import FriendsChecklist from "../components/meet/FriendsChecklist";
@@ -27,7 +27,7 @@ const Meet = () => {
     }, [friends]);
 
     return <Stack>
-        <h1>When to Meet</h1>
+        <Typography variant={'h4'}>When to Meet</Typography>
         <FriendsChecklist
             friends={friends}
             setFriends={setFriends}

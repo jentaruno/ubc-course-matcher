@@ -1,4 +1,4 @@
-import {Button, Link, Stack} from "@mui/material";
+import {Button, Link, Stack, Typography} from "@mui/material";
 import React, {useState} from "react";
 import {ArrowBack} from "@mui/icons-material";
 import useDegrees from "../data/useDegrees";
@@ -35,7 +35,7 @@ export default function EditProfile() {
 
     return (
         <Stack spacing={1} component={'form'}>
-            <h1>
+            <Typography variant={'h4'}>
                 <Link
                     href={'/profile'}
                     underline={'none'}
@@ -43,7 +43,7 @@ export default function EditProfile() {
                     <ArrowBack/>
                 </Link>
                 {' Edit Profile'}
-            </h1>
+            </Typography>
 
             {/*<InputLabel id={'photo'}>*/}
             {/*</InputLabel>*/}

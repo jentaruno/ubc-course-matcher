@@ -1,6 +1,6 @@
 import CourseBlock from "./CourseBlock";
 import React from "react";
-import {Divider, Stack} from "@mui/material";
+import {Divider, Stack, Typography} from "@mui/material";
 
 // TODO: placeholder when no courses loaded yet
 // TODO: refactor, change handleDelete to setCourses. add delete={true/false} prop. handle deletion internally
@@ -26,7 +26,7 @@ export default function LoadedCourses({courses, handleDelete}) {
                         handleDelete={handleDelete ? () => handleDelete(i) : null}
                     />
                 )
-                : <p>No courses loaded</p>}
+                : <Typography>No courses loaded</Typography>}
         </Stack>
     )
 }

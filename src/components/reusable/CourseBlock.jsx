@@ -1,4 +1,4 @@
-import {Box, Grid, IconButton, Stack, useTheme} from "@mui/material";
+import {Box, Grid, IconButton, Stack, Typography, useTheme} from "@mui/material";
 import {Clear, PeopleAlt} from "@mui/icons-material";
 import {getCalDays, getCalTimes} from "../../data/utilsCourse";
 import React from "react";
@@ -22,7 +22,7 @@ export default function CourseBlock(
             <Stack direction={'row'} spacing={2}>
                 <Grid container spacing={0}>
                     <Grid item xs={8} overflow={'hidden'}>
-                        <b>{course}</b>
+                        <Typography sx={{fontWeight: 'bold'}}>{course}</Typography>
                     </Grid>
                     <Grid
                         item xs={4}
@@ -30,7 +30,7 @@ export default function CourseBlock(
                         overflow={'hidden'} color={theme.palette.primary.light}
 
                     >
-                        <small>{days ?? ""}</small>
+                        <Typography sx={{fontSize: 'smaller'}}>{days ?? ""}</Typography>
                     </Grid>
                     <Grid
                         item
@@ -38,7 +38,7 @@ export default function CourseBlock(
                         overflow={'hidden'}
                         color={theme.palette.primary.light}
                     >
-                        {location && <small>{location}</small>}
+                        {location && <Typography sx={{fontSize: 'smaller'}}>{location}</Typography>}
                     </Grid>
                     <Grid
                         item xs={4}
@@ -46,7 +46,7 @@ export default function CourseBlock(
                         overflow={'hidden'}
                         color={theme.palette.primary.light}
                     >
-                        <small>{time ?? ""}</small>
+                        <Typography sx={{fontSize: 'smaller'}}>{time ?? ""}</Typography>
                     </Grid>
                     {Array.isArray(friends) && friends.length > 0 &&
                         <Grid
@@ -56,7 +56,7 @@ export default function CourseBlock(
                         >
                             <Stack direction={'row'} spacing={1}>
                                 <PeopleAlt/>
-                                <span>{friends.join(", ")}</span>
+                                <Typography>{friends.join(", ")}</Typography>
                             </Stack>
                         </Grid>
                     }

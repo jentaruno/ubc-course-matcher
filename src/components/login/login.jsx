@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import {Box, Button, Link, Stack, TextField} from "@mui/material";
+import {Box, Button, Link, Stack, TextField, Typography} from "@mui/material";
 
 // TODO: reg page
 // TODO: auth0
@@ -63,7 +63,7 @@ export default function Login({setToken}) {
                         justifyItems={'center'}
                         alignItems={'center'}
                     >
-                        <h2>Log in</h2>
+                        <Typography variant={'h5'}>Log in</Typography>
                         <TextField
                             label="Username"
                             onChange={e => setUsername(e.target.value)}

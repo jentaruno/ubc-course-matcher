@@ -1,4 +1,4 @@
-import {InputLabel, MenuItem, Select, Stack, TextField} from "@mui/material";
+import {InputLabel, MenuItem, Select, Stack, TextField, Typography} from "@mui/material";
 import React from "react";
 import * as PropTypes from "prop-types";
 
@@ -32,7 +32,7 @@ export function EditProfileForm(props) {
         </InputLabel>
         {props.degrees
             ? props.degrees.length === 0
-                ? <p>Loading...</p>
+                ? <Typography>Loading...</Typography>
                 : <Select
                     name="degree"
                     value={props.formData.degree}
@@ -49,7 +49,7 @@ export function EditProfileForm(props) {
                         </MenuItem>
                     )}
                 </Select>
-            : <p className={"text-danger"}>Error fetching data</p>
+            : <Typography className={"text-danger"}>Error fetching data</Typography>
         }
         <InputLabel id="major" required>
             Major

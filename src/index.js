@@ -1,8 +1,7 @@
+import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import reportWebVitals from './reportWebVitals';
-import './custom.scss';
 import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import Header from "./components/navigation/Header";
 import YourClasses from "./pages/YourClasses";
@@ -11,11 +10,13 @@ import Profile from "./pages/Profile";
 import Friends from "./pages/Friends";
 import Match from "./pages/Match";
 import Meet from "./pages/Meet";
-import {Box, Container} from "@mui/material";
+import {Container} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import useLocalStorage from "./data/useLocalStorage";
 import Register from "./pages/Register";
+import Satoshi from './fonts/Satoshi-Regular.otf';
+import SatoshiBold from './fonts/Satoshi-Bold.otf';
 
 export const theme = createTheme({
     palette: {
@@ -27,7 +28,51 @@ export const theme = createTheme({
         secondary: {
             main: '#D29A15',
         },
-        divider: '#AAAAAA',
+    },
+    typography: {
+        fontFamily: 'Satoshi',
+        h1: {
+            "fontWeight": 6800,
+        },
+        h2: {
+            "fontWeight": 600,
+        },
+        h3: {
+            "fontWeight": 600,
+        },
+        h4: {
+            "fontWeight": 600,
+        },
+        h5: {
+            "fontWeight": 600,
+        },
+        span: {
+            "fontWeight": 400
+        }
+    },
+    components: {
+        MuiDivider: {
+            color: '#AAAAAA',
+        },
+        MuiCssBaseline: {
+            styleOverrides: `
+        @font-face {
+          font-family: 'Satoshi';
+          font-style: normal;
+          font-display: swap;
+          font-weight: 400;
+          src: local('Satoshi'), local('Satoshi-Regular'), url(${Satoshi}) format('otf');
+          unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
+        }
+        @font-face {
+          font-family: 'Satoshi';
+          font-style: normal;
+          font-weight: 600;
+          src: local('SatoshiBold'), local('Satoshi-Bold'), url(${SatoshiBold}) format('otf');
+          unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
+        }
+      `,
+        },
     },
 });
 
@@ -37,9 +82,9 @@ export default function App() {
     return (
         <Router>
             <ThemeProvider theme={theme}>
-                <Box style={{display: 'flex', height: '100vh', overflowY: 'scroll', flexDirection: 'column'}}>
-                    <Header/>
-                    <Container sx={{p: '1rem', flexGrow: 1}} maxWidth={'sm'}>
+                <Container sx={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
+                    <Header sx={{flexGrow: 0}}/>
+                    <Container sx={{p: '1rem', flexGrow: 1, overflowY: 'scroll'}} maxWidth={'sm'}>
                         {userData
                             ? <Routes>
                                 <Route path="/" element={<Navigate to="/profile" replace/>}/>
@@ -52,8 +97,8 @@ export default function App() {
                             </Routes>
                             : <Register setUserData={setUserData}/>}
                     </Container>
-                    {userData && <BottomNav/>}
-                </Box>
+                    {userData && <BottomNav sx={{flexGrow: 0}}/>}
+                </Container>
             </ThemeProvider>
         </Router>
     );

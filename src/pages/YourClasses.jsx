@@ -1,4 +1,4 @@
-import {Box, Link, Stack, Tab, Tabs} from "@mui/material";
+import {Box, Link, Stack, Tab, Tabs, Typography} from "@mui/material";
 import React, {useState} from "react";
 import {UploadCalendar} from "../components/reusable/UploadCalendar";
 import TypeCourseManually from "../components/reusable/TypeCourseManually";
@@ -22,7 +22,7 @@ const YourClasses = () => {
 
     return (
         <Box>
-            <h1>
+            <Typography variant={'h4'}>
                 <Link
                     href={'/profile'}
                     underline={'none'}
@@ -30,7 +30,7 @@ const YourClasses = () => {
                     <ArrowBack/>
                 </Link>
                 {' Your Classes'}
-            </h1>
+            </Typography>
             <Stack spacing={3}>
                 <Tabs
                     value={tab}
@@ -53,16 +53,16 @@ const YourClasses = () => {
                     spacing={1}
                     overflowY={'scroll'}
                 >
-                    <h2>Loaded sections</h2>
+                    <Typography variant={'h5'}>Loaded sections</Typography>
                     {userData && userData.courses &&
                         <div>
-                            <p>
+                            <Typography>
                                 {userData.courses.length
                                     + " "
                                     + term
                                     + " sections"
                                 }
-                            </p>
+                            </Typography>
                             <LoadedCourses
                                 courses={userData.courses}
                                 handleDelete={handleDeleteCourse}

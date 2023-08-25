@@ -1,4 +1,4 @@
-import {Box, IconButton, Modal, Stack} from "@mui/material";
+import {Box, IconButton, Modal, Stack, Typography} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import LoadedCourses from "../reusable/LoadedCourses";
 import React from "react";
@@ -19,7 +19,7 @@ export function FriendModal(props) {
                 spacing={1}
             >
                 <Stack direction={"row"} justifyContent={"space-between"}>
-                    <h2>{props.name}'s sections</h2>
+                    <Typography variant={'h5'}>{props.name}'s sections</Typography>
                     <IconButton
                         aria-label={"close"}
                         onClick={props.onClose}

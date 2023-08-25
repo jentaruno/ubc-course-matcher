@@ -1,4 +1,4 @@
-import {Box, Divider, Fab, Link, Popover, Stack} from "@mui/material";
+import {Box, Divider, Fab, Link, Popover, Stack, Typography} from "@mui/material";
 import {Add, CalendarMonth, QrCode, Title} from "@mui/icons-material";
 import React, {useState} from "react";
 import CalendarFileModal from "./CalendarFileModal";
@@ -59,13 +59,22 @@ export function AddFriendButton({handleAddFriend}) {
                     divider={<Divider orientation={'horizontal'} flexItem/>}
                 >
                     <Link onClick={handleOpenQrCode} underline={'none'}>
-                        <QrCode/> QR code
+                        <Stack direction={'row'} spacing={1}>
+                            <QrCode/>
+                            <Typography>QR code</Typography>
+                        </Stack>
                     </Link>
                     <Link onClick={handleOpenCalendarFile} underline={'none'}>
-                        <CalendarMonth/> Calendar file
+                        <Stack direction={'row'} spacing={1}>
+                            <CalendarMonth/>
+                            <Typography>Calendar file</Typography>
+                        </Stack>
                     </Link>
                     <Link onClick={handleOpenTypeManually} underline={'none'}>
-                        <Title/> Type manually
+                        <Stack direction={'row'} spacing={1}>
+                            <Title/>
+                            <Typography>Type manually</Typography>
+                        </Stack>
                     </Link>
                 </Stack>
             </Popover>

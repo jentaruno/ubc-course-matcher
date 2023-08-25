@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Box, Button, CircularProgress, IconButton, Modal, Stack} from "@mui/material";
+import {Box, Button, CircularProgress, IconButton, Modal, Stack, Typography} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import QrScanner from "qr-scanner";
 import LoadedCourses from "../reusable/LoadedCourses";
@@ -93,7 +93,7 @@ export default function QRCodeModal(
             <ModalBox>
                 <Stack spacing={2} overflow={'hidden'}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
-                        <h2>Scan QR Code</h2>
+                        <Typography variant={'h5'}>Scan QR Code</Typography>
                         <IconButton
                             aria-label={'close'}
                             onClick={onClose}
@@ -112,7 +112,7 @@ export default function QRCodeModal(
                                 />
                                 : <CircularProgress/>
                             : <Stack spacing={2}>
-                                <h2>{friendBlock.name}'s courses</h2>
+                                <Typography variant={'h5'}>{friendBlock.name}'s courses</Typography>
                                 <Box sx={{height: '30vh'}}>
                                     <LoadedCourses
                                         courses={friendBlock.courses}

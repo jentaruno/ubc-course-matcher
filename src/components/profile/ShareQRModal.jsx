@@ -1,5 +1,5 @@
 import React from "react";
-import {IconButton, Modal, Stack} from "@mui/material";
+import {IconButton, Modal, Stack, Typography} from "@mui/material";
 import {Close} from "@mui/icons-material";
 import QRCode from "react-qr-code";
 import {userDataToQr} from "../../data/utilsQr";
@@ -24,7 +24,7 @@ export default function ShareQRModal(
             <ModalBox>
                 <Stack spacing={2} alignItems={'center'}>
                     <Stack width={'100%'} direction={'row'} justifyContent={'space-between'}>
-                        <h2>{qrData.name + "'s Timetable"}</h2>
+                        <Typography variant={'h5'}>{qrData.name + "'s Timetable"}</Typography>
                         <IconButton
                             aria-label={'close'}
                             onClick={handleClose}

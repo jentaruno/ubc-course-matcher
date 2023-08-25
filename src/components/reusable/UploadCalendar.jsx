@@ -125,9 +125,7 @@ export function UploadCalendar(
     return <Stack spacing={1}>
         <input
             type="file"
-            id="user-file"
             accept=".ics"
-            className="form-control"
             onChange={(e) => handleUpload(e)}
         />
         <Button

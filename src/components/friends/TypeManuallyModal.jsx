@@ -1,4 +1,4 @@
-import {Box, Button, IconButton, Modal, Stack, TextField} from "@mui/material";
+import {Box, Button, IconButton, Modal, Stack, TextField, Typography} from "@mui/material";
 import React, {useState} from "react";
 import {Close} from "@mui/icons-material";
 import TypeCourseManually from "../reusable/TypeCourseManually";
@@ -47,7 +47,7 @@ export default function TypeManuallyModal(
             <ModalBox>
                 <Stack spacing={2}>
                     <Stack direction={'row'} justifyContent={'space-between'}>
-                        <h2>Add Friend's Sections</h2>
+                        <Typography variant={'h5'}>Add Friend's Sections</Typography>
                         <IconButton
                             aria-label={'close'}
                             onClick={handleClose}
@@ -65,7 +65,7 @@ export default function TypeManuallyModal(
                         courses={previewCourses}
                         handleUpdate={setPreviewCourses}
                     />
-                    <h2>Preview</h2>
+                    <Typography variant={'h5'}>Preview</Typography>
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
                             courses={previewCourses}
