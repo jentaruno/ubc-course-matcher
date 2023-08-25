@@ -101,7 +101,7 @@ export function AddFriendButton({handleAddFriend}) {
             <AlertToast
                 open={openToast}
                 setOpen={setOpenToast}
-                variant={"Error"}
+                variant={"error"}
                 message={"Invalid QR code."}
             />
 

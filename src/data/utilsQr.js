@@ -24,6 +24,7 @@ export function userDataToQr(userData) {
 }
 
 export async function qrToUserData(qrString) {
+    // TODO: move settimeout here
     const qrJson = JSON.parse(qrString);
     let courses = qrJson.courses;
     const sectionPromises = courses.map(section => fetchSectionData(section));
@@ -42,6 +43,6 @@ async function fetchSectionData(section) {
         const response = await fetch(API_LINK + ENDPOINTS.sectionInfo + sectionURL);
         return await response.json();
     } catch (e) {
-        return null;
+        return {name: section, location: "", classTimes: [], notFetched: true};
     }
 }

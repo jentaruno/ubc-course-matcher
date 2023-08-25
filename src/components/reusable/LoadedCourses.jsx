@@ -19,6 +19,7 @@ export default function LoadedCourses({courses, handleDelete}) {
             {courses && courses?.length > 0
                 ? courses.map(({name, location, friends, classTimes}, i) =>
                     <CourseBlock
+                        key={`course-${name}`}
                         course={name}
                         location={location}
                         friends={friends}
