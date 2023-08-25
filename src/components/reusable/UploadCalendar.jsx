@@ -1,6 +1,7 @@
 import {Button, Stack} from "@mui/material";
 import React, {useState} from "react";
 import {convertDay} from "../../data/utilsCourse";
+import {MuiFileInput} from "mui-file-input";
 
 export function UploadCalendar(
     {
@@ -8,12 +9,16 @@ export function UploadCalendar(
         handleUpdate,
     }
 ) {
-    const [courseFiles, setCourseFiles] = useState([]);
-
     // TODO: handle error reading file
+    const [courseFiles, setCourseFiles] = useState([]);
+    const [file, setFile] = useState(null);
 
-    function handleUpload(e) {
-        let file = e.target.files[0];
+    const handleChange = (newFile) => {
+        setFile(newFile);
+        handleUpload(newFile);
+    }
+
+    function handleUpload(file) {
         let newCourses = [];
         let reader = new FileReader();
         reader.readAsText(file);
@@ -24,7 +29,6 @@ export function UploadCalendar(
             console.error(reader.error);
         };
         setCourseFiles(newCourses);
-        //userErrorMessage: ""
     }
 
     function handleSubmitFile() {
@@ -123,10 +127,12 @@ export function UploadCalendar(
     }
 
     return <Stack spacing={1}>
-        <input
-            type="file"
-            accept=".ics"
-            onChange={(e) => handleUpload(e)}
+        <MuiFileInput
+            inputProps={{accept: '.ics'}}
+            value={file}
+            onChange={handleChange}
+            hideSizeText
+            placeholder="Upload calendar"
         />
         <Button
             variant={'contained'}

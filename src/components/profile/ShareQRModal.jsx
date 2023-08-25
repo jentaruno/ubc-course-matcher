@@ -24,7 +24,7 @@ export default function ShareQRModal(
             <ModalBox>
                 <Stack spacing={2} alignItems={'center'}>
                     <Stack width={'100%'} direction={'row'} justifyContent={'space-between'}>
-                        <Typography variant={'h5'}>{qrData.name + "'s Timetable"}</Typography>
+                        <Typography variant={'h5'}>{qrData.name}'s Timetable</Typography>
                         <IconButton
                             aria-label={'close'}
                             onClick={handleClose}
