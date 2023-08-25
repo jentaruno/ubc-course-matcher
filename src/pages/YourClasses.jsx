@@ -45,7 +45,7 @@ const YourClasses = () => {
                         handleUpdate={setUserData}
                     />
                     : <TypeCourseManually
-                        courses={userData.courses ?? []}
+                        courses={(userData && userData.courses) ?? []}
                         handleUpdate={(c) => setUserData({courses: c})}
                     />}
                 <Stack
