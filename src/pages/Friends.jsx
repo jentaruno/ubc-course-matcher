@@ -34,7 +34,7 @@ const Friends = () => {
                     handleDelete={() => handleDeleteFriend(i)}
                 />
             )
-            : 'Add friends with the (+) button.'
+            : <Typography>Add friends with the (+) button.</Typography>
         }
         <AddFriendButton
             handleAddFriend={handleAddFriend}
