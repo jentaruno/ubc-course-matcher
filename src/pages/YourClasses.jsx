@@ -60,13 +60,13 @@ const YourClasses = () => {
                     <Typography variant={'h5'}>Loaded sections</Typography>
                     {userData && userData.courses &&
                         <div>
-                            <Typography>
-                                {userData.courses.length
-                                    + " "
-                                    + term
-                                    + " sections"
-                                }
-                            </Typography>
+                            {/*<Typography>*/}
+                            {/*    {userData.courses.length*/}
+                            {/*        + " "*/}
+                            {/*        + term*/}
+                            {/*        + " sections"*/}
+                            {/*    }*/}
+                            {/*</Typography>*/}
                             <LoadedCourses
                                 courses={userData.courses}
                                 handleDelete={handleDeleteCourse}

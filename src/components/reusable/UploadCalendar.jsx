@@ -2,6 +2,7 @@ import {Button, Stack} from "@mui/material";
 import React, {useState} from "react";
 import {convertDay} from "../../data/utilsCourse";
 import {MuiFileInput} from "mui-file-input";
+import AlertToast from "./AlertToast";
 
 export function UploadCalendar(
     {
@@ -9,9 +10,9 @@ export function UploadCalendar(
         handleUpdate,
     }
 ) {
-    // TODO: handle error reading file
     const [courseFiles, setCourseFiles] = useState([]);
     const [file, setFile] = useState(null);
+    const [openError, setOpenError] = useState(false);
 
     const handleChange = (newFile) => {
         setFile(newFile);
@@ -32,12 +33,11 @@ export function UploadCalendar(
     }
 
     function handleSubmitFile() {
-        // TODO: visible error msg
         try {
             const newCourses = readCourses();
             handleUpdate(newCourses);
         } catch (e) {
-            console.error(e);
+            setOpenError(true);
         }
     }
 
@@ -140,5 +140,11 @@ export function UploadCalendar(
         >
             Submit
         </Button>
+        <AlertToast
+            open={openError}
+            setOpen={setOpenError}
+            variant={'error'}
+            message={'Error reading file.'}
+        />
     </Stack>;
 }
