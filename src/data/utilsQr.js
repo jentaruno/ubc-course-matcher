@@ -29,7 +29,6 @@ export async function qrToUserData(qrString) {
     let courses = qrJson.courses;
     courses = courses.map(e => ({name: e, location: "", classTimes: [], notFetched: true}))
     const sectionData = await fetchSections(courses);
-    console.log("promised data", sectionData);
     return {
         name: qrJson.name,
         courses: sectionData
