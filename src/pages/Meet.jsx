@@ -5,6 +5,7 @@ import useLocalStorage from "../data/useLocalStorage";
 import FriendsChecklist from "../components/meet/FriendsChecklist";
 
 const Meet = () => {
+    // TODO: make overflow scroll work only on table
     const [userData, setUserData] = useLocalStorage("user");
     const [loading, setLoading] = useState(true);
     const friendsCheckbox = () => {
@@ -37,7 +38,8 @@ const Meet = () => {
                 friends={checkedFriends}
                 loading={loading}
                 setLoading={setLoading}
-            />}
+            />
+        }
     </Stack>;
 }
 

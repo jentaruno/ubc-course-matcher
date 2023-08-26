@@ -84,7 +84,7 @@ export default function App() {
             <ThemeProvider theme={theme}>
                 <Container sx={{display: 'flex', flexDirection: 'column', height: '100vh'}}>
                     <Header sx={{flexGrow: 0}}/>
-                    <Container sx={{p: '1rem', flexGrow: 1, overflowY: 'scroll'}} maxWidth={'sm'}>
+                    <Container sx={{p: '1rem', flexGrow: 1, overflowY: 'auto'}} maxWidth={'sm'}>
                         {userData
                             ? <Routes>
                                 <Route path="/" element={<Navigate to="/profile" replace/>}/>

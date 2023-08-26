@@ -1,4 +1,4 @@
-import {Button, Stack} from "@mui/material";
+import {Button, Stack, Typography, useTheme} from "@mui/material";
 import React, {useState} from "react";
 import {convertDay} from "../../data/utilsCourse";
 import {MuiFileInput} from "mui-file-input";
@@ -10,8 +10,8 @@ export function UploadCalendar(
         handleUpdate,
     }
 ) {
-    // TODO: courseFiles shouldn't be an array
-    const [courseFiles, setCourseFiles] = useState([]);
+    const theme = useTheme();
+    const [courseFiles, setCourseFiles] = useState(null);
     const [file, setFile] = useState(null);
     const [openError, setOpenError] = useState(false);
     const [openErrorNotIcs, setOpenErrorNotIcs] = useState(false);
@@ -30,17 +30,15 @@ export function UploadCalendar(
     }
 
     function handleUpload(file) {
-        let newCourses = [];
         let reader = new FileReader();
         reader.readAsText(file);
         reader.onload = function () {
-            newCourses[0] = {file: reader.result};
+            setCourseFiles(reader.result);
         };
         reader.onerror = function () {
             setOpenError(true);
             console.error(reader.error);
         };
-        setCourseFiles(newCourses);
     }
 
     function handleSubmitFile() {
@@ -48,6 +46,7 @@ export function UploadCalendar(
             const newCourses = readCourses();
             handleUpdate(newCourses);
         } catch (e) {
+            console.error(e);
             setOpenError(true);
         }
     }
@@ -87,8 +86,8 @@ export function UploadCalendar(
     }
 
     function readCourses() {
-        let splitFiles = courseFiles.map(e => e.file.split('BEGIN:VEVENT'));
-        let slicedFiles = sliceCurrentTerm(splitFiles[0]);
+        let splitFiles = courseFiles.split('BEGIN:VEVENT');
+        let slicedFiles = sliceCurrentTerm(splitFiles);
         let currentTermFiles = [];
         for (let i = 0; i < slicedFiles.length; i++) {
             slicedFiles[i].split("\n").map(e => currentTermFiles.push(e));
@@ -145,11 +144,18 @@ export function UploadCalendar(
             placeholder="Upload a .ics calendar file"
         />
         <Button
+            disabled={!courseFiles}
             variant={'contained'}
             onClick={handleSubmitFile}
         >
             Submit
         </Button>
+        <Typography
+            sx={{fontSize: 'smaller', fontStyle: 'italic'}}
+            color={theme.palette.primary.light}
+        >
+            Note: Calendar upload is not supported for mobile.
+        </Typography>
         <AlertToast
             open={openErrorNotIcs}
             setOpen={setOpenErrorNotIcs}
