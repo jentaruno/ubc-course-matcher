@@ -3,23 +3,17 @@ import MatchSections from "../components/match/matchSections";
 import MatchCourses from "../components/match/matchCourses";
 import React, {useState} from "react";
 import useLocalStorage from "../data/useLocalStorage";
+import hasCoursesAndFriends from "../data/utilsLocalStorage";
 
 const Match = () => {
     // TODO: check when no friends
     const [userData, setUserData] = useLocalStorage("user");
     const [tab, setTab] = useState(0);
 
-    const canMatch = () => {
-        return userData.courses
-            && userData.courses.length > 0
-            && userData.friends
-            && userData.friends.length > 0;
-    }
-
     return <div>
         <Typography variant={'h4'}>Course Match</Typography>
-        {canMatch &&
-            <Stack direction={'column'} spacing={2}>
+        {hasCoursesAndFriends(userData)
+            ? <Stack direction={'column'} spacing={2}>
                 <Tabs
                     value={tab}
                     onChange={(event, val) => setTab(val)}
@@ -30,7 +24,11 @@ const Match = () => {
                 {tab === 0
                     ? <MatchSections/>
                     : <MatchCourses/>}
-            </Stack>}
+            </Stack>
+            : <Typography>
+                To start course matching, upload your classes and your friends' on the Profile and Friends tabs!
+            </Typography>
+        }
     </div>;
 }
 
