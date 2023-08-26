@@ -1,6 +1,8 @@
 import {Button, Stack} from "@mui/material";
 import React, {useState} from "react";
 import {convertDay} from "../../data/utilsCourse";
+import {MuiFileInput} from "mui-file-input";
+import AlertToast from "./AlertToast";
 
 export function UploadCalendar(
     {
@@ -9,11 +11,15 @@ export function UploadCalendar(
     }
 ) {
     const [courseFiles, setCourseFiles] = useState([]);
+    const [file, setFile] = useState(null);
+    const [openError, setOpenError] = useState(false);
 
-    // TODO: handle error reading file
+    const handleChange = (newFile) => {
+        setFile(newFile);
+        handleUpload(newFile);
+    }
 
-    function handleUpload(e) {
-        let file = e.target.files[0];
+    function handleUpload(file) {
         let newCourses = [];
         let reader = new FileReader();
         reader.readAsText(file);
@@ -24,16 +30,14 @@ export function UploadCalendar(
             console.error(reader.error);
         };
         setCourseFiles(newCourses);
-        //userErrorMessage: ""
     }
 
     function handleSubmitFile() {
-        // TODO: visible error msg
         try {
             const newCourses = readCourses();
             handleUpdate(newCourses);
         } catch (e) {
-            console.error(e);
+            setOpenError(true);
         }
     }
 
@@ -123,10 +127,12 @@ export function UploadCalendar(
     }
 
     return <Stack spacing={1}>
-        <input
-            type="file"
-            accept=".ics"
-            onChange={(e) => handleUpload(e)}
+        <MuiFileInput
+            inputProps={{accept: '.ics'}}
+            value={file}
+            onChange={handleChange}
+            hideSizeText
+            placeholder="Upload calendar"
         />
         <Button
             variant={'contained'}
@@ -134,5 +140,11 @@ export function UploadCalendar(
         >
             Submit
         </Button>
+        <AlertToast
+            open={openError}
+            setOpen={setOpenError}
+            variant={'error'}
+            message={'Error reading file.'}
+        />
     </Stack>;
 }

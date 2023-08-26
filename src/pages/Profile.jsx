@@ -3,10 +3,20 @@ import {ArrowForwardIos, Book, Edit, QrCode} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
 import {useState} from "react";
 import ShareQRModal from "../components/profile/ShareQRModal";
+import AlertToast from "../components/reusable/AlertToast";
 
 const Profile = () => {
     const [userData, setUserData] = useLocalStorage("user");
     const [openQRModal, setOpenQRModal] = useState(false);
+    const [openError, setOpenError] = useState(false);
+
+    function handleShareModal() {
+        if (userData.courses && userData.courses.length > 0) {
+            setOpenQRModal(true);
+        } else {
+            setOpenError(true);
+        }
+    }
 
     return <Stack spacing={3}>
         <Stack
@@ -48,7 +58,7 @@ const Profile = () => {
             </Card>
         </Link>
 
-        <Card onClick={() => setOpenQRModal(true)}>
+        <Card onClick={handleShareModal} sx={{cursor: 'pointer'}}>
             <CardContent>
                 <Grid
                     container
@@ -81,7 +91,13 @@ const Profile = () => {
                 <Typography>Edit your profile</Typography>
             </Stack>
         </Link>
-        {/*<Typography><Logout/> Log out</Typography>*/}
+
+        <AlertToast
+            open={openError}
+            setOpen={setOpenError}
+            message={"You have no courses to share."}
+            variant={"warning"}
+        />
     </Stack>;
 }
 

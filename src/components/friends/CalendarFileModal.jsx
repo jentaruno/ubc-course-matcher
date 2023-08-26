@@ -59,15 +59,15 @@ export default function CalendarFileModal(
                         handleUpdate={setPreviewCourses}
                     />
                     <Typography variant={'h5'}>Preview</Typography>
-                    {previewCourses.courses &&
-                        <Typography>
-                            {previewCourses.courses.length
-                                + " "
-                                + term
-                                + " sections"
-                            }
-                        </Typography>
-                    }
+                    {/*{previewCourses.courses &&*/}
+                    {/*    <Typography>*/}
+                    {/*        {previewCourses.courses.length*/}
+                    {/*            + " "*/}
+                    {/*            + term*/}
+                    {/*            + " sections"*/}
+                    {/*        }*/}
+                    {/*    </Typography>*/}
+                    {/*}*/}
                     <Box sx={{height: '30vh'}}>
                         <LoadedCourses
                             courses={previewCourses.courses}

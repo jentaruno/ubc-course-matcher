@@ -5,6 +5,7 @@ import TypeCourseManually from "../components/reusable/TypeCourseManually";
 import LoadedCourses from "../components/reusable/LoadedCourses";
 import {ArrowBack} from "@mui/icons-material";
 import useLocalStorage from "../data/useLocalStorage";
+import {UploadCalendarHelp} from "../components/reusable/UploadCalendarHelp";
 
 const YourClasses = () => {
     const [tab, setTab] = useState(0);
@@ -31,7 +32,7 @@ const YourClasses = () => {
                 </Link>
                 {' Your Classes'}
             </Typography>
-            <Stack spacing={3}>
+            <Stack spacing={2}>
                 <Tabs
                     value={tab}
                     onChange={(event, val) => setTab(val)}
@@ -40,10 +41,13 @@ const YourClasses = () => {
                     <Tab label="Type manually" value={1}/>
                 </Tabs>
                 {tab === 0
-                    ? <UploadCalendar
-                        setTerm={setTerm}
-                        handleUpdate={setUserData}
-                    />
+                    ? <Stack>
+                        <UploadCalendarHelp/>
+                        <UploadCalendar
+                            setTerm={setTerm}
+                            handleUpdate={setUserData}
+                        />
+                    </Stack>
                     : <TypeCourseManually
                         courses={(userData && userData.courses) ?? []}
                         handleUpdate={(c) => setUserData({courses: c})}
@@ -56,13 +60,13 @@ const YourClasses = () => {
                     <Typography variant={'h5'}>Loaded sections</Typography>
                     {userData && userData.courses &&
                         <div>
-                            <Typography>
-                                {userData.courses.length
-                                    + " "
-                                    + term
-                                    + " sections"
-                                }
-                            </Typography>
+                            {/*<Typography>*/}
+                            {/*    {userData.courses.length*/}
+                            {/*        + " "*/}
+                            {/*        + term*/}
+                            {/*        + " sections"*/}
+                            {/*    }*/}
+                            {/*</Typography>*/}
                             <LoadedCourses
                                 courses={userData.courses}
                                 handleDelete={handleDeleteCourse}

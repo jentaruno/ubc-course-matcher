@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Grid, IconButton, Link, Typography} from "@mui/material";
+import {Box, Card, CardContent, Grid, IconButton, Typography} from "@mui/material";
 import {Delete} from "@mui/icons-material";
 import React, {useState} from "react";
 import {FriendModal} from "./FriendModal";
@@ -27,7 +27,7 @@ export default function FriendBlock(
 
     return (
         <Box>
-            <Card>
+            <Card onClick={handleOpenModal} sx={{cursor: 'pointer'}}>
                 <CardContent>
                     <Grid
                         container
@@ -35,12 +35,10 @@ export default function FriendBlock(
                         alignItems={'center'}
                     >
                         <Grid item xs={11}>
-                            <Link onClick={handleOpenModal} underline={'none'}>
-                                <Typography variant={'h5'}>{name}</Typography>
-                                <Typography>
-                                    {courses.map(e => e.name).slice(0, 2).join(", ") + ',...'}
-                                </Typography>
-                            </Link>
+                            <Typography variant={'h5'}>{name}</Typography>
+                            <Typography>
+                                {courses.map(e => e.name).slice(0, 2).join(", ") + ',...'}
+                            </Typography>
                         </Grid>
                         <Grid item xs={1}>
                             <IconButton onClick={handleDelete}>

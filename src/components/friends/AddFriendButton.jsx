@@ -58,19 +58,19 @@ export function AddFriendButton({handleAddFriend}) {
                     spacing={1}
                     divider={<Divider orientation={'horizontal'} flexItem/>}
                 >
-                    <Link onClick={handleOpenQrCode} underline={'none'}>
+                    <Link onClick={handleOpenQrCode} sx={{cursor: 'pointer'}} underline={'none'}>
                         <Stack direction={'row'} spacing={1}>
                             <QrCode/>
                             <Typography>QR code</Typography>
                         </Stack>
                     </Link>
-                    <Link onClick={handleOpenCalendarFile} underline={'none'}>
+                    <Link onClick={handleOpenCalendarFile} sx={{cursor: 'pointer'}} underline={'none'}>
                         <Stack direction={'row'} spacing={1}>
                             <CalendarMonth/>
                             <Typography>Calendar file</Typography>
                         </Stack>
                     </Link>
-                    <Link onClick={handleOpenTypeManually} underline={'none'}>
+                    <Link onClick={handleOpenTypeManually} sx={{cursor: 'pointer'}} underline={'none'}>
                         <Stack direction={'row'} spacing={1}>
                             <Title/>
                             <Typography>Type manually</Typography>
@@ -101,7 +101,7 @@ export function AddFriendButton({handleAddFriend}) {
             <AlertToast
                 open={openToast}
                 setOpen={setOpenToast}
-                variant={"Error"}
+                variant={"error"}
                 message={"Invalid QR code."}
             />
 
