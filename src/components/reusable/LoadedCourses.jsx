@@ -7,7 +7,7 @@ import {Divider, Stack, Typography} from "@mui/material";
 export default function LoadedCourses({courses, handleDelete}) {
     return (
         <Stack
-            sx={{height: '100%', overflowY: 'scroll'}}
+            sx={{height: '100%', overflowY: 'auto'}}
             direction={'column'}
             spacing={1}
             divider={<Divider
