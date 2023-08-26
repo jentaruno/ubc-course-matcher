@@ -10,13 +10,23 @@ export function UploadCalendar(
         handleUpdate,
     }
 ) {
+    // TODO: courseFiles shouldn't be an array
     const [courseFiles, setCourseFiles] = useState([]);
     const [file, setFile] = useState(null);
     const [openError, setOpenError] = useState(false);
+    const [openErrorNotIcs, setOpenErrorNotIcs] = useState(false);
 
     const handleChange = (newFile) => {
-        setFile(newFile);
-        handleUpload(newFile);
+        const path = newFile.name.split('.');
+        const extension = `${path[path.length - 1]}`;
+
+        if (extension === "ics") {
+            setFile(newFile);
+            handleUpload(newFile);
+        } else {
+            setOpenErrorNotIcs(true);
+            setFile(null);
+        }
     }
 
     function handleUpload(file) {
@@ -27,6 +37,7 @@ export function UploadCalendar(
             newCourses[0] = {file: reader.result};
         };
         reader.onerror = function () {
+            setOpenError(true);
             console.error(reader.error);
         };
         setCourseFiles(newCourses);
@@ -128,11 +139,10 @@ export function UploadCalendar(
 
     return <Stack spacing={1}>
         <MuiFileInput
-            inputProps={{accept: '.ics'}}
             value={file}
             onChange={handleChange}
             hideSizeText
-            placeholder="Upload calendar"
+            placeholder="Upload a .ics calendar file"
         />
         <Button
             variant={'contained'}
@@ -140,6 +150,12 @@ export function UploadCalendar(
         >
             Submit
         </Button>
+        <AlertToast
+            open={openErrorNotIcs}
+            setOpen={setOpenErrorNotIcs}
+            variant={'warning'}
+            message={'Please upload a .ics file.'}
+        />
         <AlertToast
             open={openError}
             setOpen={setOpenError}
