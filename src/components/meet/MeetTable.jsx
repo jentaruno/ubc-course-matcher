@@ -46,10 +46,10 @@ export const MeetTable = ({friends, loading, setLoading}) => {
         friendBlocks.map(friend => {
             friend.classTimes.map(time => {
                 if (shades[time]) {
-                    shades[time].shade += oneShade;
+                    shades[time].shade -= oneShade;
                     shades[time].friends.push(friend.name);
                 } else {
-                    shades[time] = {shade: oneShade, friends: [friend.name]};
+                    shades[time] = {shade: 1 - oneShade, friends: [friend.name]};
                 }
                 return time;
             })
@@ -68,7 +68,7 @@ export const MeetTable = ({friends, loading, setLoading}) => {
     }, [friends, loading]);
 
     return (
-        <Box overflow={'hidden'}>
+        <Box>
             <Table size="small" sx={{opacity: loading ? '50%' : '100%'}}>
                 <TableHead>
                     <TableRow>

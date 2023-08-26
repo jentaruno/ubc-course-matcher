@@ -12,14 +12,21 @@ export const MeetTableRow = ({time, shades}) => {
             if (shades[tdId]) {
                 const opacity = shades[tdId].shade;
                 const friends = "Not free: " + shades[tdId].friends.join(", ");
-                return <Tooltip key={`tooltip-${tdId}`} title={friends} arrow>
-                    <TableCell
-                        style={{backgroundColor: '#DC3545', opacity: opacity}}
+                if (opacity > 0) {
+                    return <Tooltip key={`tooltip-${tdId}`} title={friends} arrow>
+                        <TableCell
+                            style={{backgroundColor: '#339900', opacity: opacity}}
+                            key={tdId}
+                        />
+                    </Tooltip>;
+                } else {
+                    return <TableCell
+                        style={{backgroundColor: '#339900', opacity: opacity}}
                         key={tdId}
-                    />
-                </Tooltip>;
+                    />;
+                }
             } else {
-                return <TableCell key={tdId}/>
+                return <TableCell style={{backgroundColor: '#339900'}} key={tdId}/>
             }
         })}
     </TableRow>
