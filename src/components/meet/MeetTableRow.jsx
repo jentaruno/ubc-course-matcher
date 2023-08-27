@@ -4,7 +4,11 @@ import React from "react";
 export const MeetTableRow = ({time, shades}) => {
     return <TableRow key={time}>
         {(time.substring(3, 5) === "00")
-            ? <TableCell>{time}</TableCell>
+            ? <TableCell>
+                <Typography sx={{fontSize: 'smaller'}}>
+                    {time}
+                </Typography>
+            </TableCell>
             : <TableCell><Typography style={{opacity: 0}}>.</Typography></TableCell>
         }
         {["Mon", "Tue", "Wed", "Thu", "Fri"].map(i => {
@@ -15,18 +19,18 @@ export const MeetTableRow = ({time, shades}) => {
                 if (opacity > 0) {
                     return <Tooltip key={`tooltip-${tdId}`} title={friends} arrow>
                         <TableCell
-                            style={{backgroundColor: '#339900', opacity: opacity}}
+                            style={{backgroundColor: '#477a2d', opacity: opacity}}
                             key={tdId}
                         />
                     </Tooltip>;
                 } else {
                     return <TableCell
-                        style={{backgroundColor: '#339900', opacity: opacity}}
+                        style={{backgroundColor: '#477a2d', opacity: opacity}}
                         key={tdId}
                     />;
                 }
             } else {
-                return <TableCell style={{backgroundColor: '#339900'}} key={tdId}/>
+                return <TableCell style={{backgroundColor: '#477a2d'}} key={tdId}/>
             }
         })}
     </TableRow>
