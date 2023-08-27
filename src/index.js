@@ -15,8 +15,6 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import useLocalStorage from "./data/useLocalStorage";
 import Register from "./pages/Register";
-import Satoshi from './fonts/Satoshi-Regular.woff';
-import SatoshiBold from './fonts/Satoshi-Bold.woff';
 
 export const theme = createTheme({
     palette: {
@@ -30,7 +28,7 @@ export const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: `'Satoshi', Arial, sans-serif`,
+        fontFamily: `Plus Jakarta Sans, Arial, sans-serif`,
         h1: {
             "fontWeight": 600,
         },
@@ -53,23 +51,6 @@ export const theme = createTheme({
     components: {
         MuiDivider: {
             color: '#AAAAAA',
-        },
-        MuiCssBaseline: {
-            styleOverrides: `
-        @font-face {
-          font-family: 'Satoshi';
-          font-style: normal;
-          font-display: swap;
-          font-weight: 400;
-          src: url(${Satoshi}) format('woff');
-        }
-        @font-face {
-          font-family: 'Satoshi';
-          font-style: normal;
-          font-weight: 600;
-          src: url(${SatoshiBold}) format('woff');
-        }
-      `,
         },
     },
 });

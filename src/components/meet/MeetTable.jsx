@@ -72,10 +72,10 @@ export const MeetTable = ({friends, loading, setLoading}) => {
             <Table size="small" sx={{opacity: loading ? '50%' : '100%'}}>
                 <TableHead>
                     <TableRow>
-                        <TableCell></TableCell>
+                        <TableCell width={"16%"}></TableCell>
                         {["Mon", "Tue", "Wed", "Thu", "Fri"].map((e) =>
                             <TableCell width={"16%"} key={e}>
-                                <Typography sx={{fontWeight: 'bold'}}>{e}</Typography>
+                                <Typography sx={{fontSize: 'smaller', fontWeight: 'bold'}}>{e}</Typography>
                             </TableCell>
                         )}
                     </TableRow>
