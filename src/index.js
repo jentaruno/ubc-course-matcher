@@ -30,9 +30,9 @@ export const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: 'Satoshi',
+        fontFamily: `'Satoshi', Arial, sans-serif`,
         h1: {
-            "fontWeight": 6800,
+            "fontWeight": 600,
         },
         h2: {
             "fontWeight": 600,
@@ -61,14 +61,14 @@ export const theme = createTheme({
           font-style: normal;
           font-display: swap;
           font-weight: 400;
-          src: local('Satoshi'), local('Satoshi-Regular'), url(${Satoshi}) format('otf');
+          src: url(${Satoshi}) format('otf');
           unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
         }
         @font-face {
           font-family: 'Satoshi';
           font-style: normal;
           font-weight: 600;
-          src: local('SatoshiBold'), local('Satoshi-Bold'), url(${SatoshiBold}) format('otf');
+          src: url(${SatoshiBold}) format('otf');
           unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
         }
       `,

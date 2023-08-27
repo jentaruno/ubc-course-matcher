@@ -20,7 +20,7 @@ export function UploadCalendar(
         const path = newFile.name.split('.');
         const extension = `${path[path.length - 1]}`;
 
-        if (extension === "ics") {
+        if (["ical", "ics", "ifb", "icalendar"].some(e => e === extension)) {
             setFile(newFile);
             handleUpload(newFile);
         } else {
@@ -141,7 +141,7 @@ export function UploadCalendar(
             value={file}
             onChange={handleChange}
             hideSizeText
-            placeholder="Upload a .ics calendar file"
+            placeholder="Upload a calendar file"
         />
         <Button
             disabled={!courseFiles}
@@ -160,7 +160,7 @@ export function UploadCalendar(
             open={openErrorNotIcs}
             setOpen={setOpenErrorNotIcs}
             variant={'warning'}
-            message={'Please upload a .ics file.'}
+            message={'Please upload an iCalendar file.'}
         />
         <AlertToast
             open={openError}
