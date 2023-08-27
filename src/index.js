@@ -32,7 +32,7 @@ export const theme = createTheme({
     typography: {
         fontFamily: `'Satoshi', Arial, sans-serif`,
         h1: {
-            "fontWeight": 6800,
+            "fontWeight": 600,
         },
         h2: {
             "fontWeight": 600,
