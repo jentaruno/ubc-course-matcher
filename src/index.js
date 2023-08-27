@@ -15,8 +15,8 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import useLocalStorage from "./data/useLocalStorage";
 import Register from "./pages/Register";
-import Satoshi from './fonts/Satoshi-Regular.otf';
-import SatoshiBold from './fonts/Satoshi-Bold.otf';
+import Satoshi from '../public/fonts/Satoshi-Regular.otf';
+import SatoshiBold from '../public/fonts/Satoshi-Bold.otf';
 
 export const theme = createTheme({
     palette: {
@@ -30,7 +30,7 @@ export const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: 'Satoshi',
+        fontFamily: `'Satoshi', Arial, sans-serif`,
         h1: {
             "fontWeight": 6800,
         },
