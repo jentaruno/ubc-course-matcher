@@ -1,4 +1,5 @@
-import {Checkbox, FormControlLabel, FormGroup, Stack} from "@mui/material";
+import {Checkbox, FormControlLabel, FormGroup, Grid} from "@mui/material";
+import * as React from 'react';
 
 export default function FriendsChecklist({friends, setFriends}) {
 
@@ -10,16 +11,20 @@ export default function FriendsChecklist({friends, setFriends}) {
 
     return (
         <FormGroup>
-            <Stack direction={'row'} spacing={1}>
+            <Grid container columnSpacing={2}>
                 {friends.map((friend, i) =>
-                    <FormControlLabel
+                    <Grid
                         key={`checkbox-${friend.name}`}
-                        control={<Checkbox checked={friend.checked}/>}
-                        label={friend.name}
-                        onChange={(e) => handleChange(e, i)}
-                    />
+                        item xs={6} md={4}
+                    >
+                        <FormControlLabel
+                            control={<Checkbox checked={friend.checked}/>}
+                            label={friend.name}
+                            onChange={(e) => handleChange(e, i)}
+                        />
+                    </Grid>
                 )}
-            </Stack>
+            </Grid>
         </FormGroup>
     )
 }

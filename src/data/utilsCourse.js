@@ -1,10 +1,25 @@
+export function getCurrentTimeInterval() {
+    const currentDate = new Date();
+    const day = convertDay([currentDate.getDay()]);
+    const hour = currentDate.getHours();
+    const min = currentDate.getMinutes();
+    let time = min < 30 ? hour.toString() + ":00" : hour.toString() + ":30";
+
+    return day + time;
+}
+
 export function convertDay(day) {
     const days = {
         "MO": "Mon",
         "TU": "Tue",
         "WE": "Wed",
         "TH": "Thu",
-        "FR": "Fri"
+        "FR": "Fri",
+        1: "Mon",
+        2: "Tue",
+        3: "Wed",
+        4: "Thu",
+        5: "Fri",
     }
     return days[day];
 }
