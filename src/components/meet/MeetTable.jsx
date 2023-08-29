@@ -1,14 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {Box, Table, TableBody, TableCell, TableHead, TableRow, Typography} from "@mui/material";
-import {getAllClassTimes, stringToDate} from "../../data/utilsCourse";
+import {getAllClassTimes, getCurrentTimeInterval, stringToDate} from "../../data/utilsCourse";
 import {MeetTableBody} from "./MeetTableBody";
 
-export const MeetTable = ({friends, loading, setLoading}) => {
+export const MeetTable = ({blocksShades, setBlocksShades, friends, loading, setLoading}) => {
     // TODO: placeholder if no user data / friends
     // TODO: borders
     // TODO: pick which friends to meet with
-
-    const [blocksShades, setBlocksShades] = useState([]);
 
     // Takes array of user data and returns array of friend time blocks to add
     // {name: "Jen", classTimes: ["12:00","12:30",...]}
@@ -40,9 +38,12 @@ export const MeetTable = ({friends, loading, setLoading}) => {
 
     // Takes friend blocks and converts them into table shades
     // {"MO17:00-18:00": {shade: 0.5, friends: ["A", "B",]}}
+    // Also adds now: true status on time interval for current time
     const generateShades = (friendBlocks) => {
         const oneShade = 1 / friendBlocks.length;
         const shades = {};
+        const currentTime = getCurrentTimeInterval();
+        // Add shades based on times friends are not free
         friendBlocks.map(friend => {
             friend.classTimes.map(time => {
                 if (shades[time]) {
@@ -55,6 +56,11 @@ export const MeetTable = ({friends, loading, setLoading}) => {
             })
             return friend;
         });
+        if (shades[currentTime]) {
+            shades[currentTime].now = true;
+        } else {
+            shades[currentTime] = {shade: 1, friends: [], now: true};
+        }
         return shades;
     }
 

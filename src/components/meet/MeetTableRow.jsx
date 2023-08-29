@@ -15,19 +15,19 @@ export const MeetTableRow = ({time, shades}) => {
             const tdId = "" + i + time;
             if (shades[tdId]) {
                 const opacity = shades[tdId].shade;
-                const friends = "Not free: " + shades[tdId].friends.join(", ");
+                const friends = shades[tdId].friends && shades[tdId].friends.length > 0 && "Not free: " + shades[tdId].friends.join(", ");
+                const isNowStyles = shades[tdId].now && {border: "3px solid #FCDA58", textAlign: "center"};
+                const tableCell = <TableCell
+                    style={{backgroundColor: `rgb(71, 122, 45, ${opacity})`, ...isNowStyles}}
+                    key={tdId}>
+                    <Typography sx={{fontSize: 'smaller'}}>{isNowStyles && "⭐"}</Typography>
+                </TableCell>;
                 if (opacity > 0) {
                     return <Tooltip key={`tooltip-${tdId}`} title={friends} arrow>
-                        <TableCell
-                            style={{backgroundColor: '#477a2d', opacity: opacity}}
-                            key={tdId}
-                        />
+                        {tableCell}
                     </Tooltip>;
                 } else {
-                    return <TableCell
-                        style={{backgroundColor: '#477a2d', opacity: opacity}}
-                        key={tdId}
-                    />;
+                    return tableCell;
                 }
             } else {
                 return <TableCell style={{backgroundColor: '#477a2d'}} key={tdId}/>
