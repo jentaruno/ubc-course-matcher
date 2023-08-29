@@ -1,14 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
-import {Stack, Typography} from "@mui/material";
+import {Stack, Typography, useMediaQuery, useTheme} from "@mui/material";
 import {MeetTable} from "../components/meet/MeetTable";
 import useLocalStorage from "../data/useLocalStorage";
 import hasCoursesAndFriends from "../data/utilsLocalStorage";
 import FreeNow from "../components/meet/FreeNow";
 import {getCurrentTimeInterval} from "../data/utilsCourse";
-import CustomizedAccordions from "../components/meet/Drawer";
+import SelectFriends from "../components/meet/Drawer";
 
 const Meet = () => {
-    // TODO: make overflow scroll work only on table
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const [userData, setUserData] = useLocalStorage("user");
     const [loading, setLoading] = useState(true);
     const friendsCheckbox = () => {
@@ -59,10 +60,13 @@ const Meet = () => {
             {(hasCoursesAndFriends(userData) && container && container.current)
                 ? <Stack spacing={2}>
                     <FreeNow friends={freeFriends}/>
-                    <CustomizedAccordions
+                    <SelectFriends
                         friends={friends}
                         setFriends={setFriends}
                     />
+                    {isMobile && <Typography color={theme.palette.primary.light} sx={{fontSize: 'smaller'}}>
+                        On mobile, tap and hold a table cell to see who's not free on a particular time.
+                    </Typography>}
                     {Array.isArray(friends) && friends.length > 0 &&
                         <MeetTable
                             friends={checkedFriends}

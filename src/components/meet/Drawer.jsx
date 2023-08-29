@@ -4,7 +4,7 @@ import {Accordion, AccordionDetails, AccordionSummary, Box, Stack} from "@mui/ma
 import FriendsChecklist from "./FriendsChecklist";
 import {ArrowDropDown, Groups} from "@mui/icons-material";
 
-export default function CustomizedAccordions({friends, setFriends}) {
+export default function SelectFriends({friends, setFriends}) {
     return (
         <Box sx={{
             position: 'sticky',

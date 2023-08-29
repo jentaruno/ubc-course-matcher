@@ -154,7 +154,7 @@ export function UploadCalendar(
             sx={{fontSize: 'smaller', fontStyle: 'italic'}}
             color={theme.palette.primary.light}
         >
-            Note: Calendar upload is not supported for mobile.
+            Note: Calendar upload is not supported for some mobile devices.
         </Typography>
         <AlertToast
             open={openErrorNotIcs}

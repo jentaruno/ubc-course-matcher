@@ -13,9 +13,11 @@ export default function FriendsChecklist({friends, setFriends}) {
         <FormGroup>
             <Grid container columnSpacing={2}>
                 {friends.map((friend, i) =>
-                    <Grid item xs={4}>
+                    <Grid
+                        key={`checkbox-${friend.name}`}
+                        item xs={6} md={4}
+                    >
                         <FormControlLabel
-                            key={`checkbox-${friend.name}`}
                             control={<Checkbox checked={friend.checked}/>}
                             label={friend.name}
                             onChange={(e) => handleChange(e, i)}
