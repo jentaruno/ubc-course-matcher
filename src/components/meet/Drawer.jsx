@@ -1,8 +1,8 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
-import {Accordion, AccordionDetails, AccordionSummary, Box} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Box, Stack} from "@mui/material";
 import FriendsChecklist from "./FriendsChecklist";
-import {ArrowDropDown} from "@mui/icons-material";
+import {ArrowDropDown, Groups} from "@mui/icons-material";
 
 export default function CustomizedAccordions({friends, setFriends}) {
     return (
@@ -16,9 +16,12 @@ export default function CustomizedAccordions({friends, setFriends}) {
                     aria-controls="panel-content"
                     id="panel-header"
                 >
-                    <Typography>
-                        Selected: {friends.filter(e => e.checked).map(e => e.name).join(", ")}
-                    </Typography>
+                    <Stack direction={'row'} spacing={1}>
+                        <Groups/>
+                        <Typography>
+                            {friends.filter(e => e.checked).map(e => e.name).join(", ")}
+                        </Typography>
+                    </Stack>
                 </AccordionSummary>
                 <AccordionDetails>
                     <FriendsChecklist
