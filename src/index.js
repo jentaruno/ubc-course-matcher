@@ -14,7 +14,7 @@ import {Container} from "@mui/material";
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import EditProfile from "./pages/EditProfile";
 import useLocalStorage from "./data/useLocalStorage";
-import Register from "./pages/Register";
+import LandingPage from "./pages/LandingPage";
 
 export const theme = createTheme({
     palette: {
@@ -74,7 +74,7 @@ export default function App() {
                                 <Route path="/match" element={<Match/>}/>
                                 <Route path="/meet" element={<Meet/>}/>
                             </Routes>
-                            : <Register setUserData={setUserData}/>}
+                            : <LandingPage/>}
                     </Container>
                     {userData && <BottomNav sx={{flexGrow: 0}}/>}
                 </Container>
