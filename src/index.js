@@ -74,7 +74,7 @@ export default function App() {
                                 <Route path="/match" element={<Match/>}/>
                                 <Route path="/meet" element={<Meet/>}/>
                             </Routes>
-                            : <LandingPage/>}
+                            : <LandingPage setUserData={setUserData}/>}
                     </Container>
                     {userData && <BottomNav sx={{flexGrow: 0}}/>}
                 </Container>
