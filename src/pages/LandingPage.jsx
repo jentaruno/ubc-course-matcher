@@ -1,14 +1,12 @@
 import {Box, Button, Stack, Typography} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import Register from "./Register";
-import useLocalStorage from "../data/useLocalStorage";
 import slide1 from '../images/slide1.png';
 import slide2 from '../images/slide2.png';
 import slide3 from '../images/slide3.png';
 import slide4 from '../images/slide4.png';
 
-export default function LandingPage() {
-    const [userData, setUserData] = useLocalStorage("user");
+export default function LandingPage({setUserData}) {
     const [slide, setSlide] = useState(0);
     const imageSlides = [slide1, slide2, slide3, slide4];
     const [registerPage, setRegisterPage] = useState(false);

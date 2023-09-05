@@ -1,11 +1,10 @@
 import {Button, Stack, Typography} from "@mui/material";
-import * as PropTypes from "prop-types";
 import {EditProfileForm} from "../components/profile/EditProfileForm";
 import React, {useState} from "react";
 import useDegrees from "../data/useDegrees";
 import {useNavigate} from "react-router-dom";
 
-export default function Register(props) {
+export default function Register({setUserData}) {
     const [formData, setFormData] = useState({
         name: 'UBC Student',
         yearLevel: 1,
@@ -25,9 +24,9 @@ export default function Register(props) {
         }));
     }
 
-    function saveUserData() {
+    async function saveUserData() {
         if (Object.keys(formData).every(key => formData[key] !== "")) {
-            props.setUserData(formData);
+            await setUserData(formData);
             navigate("/profile/your-classes");
         } else {
             // TODO: toast error
@@ -52,7 +51,3 @@ export default function Register(props) {
         </Stack>
     )
 }
-
-Register.propTypes = {
-    setUserData: PropTypes.func,
-};
